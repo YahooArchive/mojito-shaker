@@ -26,7 +26,7 @@ suite.add( new YUITest.TestCase({
             var self = this;
             this.shaker.shakeMojit(this._m1, this._mojits[this._m1],function(shaken){
                 self.resume(function(){
-                    console.log(JSON.stringify(shaken));
+                    console.log(JSON.stringify(shaken,null,'\t'));
                     Assert.isTrue(true);
                 });
             });
