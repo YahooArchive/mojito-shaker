@@ -31,7 +31,7 @@ suite.add( new YUITest.TestCase({
                 });
             });
 		
-			this.wait(1000);
+			this.wait(3000);
         }
         
        }));

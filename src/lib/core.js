@@ -54,7 +54,6 @@ Shaker.prototype._log = function(f,err){this._debugging && console.log(f + ': ' 
 **/
 Shaker.prototype._getAppConfig = function(){
     var file =  this._APP_ROOT + APP_CONFIG_FILE;
-    console.log(file);
     try{
         return JSON.parse(libfs.readFileSync(file));
         
@@ -170,7 +169,7 @@ Shaker.prototype._walkResources = function(dir, done,options) {
 };
 
 /**
-* Returns all the assets (js and css) from an specific path.
+* Returns all the assets (js and css) from specific paths.
 * It takes an object where the key is a string for identify the resources type;
 * and the value is the path associated (relative to the app level).
 *
@@ -200,10 +199,10 @@ Shaker.prototype._loadMojitResources = function(resourcesPath,callback){
 };
 
 /**
-* Try to match the default dimensions with the assets folders.
-* If founds the right structure matching, It generates all children associated for each dimension.
+* Try to match the default dimensions with the assets folder tree.
+* If founds the matching dimension-folder, It generates all children associated for that dimension.
 * @method _matchDefaultDmensions
-* @param {string} Assets folder where to look for the dimension-asset structure.
+* @param {string} Assets folder where to look for the dimension-assets structure.
 * @protected
 * @return {Object} The dimensions matched agains the assets whith all the children.
 *An empty object is returned if nothing matches.
@@ -471,7 +470,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                     }
                 };
          }
-         console.log(shaked);
+         callback(shaked);
 
     });
 };
