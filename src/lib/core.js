@@ -168,6 +168,18 @@ Shaker.prototype._walkResources = function(dir, done,options) {
     });
 };
 
+Shaker.prototype.includeResources = function(includes,resources){
+
+};
+
+Shaker.prototype.excludeResources = function(excludes,resources){
+
+};
+
+Shaker.prototype.replaceResources = function(replaces, resources){
+
+};
+
 /**
 * Returns all the assets (js and css) from specific paths.
 * It takes an object where the key is a string for identify the resources type;
@@ -236,12 +248,20 @@ Shaker.prototype._matchDefaultDimensions = function(assetspath){
     return dimensions;
 };
 
+/*
+* Merge the default configuration (defined on the top) with the shaker.json file if founded.
+* @method _mergeShakerConfig
+* @param {string} the name of the mojit
+* @param {string} the path of the mojit (relative to the app level)
+* @param {Object} an object with the resources (assets files)
+* @private
+*/
+
 Shaker.prototype._mergeShakerConfig = function(name,path,resources){
     var shaker_config = this._getMojitShakerConfig(name,path) || {},//get shaker.json
     default_dim = this._matchDefaultDimensions(path + '/assets'),
     binders = resources.binders, default_config,
     default_actions = util.simpleClone(SHAKER_DEFAULT_ACTION_CONFIG);//default '*' action
-    
     for(var i = 0; i< binders.length;i++){
         default_actions[libpath.basename(binders[i],'.js')] = {};
     }
@@ -249,6 +269,13 @@ Shaker.prototype._mergeShakerConfig = function(name,path,resources){
     return util.mergeRecursive(default_config,shaker_config);
 };
 
+/*
+* Takes a YUI Module file and returns it's name,version,path and dependencies.
+* @method precalcModule
+* @param {string} the file path of the js
+* @param {Object} an object with the resources (assets files)
+* @private
+*/
 
 Shaker.prototype.preCalcModule = function(filePath) {
         var file = libfs.readFileSync(filePath, 'utf8'),
@@ -278,15 +305,31 @@ Shaker.prototype.preCalcModule = function(filePath) {
         }
 };
 
-
+/*
+* Iterate over the autoloads and generates an object with all the YUI modules info and dependencies
+* It realies on the preCalcModule.
+* @method precalculateAutoloads
+* @params {array[strings]} list of autoload files
+* @protected
+*/
 Shaker.prototype.precalculateAutoloads = function(autoloads){
-    var appPath = process.cwd()+ '/',modules = {};
+    autoloads = autoloads || [];
+    var appPath = process.cwd() + '/',modules = {};
     for(var i = 0; i<autoloads.length; i++){
         var m = this.preCalcModule(autoloads[i],modules);
         modules[m.name] = m;
     }
     return modules;
 };
+
+/*
+* Filter the resources from a specific set of folders and files.
+* For each item in resources we check if belongs to any folder, and then we add the rest of the files given.
+* @method filterResources
+* @params {array[strings]} A list of folders and files that a particular dimension has.
+* @params {array[strings]} The list of all the assets.
+* @protected
+*/
 
 Shaker.prototype.filterResources = function(list,resources){
     var folders = list.filter(function(i){return libpath.extname(i) === "";}),
@@ -310,16 +353,18 @@ Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,
             continue;
         }
         children++;
-        res[i] = this.generateRecursiveShakerDimensions(dim[i],resources,prefix + '/' +i);
+        res[i] = this.generateRecursiveShakerDimensions(dim[i],resources,prefix + '/' + i);
     }
     if(!children) {
-        res.files = this.filterResources(shaker_dimensions.include || [prefix],resources);
+        var list = shaker_dimensions.include ? shaker_dimensions.include.concat([prefix]) : [prefix];
+        res.files = this.filterResources(list,resources);
     }
     return res;
 };
 
 Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources){
     var dimensions = shaker_cfg.dimensions;
+    dimensions.action = dimensions.action || {};
     for(var action in shaker_cfg.actions){
         dimensions.action[action] = {include: shaker_cfg.actions[action].include || [path+'/assets/action/'+action]  };
     }
@@ -399,7 +444,7 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions){
         while(parts.length){
             var rightDim = dimensions[right] || cache[right],
                 leftDim = dimensions[left] || cache[left];
-            //if left part didnt exists, then we skip it
+            //if left part didnt exists, then we skip it (it only can happen with the first dimension in the chain but still)
             if(!leftDim){
                 left = right;
                 right = parts.shift();
@@ -408,10 +453,10 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions){
              //if action is founded then we transform it to the actual value
             if(right == 'action'){
                 right = action;
-                rightDim = dimensions.action[right];
+                rightDim = dimensions.action[right].files.length ? dimensions.action[right] : null;
             }else if(left == 'action'){
                 left = action;
-                leftDim = dimensions.action[left];
+                rightDim = dimensions.action[left].files.length ? dimensions.action[left] : null;
             }
             //if rightDim is founded we compute it if not we skip it
             if(rightDim){
@@ -438,13 +483,53 @@ Shaker.prototype.shakeAction = function (name,meta,cache){
     return cache;
 };
 
+Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selectors){
+    if(!shaker_cfg.augments) return;
+
+    var rules = shaker_cfg.augments,
+        selector = selectors.pop(),
+        parts = selector.split('-');
+
+    for(var rule in rules){
+        var discriminants = rules[rule].on;
+        for(var rollup in shaken){
+            var rollups_dimensions = rollup.split('-'),
+            fulfill = true;
+            for(var disc in discriminants){
+                var value = discriminants[disc],
+                    pos = util.isInList(value,rollups_dimensions);
+                    //if we found it in the correct postition, we keep checking next discriminants if not we break
+                    if(pos !== -1 && parts[pos] == disc){
+                        //console.log('Rollup: ' + rollup + ' meets dicriminant: ' + disc);
+                        continue;
+                    }else{
+                        fulfill = false;
+                        break;
+                    }
+            }//discriminants
+            if(fulfill){//if the rollup fulfill all the discriminants we apply the actions of the rule
+                var execRule = rules[rule];
+                if(execRule.include){
+                    //ToDo: Call _includeResources...
+                }
+                if(execRule.exclude){
+
+                }
+                if(execRule.replace){
+
+                }
+            }
+        }//rollup
+
+    }//rule
+};
+
 Shaker.prototype.shakeMojit = function(name,path,callback,options){
     var self = this,
         resourcesPath = {assets: path+'/assets',
                          autoload: path+'/autoload',
                          binders: path+'/binders'
         };
-        
     this._loadMojitResources(resourcesPath,function(resources){
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
             modules = self.precalculateAutoloads(resources.autoload),
@@ -452,7 +537,6 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
             actions,
             default_order = shaker_config.actions['*'].order,
             shaked = {};
-            
          for(var action in (actions = shaker_config.actions)){
             if(action == '*') continue;
             var order = actions[action].order || default_order,
@@ -461,7 +545,10 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 meta = {binder: binder_dependencies,dimensions: dispatched},
                 listFiles = self.shakeAction(action,meta),
                 selectors = [];
-                for(var i in dispatched) selectors.push(i);
+                for(var i in dispatched) {
+                    selectors.push(i);//add the dispatched selectors
+                }
+                self._augmentRules(shaker_config,listFiles,selectors);
                 shaked[action] = {
                     shaken: listFiles,
                     meta:{
