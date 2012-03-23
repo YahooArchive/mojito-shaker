@@ -7,5 +7,12 @@ customRegistry.load(__dirname + '/mobstor.js');
 
 var q = new Queue('Testing queue', {registry: customRegistry});
 
-q.task('mobstor', {name: './mobstor.txt'});
+q.task('files', ['mobstor.js'])
+    //.task('jslint')
+    .task('concat')
+    .task('jsminify')
+    //.task('write', {name: 'mobstor.txt'})
+    .task('mobstor', {name: '/mobstor.txt'});
 q.run();
+
+// http://playground.yahoofs.com//mobstor.txt
