@@ -2,13 +2,34 @@ var State = require('../../node_modules/buildy').State,
     mobstor = require('mobstor');
 
 /**
- * Deploy to MObStor.
+ * Send content to MObStor. Simple Buildy wrapper for ynodejs_mobstor.
+ * See http://devel.corp.yahoo.com/ynodejs_mobstor/
  *
- * This can only apply to single string inputs.
+ * Example:
+ *
+ * var Registry = require('../../node_modules/buildy').Registry,
+ *     Queue = require('../../node_modules/buildy').Queue,
+ *     reg = new Registry(),
+ *     mobstor_config = {
+ *         host: 'playground.yahoofs.com',
+ *         proxy: {host : "yca-proxy.corp.yahoo.com", port : 3128}
+ *     };
+ *
+ * reg.load(__dirname + '/mobstor.js'); // Mobstor task
+ *
+ * new Queue('deploy', {registry: reg})
+ *     .task('files', ['mobstor.js'])
+ *     .task('concat')
+ *     .task('jsminify')
+ *     .task('mobstor', {name: '/foo/bar/baz.js', config: mobstor_config})
+ *     .task('write', {name: 'baz.js'})
+ *     .task('inspect')
+ *     .run();
  *
  * @method mobstorTask
- * @param options {Object} Write task options
- * @param options.name {String} Filename to write to.
+ * @param options {Object} MObStor task options.
+ * @param options.name {String} Resource name.
+ * @param options.config {Object} MObStor config (host, port, certificate, proxy).
  * @param status {EventEmitter} Status object, handles 'complete' and 'failed' task exit statuses.
  * @param logger {winston.Logger} Logger instance, if additional logging required (other than task exit status)
  * @return {undefined}
@@ -17,40 +38,35 @@ var State = require('../../node_modules/buildy').State,
 function mobstorTask(options, status, logger) {
     var self = this,
         name = options.name,
-        host = options.host || 'playground.yahoofs.com',
-        proxy = options.proxy || {
-            host : "yca-proxy.corp.yahoo.com",
-            port : 3128
-        },
-        client = mobstor.createClient({host: host, proxy: proxy});
+        client = mobstor.createClient(options.config);
 
-    // Write the content to mobstor.
-    function mobstorFile(filename, data) {
-        client.storeFile(filename, data, function(err, status, data) {
+    // Send content to mobstor.
+    function storeFile(filename, content) {
+        client.storeFile(filename, content, function(err, data) {
             if (err) {
-                status.emit('failed', 'mobstor', 'error deploying file: ' + err);
+                status.emit('failed', 'mobstor', 'error sending file: ' + err);
             } else {
-                self._state.set(State.TYPES.FILES, [filename]);
-                status.emit('complete', 'mobstor', 'deployed ' + filename);
+                self._state.set(State.TYPES.STRING, content);
+                status.emit('complete', 'mobstor', 'sent ' + filename);
             }
         });
     }
 
     switch (this._state.get().type) {
         case State.TYPES.FILES:
-            mobstorFile(name, self._state.get().value.join("\n"));
+            storeFile(name, self._state.get().value.join("\n"));
             break;
 
         case State.TYPES.STRING:
-            mobstorFile(name, self._state.get().value);
+            storeFile(name, self._state.get().value);
             break;
 
         case State.TYPES.STRINGS:
-            mobstorFile(name, self._state.get().value.join(""));
+            storeFile(name, self._state.get().value.join(""));
             break;
 
         case State.TYPES.UNDEFINED:
-            mobstorFile(name, "");
+            storeFile(name, "");
             break;
 
         default:

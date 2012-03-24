@@ -1,18 +1,18 @@
 var Registry = require('../../node_modules/buildy').Registry,
     Queue = require('../../node_modules/buildy').Queue,
-    customRegistry, testq;
+    reg = new Registry(),
+    mobstor_config = {
+        host: 'playground.yahoofs.com',
+        proxy: {host : "yca-proxy.corp.yahoo.com", port : 3128}
+    };
 
-customRegistry = new Registry();
-customRegistry.load(__dirname + '/mobstor.js');
+reg.load(__dirname + '/mobstor.js'); // Path to mobstor task
 
-var q = new Queue('Testing queue', {registry: customRegistry});
-
-q.task('files', ['mobstor.js'])
-    //.task('jslint')
+new Queue('deploy', {registry: reg})
+    .task('files', ['mobstor.js'])
     .task('concat')
     .task('jsminify')
-    //.task('write', {name: 'mobstor.txt'})
-    .task('mobstor', {name: '/mobstor.txt'});
-q.run();
-
-// http://playground.yahoofs.com//mobstor.txt
+    .task('mobstor', {name: '/foo/bar/baz.js', config: mobstor_config})
+    .task('write', {name: 'baz.js'})
+    .task('inspect')
+    .run();
