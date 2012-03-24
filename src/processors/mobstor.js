@@ -26,6 +26,8 @@ var State = require('../../node_modules/buildy').State,
  *     .task('inspect')
  *     .run();
  *
+ * View output here: http://playground.yahoofs.com/foo/bar/baz.js
+ *
  * @method mobstorTask
  * @param options {Object} MObStor task options.
  * @param options.name {String} Resource name.
