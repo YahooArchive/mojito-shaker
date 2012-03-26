@@ -20,8 +20,6 @@ Rollup.prototype = {
         this._queue.task(this._ext === '.js' ? 'jsminify' : 'cssminify');
         this._queue.run();
 
-        console.log(this._queue._state._state);
-
         if (this._enable_checksum) {
             var md5sum = Crypto.createHash('md5');
             md5sum.update(this._queue._state._state);
@@ -76,3 +74,5 @@ MobstorRollup.prototype.deploy = function(root, name) {
     queue.task('mobstor', {name: root + filename, config: this.config});
     return this;
 };
+
+module.exports.Rollup = Rollup;

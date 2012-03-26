@@ -1,3 +1,4 @@
+/*
 var YUITest = require('yuitest').YUITest,
     Rollup = require('../../src/lib/rollup.js').Rollup,
     libfs = require('fs');
@@ -20,3 +21,25 @@ suite.add(new YUITest.TestCase({
 }));
 
 YUITest.TestRunner.add(suite);
+*/
+var Rollup = require('../../src/lib/rollup.js').Rollup,
+    Path = require('path');
+
+var config = {
+    host: 'playground.yahoofs.com',
+    proxy: {host: "yca-proxy.corp.yahoo.com", port: 3128}
+};
+
+var files = ['../../docs/_build/html/_static/jquery.js', '../../docs/_build/html/_static/default.css', '../../docs/_build/html/_static/basic.css'],
+    css_files = files.filter(function(f) {return Path.extname(f) == ".css";}),
+    js_files = files.filter(function(f) {return Path.extname(f) == ".js";});
+
+new Rollup(js_files)
+    .uglify()
+    .write('js_rollup')
+    .run();
+
+new Rollup(css_files)
+    .uglify()
+    .write('css_rollup')
+    .run();
