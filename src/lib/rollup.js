@@ -76,24 +76,3 @@ MobstorRollup.prototype.deploy = function(root, name) {
     queue.task('mobstor', {name: root + filename, config: this.config});
     return this;
 };
-
-(function() {
-    var config = {
-        host: 'playground.yahoofs.com',
-        proxy: {host: "yca-proxy.corp.yahoo.com", port: 3128}
-    };
-
-    var files = ['../../docs/_build/html/_static/jquery.js', '../../docs/_build/html/_static/default.css', '../../docs/_build/html/_static/basic.css'],
-        css_files = files.filter(function(f) {return Path.extname(f) == ".css";}),
-        js_files = files.filter(function(f) {return Path.extname(f) == ".js";});
-
-    new Rollup(js_files)
-        .uglify()
-        .write('js_rollup')
-        .run();
-
-    new Rollup(css_files)
-        .uglify()
-        .write('css_rollup')
-        .run();
-})();
