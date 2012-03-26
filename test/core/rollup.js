@@ -23,6 +23,7 @@ suite.add(new YUITest.TestCase({
 YUITest.TestRunner.add(suite);
 */
 var Rollup = require('../../src/lib/rollup.js').Rollup,
+    MobstorRollup = require('../../src/lib/mobstor.js').MobstorRollup,
     Path = require('path');
 
 var config = {
@@ -42,4 +43,10 @@ new Rollup(js_files)
 new Rollup(css_files)
     .uglify()
     .write('css_rollup')
+    .run();
+
+new MobstorRollup(css_files, {checksum: false})
+    .uglify()
+    //.write('css_rollup')
+    .deploy('/test/', 'css_rollup', config) // http://playground.yahoofs.com/foo/bar/baz.js
     .run();

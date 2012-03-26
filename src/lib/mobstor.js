@@ -1,84 +1,34 @@
-var State = require('../../node_modules/buildy').State,
-    mobstor = require('mobstor');
+var Util = require('util'),
+    Path = require('path'),
+    Queue = require('../../node_modules/buildy').Queue,
+    Registry = require('../../node_modules/buildy').Registry,
+    Rollup = require('./rollup.js').Rollup;
 
-/**
- * Send content to MObStor. Simple Buildy wrapper for ynodejs_mobstor.
- * See http://devel.corp.yahoo.com/ynodejs_mobstor/
- *
- * Example:
- *
- * var Registry = require('../../node_modules/buildy').Registry,
- *     Queue = require('../../node_modules/buildy').Queue,
- *     reg = new Registry(),
- *     mobstor_config = {
- *         host: 'playground.yahoofs.com',
- *         proxy: {host : "yca-proxy.corp.yahoo.com", port : 3128}
- *     };
- *
- * reg.load(__dirname + '/mobstor.js'); // Mobstor task
- *
- * new Queue('deploy', {registry: reg})
- *     .task('files', ['mobstor.js'])
- *     .task('concat')
- *     .task('jsminify')
- *     .task('mobstor', {name: '/foo/bar/baz.js', config: mobstor_config})
- *     .task('write', {name: 'baz.js'})
- *     .task('inspect')
- *     .run();
- *
- * View output here: http://playground.yahoofs.com/foo/bar/baz.js
- *
- * @method mobstorTask
- * @param options {Object} MObStor task options.
- * @param options.name {String} Resource name.
- * @param options.config {Object} MObStor config (host, port, certificate, proxy).
- * @param status {EventEmitter} Status object, handles 'complete' and 'failed' task exit statuses.
- * @param logger {winston.Logger} Logger instance, if additional logging required (other than task exit status)
- * @return {undefined}
- * @public
- */
-function mobstorTask(options, status, logger) {
-    var self = this,
-        name = options.name,
-        client = mobstor.createClient(options.config);
+function MobstorRollup(files, options) {
+    var opts = options || {};
+    var registry = new Registry();
+    registry.load(__dirname + '/mobstor_task.js'); // Path to mobstor task
 
-    // Send content to mobstor.
-    function storeFile(filename, content) {
-        client.storeFile(filename, content, function(err, data) {
-            if (err) {
-                status.emit('failed', 'mobstor', 'error sending file: ' + err);
-            } else {
-                self._state.set(State.TYPES.STRING, content);
-                status.emit('complete', 'mobstor', 'sent ' + filename);
-            }
-        });
-    }
-
-    switch (this._state.get().type) {
-        case State.TYPES.FILES:
-            storeFile(name, self._state.get().value.join("\n"));
-            break;
-
-        case State.TYPES.STRING:
-            storeFile(name, self._state.get().value);
-            break;
-
-        case State.TYPES.STRINGS:
-            storeFile(name, self._state.get().value.join(""));
-            break;
-
-        case State.TYPES.UNDEFINED:
-            storeFile(name, "");
-            break;
-
-        default:
-            status.emit('failed', 'mobstor', 'unrecognised input type: ' + this._type);
-            break;
-    }
+    this._queue = new Queue('Rollup', {registry: registry});
+    this._queue.task('files', files);
+    this._ext = files ? Path.extname(files[0]) : '.js';
+    this._enable_checksum = opts.hasOwnProperty('checksum') ? opts.checksum : true;
+    this._checksum = null;
 }
 
-exports.tasks = {
-    'mobstor' : {
-        callback: mobstorTask
+Util.inherits(MobstorRollup, Rollup);
+
+MobstorRollup.prototype.deploy = function(root, name, config) {
+    var filename = root + name;
+
+    if (this._enable_checksum) {
+        filename += '_' + this._checksum;
     }
+
+    filename += this._ext;
+
+    this._queue.task('mobstor', {name: filename, config: config});
+    return this;
 };
+
+exports.MobstorRollup = MobstorRollup;
