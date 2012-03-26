@@ -579,9 +579,8 @@ Shaker.prototype.shakeApp = function(name,path,callback,options){
         binders: path + 'binders'
     };
     this._loadMojitResources(resourcesPath,function(resources){
-        var shaker_config = self._mergeShakerConfig(name,path,resources); //we get the final merged shaker config
-        console.log(shaker_config);
-            var modules = self.precalculateAutoloads(resources.autoload),
+        var shaker_config = self._mergeShakerConfig(name,path,resources), //we get the final merged shaker config
+            modules = self.precalculateAutoloads(resources.autoload),
             dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets),//files per dimension filtering
             actions,
             default_order = shaker_config.actions['*'].order,
@@ -590,9 +589,16 @@ Shaker.prototype.shakeApp = function(name,path,callback,options){
                 var order = actions[action].order || default_order,
                     dispatched = self.dispatchOrder(action,order,dimensions),
                     meta = {binder: [],dimensions: dispatched},
-                    listFiles = self.shakeAction(action,meta);
+                    listFiles = self.shakeAction(action,meta),
+                    selectors = [];
+                for(var i in dispatched) {
+                    selectors.push(i.replace(action,'action'));//add the dispatched selectors
+                }
                 shaked[action] = {
-                    shaken : listFiles
+                    shaken : listFiles,
+                    meta: {
+                        selectors: selectors
+                    }
                 };
             }
 
