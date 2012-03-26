@@ -1,13 +1,13 @@
 //fuse helper functions
-	function substitute(str, arr) { 
-		var i,pattern,re, n = arr.length; 
-  		for (i = 0; i < n; i++) { 
-		    pattern = "\\{" + i + "\\}"; 
-		    re = new RegExp(pattern, "g"); 
-		    str = str.replace(re, arr[i]); 
-		}		 
-	  return str; 
+function substitute(str, arr) {
+	var i,pattern,re, n = arr.length;
+	for (i = 0; i < n; i++) {
+		pattern = "\\{" + i + "\\}";
+		re = new RegExp(pattern, "g");
+		str = str.replace(re, arr[i]);
 	}
+	return str;
+}
 	
 	function readConfigFile(file){
 		var fs = require('fs');
@@ -34,21 +34,38 @@
     		 return obj3;
 	}
 	
-	function mergeRecursive(obj1, obj2) {
-	   for (var p in obj2) {
-            try {
-                if ( obj2[p].constructor == Object ) {
-                    obj1[p] = mergeRecursive(obj1[p], obj2[p]);
-              } else {
-                    obj1[p] = obj2[p];
-                } 
-            } catch(e) {
-            obj1[p] = obj2[p];
+	function mergeRecursive(dest, src, typeMatch) {
+            var p;
+            for (p in src) {
+                if (src.hasOwnProperty(p)) {
+                    // Property in destination object set; update its value.
+                    if ( src[p] && src[p].constructor === Object ) {
+                        if(!dest[p]){
+                            dest[p] = {};
+                        }
+                        dest[p] = this.mergeRecursive(dest[p], src[p]);
+                    } else {
+                        if(dest[p] && typeMatch){
+                            if(typeof dest[p] === typeof src[p]){
+                                dest[p] = src[p];
+                            }
+                        }
+                        // only copy values that are not undefined, null and falsey values should be copied
+                        else if (typeof src[p] !== 'undefined') {
+                            // for null sources, we only want to copy over values that are undefined
+                            if (src[p] === null) {
+                                if (typeof dest[p] === 'undefined') {
+                                    dest[p] = src[p];
+                                }
+                            } else {
+                                dest[p] = src[p];
+                            }
+                        }
+                    }
+                }
             }
-  }
-  
-  return obj1;
-}
+            return dest;
+        }
 	
 	function simpleClone(obj){
     		if(obj == null || typeof(obj) != 'object')
