@@ -5,6 +5,8 @@ var path = require('path'),
     utils = require('mojito/lib/management/utils'),
     fs = require('fs'),
 	ResourceStore = require('mojito/lib/store.server'),
+    Queue = require('buildy').Queue,
+    Registry = require('buildy').Registry,
 
     run,usage,options,
 
@@ -97,10 +99,29 @@ function generateRollup(list,options,callback){
     }
     //output inline
     else{
-    	console.log(rolledModules);
+        processRollup(rolledModules, function(filename) {
+            console.log(filename);
+        });
     }
+}
 
-	
+function processRollup(files, callback) {
+    var registry = new Registry();
+    registry.load(__dirname + '/lib/tasks/checksumwrite.js');
+
+    var queue = new Queue('MojitoRollup', {registry: registry});
+
+    queue.on('taskComplete', function(data) {
+        if (data.task.type === 'checksumwrite') {
+            callback(data.result);
+        }
+    });
+
+    queue.task('files', files)
+        .task('concat')
+        .task('jsminify')
+        .task('checksumwrite', {name: 'mojito_rollup_{checksum}.js'})
+        .run();
 }
 
 function buildShaker(params,options,callback){
