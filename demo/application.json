@@ -1,0 +1,37 @@
+[{
+    "settings": ["master"],
+    
+    "log": {
+        "client": {
+            "level": "none",
+            "yui": false
+        },
+        "server": {
+            "level": "error",
+            "yui": false
+        }
+    },
+    
+    "specs": {
+        "htmlframe": {
+            "type": "HTMLFrameMojit",
+            "config": {
+                "deploy": false,
+                "title": "Shaker Demo",
+                "child": {
+                    "type": "master"
+                },
+                "assets": {
+                    "top": {
+                        "css": [
+                            "/static/shakerdemo/assets/css/common/yui-reset.css",
+                            "/static/shakerdemo/assets/css/common/yui-fonts.css",
+                            "/static/shakerdemo/assets/css/common/yui-base.css",
+                            "/static/shakerdemo/assets/css/common/utils.css"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}]

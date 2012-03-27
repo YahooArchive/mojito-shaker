@@ -1,0 +1,13 @@
+#features {
+    width: 420px;
+}
+
+.feature {
+    width: 410px;
+}
+
+.feature .hd { width: 175px; }
+.feature .bd {
+    padding-top: 7px;
+    width: 335px;
+}
