@@ -23,7 +23,7 @@
  * ---
  */
 
-var State = require('../../../node_modules/buildy').State,
+var State = require('buildy').State,
     path   = require('path'),
     mkdirp = require('mkdirp').mkdirp,
     fs     = require('fs'),

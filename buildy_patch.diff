@@ -1,0 +1,11 @@
+18a19,23
+> util.isArray = function isArray(ar) {
+>   return Array.isArray(ar) ||
+>          (typeof ar === 'object' && objectToString(ar) === '[object Array]');
+> };
+> 
+340c345
+< };
+\ No newline at end of file
+---
+> };

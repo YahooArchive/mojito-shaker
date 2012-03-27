@@ -1,5 +1,5 @@
 var Mobstor = require('mobstor'),
-    State = require('../../../node_modules/buildy').State,
+    State = require('buildy').State,
     Crypto = require('crypto');
 
 /**

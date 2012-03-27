@@ -1,8 +1,8 @@
 var YUITest = require('yuitest').YUITest,
     libfs = require('fs'),
     Path = require('path'),
-    Queue = require('../../node_modules/buildy').Queue,
-    Registry = require('../../node_modules/buildy').Registry;
+    Queue = require('buildy').Queue,
+    Registry = require('buildy').Registry;
 
 var Assert = YUITest.Assert;
 var suite = new YUITest.TestSuite("mobstor test");
