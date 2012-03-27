@@ -2,9 +2,9 @@
 * Shaker command!
 */
 var path = require('path'),
-    utils = require("../utils"),
+    utils = require('mojito/lib/management/utils'),
     fs = require('fs'),
-	ResourceStore = require(path.join(__dirname, '../..', 'store.server.js')),
+	ResourceStore = require('mojito/lib/store.server'),
 
     run,usage,options,
 
