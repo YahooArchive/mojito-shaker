@@ -507,12 +507,12 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
             }
 
             if(!rightDim){
-
                 if(!options.recursive){
                     right = parts.shift();
                     continue;
                 }else{
-                    dimensions[right] = {files: []};
+                    dimensions[right] = {};
+                    dimensions[right][right] = {files:[]};
                     rightDim = dimensions[right];
                 }
             }
@@ -738,7 +738,8 @@ Shaker.prototype.bundleMojits = function(shaken,usel){
     if(!app) return shaken;
     for(var action in app.actions){
         var loadedMojits = app.actions[action].mojits,
-            appShake = shaken.app[action].shaken;
+            appShake = shaken.app[action].shaken,
+            originalAppShake = util.simpleClone(appShake),
             appDeps = shaken.app[action].meta.dependencies;
         for(var i in loadedMojits){
             var mojit = loadedMojits[i],
@@ -749,7 +750,17 @@ Shaker.prototype.bundleMojits = function(shaken,usel){
                 mShake = shaken.mojits[mojitName][mojitAction].shaken;
 
             for(var list in mShake){
-                appShake[list] = appShake[list] ? appShake[list].concat(mShake[list]) : mShake[list];
+                if(appShake[list]){
+                  appShake[list] = appShake[list].concat(mShake[list]);
+                }else{
+                var tmp = mShake[list];
+                   for(var j in originalAppShake){//ToDo: Hack for the demo!
+                        if(list.indexOf(j) === 0){
+                            tmp = originalAppShake[j];
+                        }
+                   }
+                   appShake[list] = tmp.concat(mShake[list]);
+                }
             }
             appDeps = appDeps.concat(mojitShaken.meta.dependencies);
         }

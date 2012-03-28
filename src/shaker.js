@@ -153,12 +153,13 @@ function rename(shaken,callback){
 
 function compress(shaken,callback){
             var mojit,mojits,action,actions,dim,list,actionName,dimensions,counter = 0,
+                app = path.basename(process.cwd());
                 wrap = function(list,mojit,action,actionName,dim){
                     processRollup(list,'assets/r/'+mojit+'_'+actionName+'_'+dim,'.css',function(fileName){
                         if(mojit !== 'app'){
-                            shaken.mojits[mojit][action].shaken[dim] = ['/static/'+mojit+'/'+fileName];
+                            shaken.mojits[mojit][action].shaken[dim] = ['/static/'+app+'/'+fileName];
                         }else{
-                            shaken.app[action].shaken[dim] = ['/static/'+mojit+'/'+fileName];
+                            shaken.app[action].shaken[dim] = ['/static/'+app+'/'+fileName];
                         }
                         if(!--counter) {
                             callback(shaken);

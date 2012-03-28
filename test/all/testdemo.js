@@ -28,15 +28,15 @@ suite.add( new YUITest.TestCase({
             });
         
             this.wait(3000);
-        }
-        /*testShaker_mojit: function(){
+        }/*
+        testShaker_mojit: function(){
             var self = this;
-            this.shaker.shakeMojit('master','../../demo/mojits/master',function(shaken){
+            this.shaker.shakeMojit('master','../../shakerdemo/mojits/master',function(shaken){
                 self.resume(function(){
                     console.log(JSON.stringify(shaken,null,'\t'));
                     Assert.isTrue(true);
                 });
-            });
+            },{recursive:true,selectors:['common-action-device-skin-region']});
         
             this.wait(3000);
         }*/

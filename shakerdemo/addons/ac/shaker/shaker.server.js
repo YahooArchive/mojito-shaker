@@ -128,26 +128,35 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
         },
         shakeAll: function(meta){
-            var ac = this._ac;
-            var assets = ac.assets.getAssets(),
+            var ac = this._ac,
+                assets = ac.assets.getAssets(),
                 topjs = assets.top && assets.top.js || [],
                 js = topjs.concat(assets.bottom && assets.bottom.js || []),
                 groups = filterAssets(this._app,js),
-                loadedMojits = [],rollupsMojits,rollupsApp;
+                loadedMojits = [],rollupsMojits = [],rollupsApp,
+                diffArray = function(b,a){
+                    return b.filter(function(i) {return !(a.indexOf(i) > -1);});
+                };
+                //get all mojits
                 for(var m in meta.children){
                     var mojit = meta.children[m];
                     loadedMojits.push(mojit.base || mojit.type );
                 }
 
-                rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits),
+                var app = this._meta.app,
+                    hcMojits = (app[ac.action] || app['*']).mojits || [],
+                    nonCoveredMojits = diffArray(loadedMojits,hcMojits);
+
+                Y.log(nonCoveredMojits);
+
+                if(nonCoveredMojits.length){
+                    rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits);
+                }
+
                 rollupsApp = this._shakeApp(groups.app);
 
                 var all = rollupsApp.concat(rollupsMojits);
                 assets.top.css = all;
-                
-
-
-                
 
         },
         shakeList: function(assets,type,location){
