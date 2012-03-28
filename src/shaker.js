@@ -37,6 +37,11 @@ options = [
         hasValue: false
     },
     {
+        shortName: 'st',
+        longName: 'stage',
+        hasValue: false
+    },
+    {
         shortName: 's',
         longName: 'setup',
         hasValue: false
@@ -80,7 +85,7 @@ function generateRollup(list,options,callback){
 			}
 			return false;
 		};
-	//get an filter the files from the store
+	//get and filter the files from the store
 	store.preload();
 	var rollupMojito = (store.getRollupsApp('client', context)).srcs;
 	modules = list ? rollupMojito.filter(filterModules) : rollupMojito;
@@ -92,6 +97,7 @@ function generateRollup(list,options,callback){
         rolledModules.push(modules[j]);
         rollupBody += fs.readFileSync(modules[j], 'utf-8');
     }
+
     //output a file
     if(options.output){
 			utils.makeDir(dest);
@@ -100,29 +106,99 @@ function generateRollup(list,options,callback){
     }
     //output inline
     else{
-        var results = [];
-
-        processRollup(rolledModules, 'mojito_rollup', '.js', function(filename) {
+        //create mojito-core rollup
+        processRollup(rolledModules, 'assets/mojito/mojito_rollup_full', '.js', function(filename) {
             transformedRollup(filename);
         });
 
+        //shaker stuff
         var shaker = new Shaker({root: './'});
         shaker.shakeAll(function(shaken){
-            var modules = [
-                {name: 'master', module: shaken.mojits.master['*'].shaken},
-                {name: 'primary', module: shaken.mojits.primary['*'].shaken},
-                {name: 'secondary', module: shaken.mojits.secondary['*'].shaken},
-                {name: 'app', module: shaken.app['*'].shaken}
-            ];
-
-            modules.forEach(function(module) {
-                for (var type in module.module) {
-                    processRollup(module.module[type], module.name + '-' + type, '.css', transformedRollup);
-                }
-            });
+            if(options.stage || options.production){
+                compress(shaken,function(shaken_p){
+                    writeMetaData(shaken_p,callback);
+                });
+            }else{//dev
+                rename(shaken,function(shaken_r){
+                    writeMetaData(shaken_r,callback);
+                });
+            }
         });
     }
 }
+function rename(shaken,callback){
+    var mojit,mojits,action,actions,dim,list,actionName,dimensions,item,
+        app = path.basename(process.cwd());
+    for(mojit in (mojits = shaken.mojits)){
+        for(action in (actions = mojits[mojit])){
+            for(dim in (dimensions = actions[action].shaken)){
+                for(item in (list = dimensions[dim])){
+                    list[item] = list[item].replace('./mojits','/static');
+                }
+            }
+        }
+    }
+    for(action in (actions = shaken.app)){
+        for(dim in (dimensions = actions[action].shaken)){
+            for(item in (list = dimensions[dim])){
+                    list[item] = list[item].replace('./','/static/'+app+'/');
+            }
+        }
+    }
+    callback(shaken);
+}
+
+function compress(shaken,callback){
+            var mojit,mojits,action,actions,dim,list,actionName,dimensions,counter = 0,
+                wrap = function(list,mojit,action,actionName,dim){
+                    processRollup(list,'assets/r/'+mojit+'_'+actionName+'_'+dim,'.css',function(fileName){
+                        if(mojit !== 'app'){
+                            shaken.mojits[mojit][action].shaken[dim] = ['/static/'+mojit+'/'+fileName];
+                        }else{
+                            shaken.app[action].shaken[dim] = ['/static/'+mojit+'/'+fileName];
+                        }
+                        if(!--counter) {
+                            callback(shaken);
+                        }
+                    });
+                };
+
+            for(mojit in (mojits = shaken.mojits)){
+                for(action in (actions = mojits[mojit])){
+                    for(dim in (dimensions = actions[action].shaken)){
+                        list = dimensions[dim];
+                        actionName = action == '*' ? 'default' : action;
+                        //console.log(counter +') '+mojit+'_'+actionName+'_'+dim);
+                        if(list.length) {
+                            counter++;
+                            wrap(list,mojit,action,actionName,dim);
+                        }
+                    }
+                }
+            }
+            for(action in (actions = shaken.app)){
+                for(dim in (dimensions = actions[action].shaken)){
+                    list = dimensions[dim];
+                    actionName = action == '*' ? 'default' : action;
+                    if(list.length) {
+                        counter++;
+                        wrap(list,'app',action,actionName,dim);
+                    }
+                }
+            }
+        }
+
+function writeMetaData(shaken,callback){
+     var aux = "";
+        aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
+        aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
+        aux+= 'YUI._mojito._cache.shaker.meta = \n';
+        aux += JSON.stringify(shaken,null,'\t');
+        aux+= '});';
+    fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js',aux);
+    callback();
+}
+
 
 function transformedRollup(filename) {
     console.log(filename);
