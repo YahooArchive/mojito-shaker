@@ -7,6 +7,7 @@ var path = require('path'),
 	ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
+    Shaker = require('./lib/core').Shaker,
 
     run,usage,options,
 
@@ -99,13 +100,35 @@ function generateRollup(list,options,callback){
     }
     //output inline
     else{
-        processRollup(rolledModules, function(filename) {
-            console.log(filename);
+        var results = [];
+
+        processRollup(rolledModules, 'mojito_rollup', '.js', function(filename) {
+            transformedRollup(filename);
+        });
+
+        var shaker = new Shaker({root: './'});
+        shaker.shakeAll(function(shaken){
+            var modules = [
+                {name: 'master', module: shaken.mojits.master['*'].shaken},
+                {name: 'primary', module: shaken.mojits.primary['*'].shaken},
+                {name: 'secondary', module: shaken.mojits.secondary['*'].shaken},
+                {name: 'app', module: shaken.app['*'].shaken}
+            ];
+
+            modules.forEach(function(module) {
+                for (var type in module.module) {
+                    processRollup(module.module[type], module.name + '-' + type, '.css', transformedRollup);
+                }
+            });
         });
     }
 }
 
-function processRollup(files, callback) {
+function transformedRollup(filename) {
+    console.log(filename);
+}
+
+function processRollup(files, name, ext, callback) {
     var registry = new Registry();
     registry.load(__dirname + '/lib/tasks/checksumwrite.js');
 
@@ -119,8 +142,8 @@ function processRollup(files, callback) {
 
     queue.task('files', files)
         .task('concat')
-        .task('jsminify')
-        .task('checksumwrite', {name: 'mojito_rollup_{checksum}.js'})
+        .task(ext === '.js' ? 'jsminify' : 'cssminify')
+        .task('checksumwrite', {name: name + '_{checksum}' + ext})
         .run();
 }
 
