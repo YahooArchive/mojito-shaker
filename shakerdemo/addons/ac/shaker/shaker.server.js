@@ -141,7 +141,12 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
                 rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits),
                 rollupsApp = this._shakeApp(groups.app);
-                console.log(rollupsMojits.concat(rollupsApp));
+
+                var all = rollupsApp.concat(rollupsMojits);
+                assets.top.css = all;
+                
+
+
                 
 
         },

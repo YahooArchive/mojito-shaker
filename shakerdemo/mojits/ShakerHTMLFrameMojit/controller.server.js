@@ -88,6 +88,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
+                
                 ac.context = Y.merge(ac.context,ac.params.getFromUrl());
                 ac.shaker.shakeAll(meta);
                 // Attach assets found in the "meta" to the page

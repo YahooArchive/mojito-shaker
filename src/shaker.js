@@ -113,13 +113,16 @@ function generateRollup(list,options,callback){
 
         //shaker stuff
         var shaker = new Shaker({root: './'});
+        utils.log('[SHAKER] - Analizying application assets to Shake... ');
         shaker.shakeAll(function(shaken){
             if(options.stage || options.production){
                 compress(shaken,function(shaken_p){
+                    utils.log('[SHAKER] - Minifying and optimizing rollups... ');
                     writeMetaData(shaken_p,callback);
                 });
             }else{//dev
                 rename(shaken,function(shaken_r){
+                    utils.log('[SHAKER] - Processed assets for development env. ');
                     writeMetaData(shaken_r,callback);
                 });
             }
@@ -189,6 +192,7 @@ function compress(shaken,callback){
         }
 
 function writeMetaData(shaken,callback){
+    utils.log('[SHAKER] - Writing processed metadata in autoload.');
      var aux = "";
         aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
         aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
@@ -201,7 +205,7 @@ function writeMetaData(shaken,callback){
 
 
 function transformedRollup(filename) {
-    console.log(filename);
+    utils.log('[SHAKER] - Created rollup for mojito-core in: '+filename);
 }
 
 function processRollup(files, name, ext, callback) {
