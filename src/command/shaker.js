@@ -7,7 +7,7 @@ var path = require('path'),
 	ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
-    Shaker = require('./lib/core').Shaker,
+    Shaker = require('../lib/core').Shaker,
 
     usage,
     options,
@@ -179,7 +179,7 @@ function transformedRollup(filename) {
 
 function processRollup(files, name, ext, callback) {
     var registry = new Registry();
-    registry.load(__dirname + '/lib/tasks/checksumwrite.js');
+    registry.load(__dirname + '/../lib/tasks/checksumwrite.js');
 
     var queue = new Queue('MojitoRollup', {registry: registry});
 

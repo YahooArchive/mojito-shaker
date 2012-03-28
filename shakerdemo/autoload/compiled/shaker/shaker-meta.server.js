@@ -319,52 +319,52 @@ YUI._mojito._cache.shaker.meta =
 		"*": {
 			"shaken": {
 				"common": [
-					"/static/shakerdemo/assets/r/app_default_common_7f0aabdd584ec19ac92671545f31b595.css"
+					"/static/shakerdemo/assets/r/app_default_common_0c684fd302a22293b6a4606b76337198.css"
 				],
 				"common-action": [
-					"/static/shakerdemo/assets/r/app_default_common-action_7f0aabdd584ec19ac92671545f31b595.css"
+					"/static/shakerdemo/assets/r/app_default_common-action_0c684fd302a22293b6a4606b76337198.css"
 				],
 				"common-action-device": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device_7f0aabdd584ec19ac92671545f31b595.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device_0c684fd302a22293b6a4606b76337198.css"
 				],
 				"common-action-smartphone": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone_31e9f8c2ca7ecffa8b12525bd87f4870.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone_682ebb86231e1026fd107d30937933f0.css"
 				],
 				"common-action-device-skin": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_7f0aabdd584ec19ac92671545f31b595.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_0c684fd302a22293b6a4606b76337198.css"
 				],
 				"common-action-device-grey": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey_487632b65cb7a397a2dc2d2849ea760b.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey_e746d90a86a5d475b6110799220a3862.css"
 				],
 				"common-action-smartphone-skin": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin_31e9f8c2ca7ecffa8b12525bd87f4870.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin_682ebb86231e1026fd107d30937933f0.css"
 				],
 				"common-action-smartphone-grey": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey_04ce2c10fe9d4cc06d355f4619d46ad6.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey_ee743cc7584486651e3f219574b844a1.css"
 				],
 				"common-action-device-skin-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_7f0aabdd584ec19ac92671545f31b595.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_0c684fd302a22293b6a4606b76337198.css"
 				],
 				"common-action-device-skin-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-CA_fac4b42a0bd4f713659a62f37e10b13e.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-CA_94f9941d57857959a781544cfb602af9.css"
 				],
 				"common-action-device-grey-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-region_487632b65cb7a397a2dc2d2849ea760b.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-region_e746d90a86a5d475b6110799220a3862.css"
 				],
 				"common-action-device-grey-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-CA_53999c7da8409ddf5ff2c29885c87221.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-CA_565d75bcaeb83ca4dd70d5a1fed23265.css"
 				],
 				"common-action-smartphone-skin-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-region_31e9f8c2ca7ecffa8b12525bd87f4870.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-region_682ebb86231e1026fd107d30937933f0.css"
 				],
 				"common-action-smartphone-skin-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-CA_0edb7f7770ca69f4cd588632745b5ad2.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-CA_6297bbbbdb19384c4b1e081bf8cefbb0.css"
 				],
 				"common-action-smartphone-grey-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-region_04ce2c10fe9d4cc06d355f4619d46ad6.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-region_ee743cc7584486651e3f219574b844a1.css"
 				],
 				"common-action-smartphone-grey-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-CA_8c441fc5618d22b117081a06e979378b.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-CA_378b66ae75bc07b48377f12841bdf5f9.css"
 				]
 			},
 			"meta": {
@@ -374,10 +374,10 @@ YUI._mojito._cache.shaker.meta =
 				"dimensions": {
 					"common": {
 						"files": [
-							"./assets/common/yui-base.css",
 							"./assets/common/utils.css",
-							"./assets/common/yui-reset.css",
 							"./assets/common/yui-fonts.css",
+							"./assets/common/yui-base.css",
+							"./assets/common/yui-reset.css",
 							"./mojits/master/assets/common/master.css",
 							"./mojits/primary/assets/common/primary.css"
 						]
