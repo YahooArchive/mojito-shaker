@@ -507,10 +507,10 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
             }
 
             if(!rightDim){
+
                 if(!options.recursive){
                     right = parts.shift();
                     continue;
-
                 }else{
                     dimensions[right] = {files: []};
                     rightDim = dimensions[right];
@@ -518,6 +518,7 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
             }
             //if rightDim is founded we compute it if not we skip it
             if(rightDim){
+                dimensions[right][right] = {files:[]};
                 var tempDim =  left+'-'+right;
                 cache[tempDim] = this.mergeDimensionsRecursive(left,right,leftDim,rightDim);
                 computed++;

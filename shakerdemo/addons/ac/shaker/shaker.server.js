@@ -53,10 +53,16 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                         if(aux === 'common'){
                             matched+= matched ? '-' + aux : aux;
                         }else if(aux === 'action'){
-                            matched+= matched? '-' + action: action;
+                            action = shaken[matched + '-' + action] ? action : 'action';
+                            matched+=matched? '-' + action: action;
                         }else{// common case dimensions
+
+                            //we find a matched dimension in shaken
                             if(typeof dimensions[aux] !== 'undefined' && shaken[matched + '-' + dimensions[aux] ]){
                                 matched+= matched ? '-' + dimensions[aux] : dimensions[aux];
+                            }else if(shaken[matched+'-'+aux]){//if we have the default name keep going
+                                matched+= matched ? '-' + aux : aux;
+                                continue;
                             }else{
                                 break;
                             }
@@ -66,9 +72,11 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         _matchMojitDimensions: function(mojit,binder){
             var mojitAll = this._meta.mojits[mojit],
-                mojitmeta = mojitAll && mojitAll[binder || '*'],
-                selectors = mojitmeta && mojitmeta.meta.selectors.slice(),
+                action = binder || '*',
+                mojitmeta = mojitAll && mojitAll[action],
+                selectors = mojitmeta && mojitmeta.meta.order.slice(),
                 matched = '';
+
                 if(selectors){
                     matched = this._matchDimensions(selectors.pop(),this._ac.context,binder,mojitmeta.shaken);
                 }//selectorMeta?
@@ -111,9 +119,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 app = this._meta.app,
                 dimensions = this._ac.context,
                 shakenAction = app[action] || app['*'],
-                selectors = shakenAction.meta.selectors.slice(),
+                selectors = shakenAction.meta.order.slice(),
                 shaken = shakenAction.shaken,
                 selector = this._matchDimensions(selectors.pop(),dimensions,action,shaken);
+                console.log(selector);
                 return this._getAppRollup(selector,action);
 
 
@@ -121,16 +130,19 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         shakeAll: function(meta){
             var ac = this._ac;
             var assets = ac.assets.getAssets(),
-                js = assets.top.js.concat(assets.bottom.js),
+                topjs = assets.top && assets.top.js || [],
+                js = topjs.concat(assets.bottom && assets.bottom.js || []),
                 groups = filterAssets(this._app,js),
                 loadedMojits = [],rollupsMojits,rollupsApp;
                 for(var m in meta.children){
                     var mojit = meta.children[m];
                     loadedMojits.push(mojit.base || mojit.type );
                 }
+
                 rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits),
                 rollupsApp = this._shakeApp(groups.app);
-                console.log(rollupsMojits);
+                console.log(rollupsMojits.concat(rollupsApp));
+                
 
         },
         shakeList: function(assets,type,location){

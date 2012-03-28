@@ -1,20 +1,9 @@
 [{
     "settings": ["master"],
     
-    "log": {
-        "client": {
-            "level": "none",
-            "yui": false
-        },
-        "server": {
-            "level": "error",
-            "yui": false
-        }
-    },
-    
     "specs": {
         "htmlframe": {
-            "type": "HTMLFrameMojit",
+            "type": "ShakerHTMLFrameMojit",
             "config": {
                 "deploy": false,
                 "title": "Shaker Demo",

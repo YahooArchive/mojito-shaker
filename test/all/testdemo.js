@@ -12,7 +12,7 @@ suite.add( new YUITest.TestCase({
         name: "Demo test",
                 
         setUp : function () {
-            this._appPath = '../../demo/';
+            this._appPath = '../../shakerdemo/';
             this.shaker = new Shaker({root: this._appPath});
         },
         tearDown : function () {
