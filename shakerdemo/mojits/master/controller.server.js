@@ -49,7 +49,7 @@ var DIMENSIONS = {
                     }
                 };
                 
-            ac.assets.addCss('/static/' + NAME + '/assets/css/common/' + NAME + '.css');
+            ac.assets.addCss('/static/' + NAME + '/assets/common/' + NAME + '.css');
                 
             dims.device && ac.assets.addCss(this.cssPath('device',   dims.device));
             // dims.region && ac.assets.addCss(this.cssPath('region', dims.region));
@@ -62,7 +62,7 @@ var DIMENSIONS = {
         },
         
         cssPath: function (dim, val) {
-            return '/static/' + NAME + '/assets/css/' + dim + '/' + val + '/' +
+            return '/static/' + NAME + '/assets/' + dim + '/' + val + '/' +
                 NAME + '-' + val + '.css';
         },
         

@@ -28,7 +28,7 @@ YUI.add('primary', function(Y, NAME) {
         index: function(ac) {
             var dim = ac.params.getFromUrl();
             
-            ac.assets.addCss('/static/' + NAME + '/assets/css/common/' + NAME + '.css');
+            ac.assets.addCss('/static/' + NAME + '/assets/common/' + NAME + '.css');
             
             // dim.device && ac.assets.addCss(this.cssPath('device',   dim.device));
             dim.region && ac.assets.addCss(this.cssPath('region', dim.region));
@@ -40,7 +40,7 @@ YUI.add('primary', function(Y, NAME) {
         cssPath: function (dim, val) {
             val || (val = dim);
             
-            return '/static/' + NAME + '/assets/css/' + dim + '/' + val + '/' +
+            return '/static/' + NAME + '/assets/' + dim + '/' + val + '/' +
                 NAME + '-' + val + '.css';
         }
     };

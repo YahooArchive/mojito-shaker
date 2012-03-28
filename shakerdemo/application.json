@@ -24,10 +24,10 @@
                 "assets": {
                     "top": {
                         "css": [
-                            "/static/shakerdemo/assets/css/common/yui-reset.css",
-                            "/static/shakerdemo/assets/css/common/yui-fonts.css",
-                            "/static/shakerdemo/assets/css/common/yui-base.css",
-                            "/static/shakerdemo/assets/css/common/utils.css"
+                            "/static/shakerdemo/assets/common/yui-reset.css",
+                            "/static/shakerdemo/assets/common/yui-fonts.css",
+                            "/static/shakerdemo/assets/common/yui-base.css",
+                            "/static/shakerdemo/assets/common/utils.css"
                         ]
                     }
                 }
