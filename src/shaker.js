@@ -144,7 +144,11 @@ function rename(shaken,callback){
     for(action in (actions = shaken.app)){
         for(dim in (dimensions = actions[action].shaken)){
             for(item in (list = dimensions[dim])){
-                    list[item] = list[item].replace('./','/static/'+app+'/');
+                    var tmp = list[item];
+                    tmp = tmp.replace('./mojits/','/static/');
+                    tmp = tmp.replace('./','/static/'+app+'/');
+                    //console.log(list[item] + '=>' + tmp);
+                    list[item] = tmp;
             }
         }
     }

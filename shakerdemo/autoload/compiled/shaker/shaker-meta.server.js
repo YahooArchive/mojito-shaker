@@ -16,6 +16,31 @@ YUI._mojito._cache.shaker.meta =
 					"order": [
 						"common-action-device-skin-region"
 					],
+					"dimensions": {
+						"action": {
+							"action": {
+								"files": []
+							}
+						},
+						"common": {
+							"files": []
+						},
+						"device": {
+							"device": {
+								"files": []
+							}
+						},
+						"skin": {
+							"skin": {
+								"files": []
+							}
+						},
+						"region": {
+							"region": {
+								"files": []
+							}
+						}
+					},
 					"dependencies": []
 				}
 			}
@@ -64,6 +89,46 @@ YUI._mojito._cache.shaker.meta =
 					"order": [
 						"common-action-device-skin-region"
 					],
+					"dimensions": {
+						"common": {
+							"files": [
+								"./mojits/master/assets/common/master.css"
+							]
+						},
+						"device": {
+							"smartphone": {
+								"files": [
+									"./mojits/master/assets/device/smartphone/master-smartphone.css"
+								]
+							},
+							"device": {
+								"files": []
+							}
+						},
+						"skin": {
+							"grey": {
+								"files": [
+									"./mojits/master/assets/skin/grey/master-grey.css"
+								]
+							},
+							"skin": {
+								"files": []
+							}
+						},
+						"action": {
+							"action": {
+								"files": []
+							},
+							"*": {
+								"files": []
+							}
+						},
+						"region": {
+							"region": {
+								"files": []
+							}
+						}
+					},
 					"dependencies": []
 				}
 			}
@@ -103,6 +168,46 @@ YUI._mojito._cache.shaker.meta =
 					"order": [
 						"common-action-device-skin-region"
 					],
+					"dimensions": {
+						"common": {
+							"files": [
+								"./mojits/primary/assets/common/primary.css"
+							]
+						},
+						"skin": {
+							"grey": {
+								"files": [
+									"./mojits/primary/assets/skin/grey/primary-grey.css"
+								]
+							},
+							"skin": {
+								"files": []
+							}
+						},
+						"region": {
+							"CA": {
+								"files": [
+									"./mojits/primary/assets/region/CA/primary-CA.css"
+								]
+							},
+							"region": {
+								"files": []
+							}
+						},
+						"action": {
+							"action": {
+								"files": []
+							},
+							"*": {
+								"files": []
+							}
+						},
+						"device": {
+							"device": {
+								"files": []
+							}
+						}
+					},
 					"dependencies": []
 				}
 			}
@@ -163,6 +268,48 @@ YUI._mojito._cache.shaker.meta =
 					"order": [
 						"common-action-device-skin-region"
 					],
+					"dimensions": {
+						"common": {
+							"files": [
+								"./mojits/secondary/assets/common/secondary.css"
+							]
+						},
+						"device": {
+							"smartphone": {
+								"files": [
+									"./mojits/secondary/assets/device/smartphone/secondary-smartphone.css"
+								]
+							},
+							"device": {
+								"files": []
+							}
+						},
+						"skin": {
+							"grey": {
+								"files": [
+									"./mojits/secondary/assets/skin/grey/secondary-grey.css"
+								]
+							},
+							"skin": {
+								"files": []
+							}
+						},
+						"region": {
+							"CA": {
+								"files": [
+									"./mojits/secondary/assets/region/CA/secondary-CA.css"
+								]
+							},
+							"region": {
+								"files": []
+							}
+						},
+						"action": {
+							"action": {
+								"files": []
+							}
+						}
+					},
 					"dependencies": []
 				}
 			}
@@ -172,27 +319,112 @@ YUI._mojito._cache.shaker.meta =
 		"*": {
 			"shaken": {
 				"common": [
-					"/static/shakerdemo/assets/r/app_default_common_8bc8b7439deafcbd08a2d534bf8203ee.css"
+					"/static/shakerdemo/assets/r/app_default_common_3c6e151abab63c20c8efca00144b27b2.css"
 				],
 				"common-action": [
-					"/static/shakerdemo/assets/r/app_default_common-action_8bc8b7439deafcbd08a2d534bf8203ee.css"
+					"/static/shakerdemo/assets/r/app_default_common-action_3c6e151abab63c20c8efca00144b27b2.css"
 				],
 				"common-action-device": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device_8bc8b7439deafcbd08a2d534bf8203ee.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device_3c6e151abab63c20c8efca00144b27b2.css"
+				],
+				"common-action-smartphone": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone_41a7e7436e679cbe5d3501875b9c3c0a.css"
 				],
 				"common-action-device-skin": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_8bc8b7439deafcbd08a2d534bf8203ee.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_3c6e151abab63c20c8efca00144b27b2.css"
+				],
+				"common-action-device-grey": [
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey_684b1510a6928dac3180b5bf8b759abe.css"
+				],
+				"common-action-smartphone-skin": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin_41a7e7436e679cbe5d3501875b9c3c0a.css"
+				],
+				"common-action-smartphone-grey": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey_541dfeaadbfb56b3c81253adbdbc249c.css"
 				],
 				"common-action-device-skin-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_8bc8b7439deafcbd08a2d534bf8203ee.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_3c6e151abab63c20c8efca00144b27b2.css"
+				],
+				"common-action-device-skin-CA": [
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-CA_a77317c0632cf394be77feeda4cf9cd1.css"
+				],
+				"common-action-device-grey-region": [
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-region_684b1510a6928dac3180b5bf8b759abe.css"
+				],
+				"common-action-device-grey-CA": [
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-CA_8782f7b9133ecd3bb3afdf7298da2b66.css"
+				],
+				"common-action-smartphone-skin-region": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-region_41a7e7436e679cbe5d3501875b9c3c0a.css"
+				],
+				"common-action-smartphone-skin-CA": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-CA_064d5a246f2718854fd13c7b97554043.css"
+				],
+				"common-action-smartphone-grey-region": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-region_541dfeaadbfb56b3c81253adbdbc249c.css"
+				],
+				"common-action-smartphone-grey-CA": [
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-CA_457c21c5df95d469c9ee3271795dd6d4.css"
 				]
 			},
 			"meta": {
 				"order": [
 					"common-action-device-skin-region"
 				],
+				"dimensions": {
+					"common": {
+						"files": [
+							"./assets/common/utils.css",
+							"./assets/common/yui-base.css",
+							"./assets/common/yui-fonts.css",
+							"./assets/common/yui-reset.css",
+							"./mojits/master/assets/common/master.css",
+							"./mojits/primary/assets/common/primary.css"
+						]
+					},
+					"action": {
+						"action": {
+							"files": []
+						}
+					},
+					"device": {
+						"device": {
+							"files": []
+						},
+						"smartphone": {
+							"files": [
+								"./mojits/master/assets/device/smartphone/master-smartphone.css"
+							]
+						}
+					},
+					"skin": {
+						"skin": {
+							"files": []
+						},
+						"grey": {
+							"files": [
+								"./mojits/master/assets/skin/grey/master-grey.css",
+								"./mojits/primary/assets/skin/grey/primary-grey.css"
+							]
+						}
+					},
+					"region": {
+						"region": {
+							"files": []
+						},
+						"CA": {
+							"files": [
+								"./mojits/primary/assets/region/CA/primary-CA.css"
+							]
+						}
+					}
+				},
 				"dependencies": []
-			}
+			},
+			"mojits": [
+				"master",
+				"primary"
+			]
 		}
 	}
 }});

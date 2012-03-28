@@ -696,7 +696,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                     shaken: listFiles,
                     meta:{
                         order:selectors,
-                        //dimensions: dimensions,
+                        dimensions: dimensions,
                         dependencies: binder_dependencies
                     }
                 };
@@ -734,36 +734,33 @@ Shaker.prototype.shakeAllMojits = function(app,mojits,callback,options){
 
 Shaker.prototype.bundleMojits = function(shaken,usel){
     var app = this._getMojitShakerConfig('app',this._APP_ROOT),
-        dimensions;
+        dimensions = {};
+
     if(!app) return shaken;
     for(var action in app.actions){
         var loadedMojits = app.actions[action].mojits,
             appShake = shaken.app[action].shaken,
+            appDim = shaken.app[action].meta.dimensions,
             originalAppShake = util.simpleClone(appShake),
             appDeps = shaken.app[action].meta.dependencies;
+
         for(var i in loadedMojits){
             var mojit = loadedMojits[i],
                 parts = mojit.split('.'),
                 mojitAction = parts.length > 1 ? parts[1] : '*',
                 mojitName = parts[0];
-                mojitShaken = shaken.mojits[mojitName][mojitAction];
-                mShake = shaken.mojits[mojitName][mojitAction].shaken;
+                mojitShaken = shaken.mojits[mojitName][mojitAction],
+                mojitDim = mojitShaken.meta.dimensions;
+                mojitDim.action[action] = mojitDim.action[mojitAction] || {files:[]};
 
-            for(var list in mShake){
-                if(appShake[list]){
-                  appShake[list] = appShake[list].concat(mShake[list]);
-                }else{
-                var tmp = mShake[list];
-                   for(var j in originalAppShake){//ToDo: Hack for the demo!
-                        if(list.indexOf(j) === 0){
-                            tmp = originalAppShake[j];
-                        }
-                   }
-                   appShake[list] = tmp.concat(mShake[list]);
-                }
-            }
+            appDim = this.mergeConcatDimensions(appDim,mojitDim);
             appDeps = appDeps.concat(mojitShaken.meta.dependencies);
+
         }
+        var dispatched = this.dispatchOrder(action,usel,appDim,{recursive:true}),
+            meta = {binder: appDeps,dimensions: dispatched},
+            listFiles = this.shakeAction(action,meta);
+        shaken.app[action].shaken = listFiles;
         shaken.app[action].mojits = loadedMojits;
     }
     return shaken;
@@ -787,7 +784,6 @@ Shaker.prototype.shakeAll = function(callback,options){
             }else{
                 shaken = self.bundleMojits(shaken,self.mergeSelectors(selectors));
                 callback(shaken);
-                //callback({});
             }
         },options);
     },options);

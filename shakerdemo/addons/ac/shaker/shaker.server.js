@@ -147,10 +147,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                     hcMojits = (app[ac.action] || app['*']).mojits || [],
                     nonCoveredMojits = diffArray(loadedMojits,hcMojits);
 
-                Y.log(nonCoveredMojits);
-
                 if(nonCoveredMojits.length){
-                    rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits);
+                    rollupsMojits = this._shakeMojits(nonCoveredMojits,groups.mojits);
                 }
 
                 rollupsApp = this._shakeApp(groups.app);
