@@ -45,6 +45,85 @@ YUI._mojito._cache.shaker.meta =
 				}
 			}
 		},
+		"primary": {
+			"*": {
+				"shaken": {
+					"common": [
+						"/static/shakerdemo/assets/r/primary_default_common_1e477436870f00543f0dcb8853ec66fa.css"
+					],
+					"common-action": [
+						"/static/shakerdemo/assets/r/primary_default_common-action_1e477436870f00543f0dcb8853ec66fa.css"
+					],
+					"common-action-device": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device_1e477436870f00543f0dcb8853ec66fa.css"
+					],
+					"common-action-device-grey": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey_84f5e5c85d08c4e00a59f07035eb170f.css"
+					],
+					"common-action-device-skin": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin_1e477436870f00543f0dcb8853ec66fa.css"
+					],
+					"common-action-device-grey-CA": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey-CA_75598c6f5ee37fc14be5ee14289af43f.css"
+					],
+					"common-action-device-grey-region": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey-region_84f5e5c85d08c4e00a59f07035eb170f.css"
+					],
+					"common-action-device-skin-CA": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin-CA_f4b124a8fca6b20791defb278281d0b6.css"
+					],
+					"common-action-device-skin-region": [
+						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin-region_1e477436870f00543f0dcb8853ec66fa.css"
+					]
+				},
+				"meta": {
+					"order": [
+						"common-action-device-skin-region"
+					],
+					"dimensions": {
+						"common": {
+							"files": [
+								"./mojits/primary/assets/common/primary.css"
+							]
+						},
+						"skin": {
+							"grey": {
+								"files": [
+									"./mojits/primary/assets/skin/grey/primary-grey.css"
+								]
+							},
+							"skin": {
+								"files": []
+							}
+						},
+						"region": {
+							"CA": {
+								"files": [
+									"./mojits/primary/assets/region/CA/primary-CA.css"
+								]
+							},
+							"region": {
+								"files": []
+							}
+						},
+						"action": {
+							"action": {
+								"files": []
+							},
+							"*": {
+								"files": []
+							}
+						},
+						"device": {
+							"device": {
+								"files": []
+							}
+						}
+					},
+					"dependencies": []
+				}
+			}
+		},
 		"master": {
 			"*": {
 				"shaken": {
@@ -125,85 +204,6 @@ YUI._mojito._cache.shaker.meta =
 						},
 						"region": {
 							"region": {
-								"files": []
-							}
-						}
-					},
-					"dependencies": []
-				}
-			}
-		},
-		"primary": {
-			"*": {
-				"shaken": {
-					"common": [
-						"/static/shakerdemo/assets/r/primary_default_common_1e477436870f00543f0dcb8853ec66fa.css"
-					],
-					"common-action": [
-						"/static/shakerdemo/assets/r/primary_default_common-action_1e477436870f00543f0dcb8853ec66fa.css"
-					],
-					"common-action-device": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device_1e477436870f00543f0dcb8853ec66fa.css"
-					],
-					"common-action-device-grey": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey_84f5e5c85d08c4e00a59f07035eb170f.css"
-					],
-					"common-action-device-skin": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin_1e477436870f00543f0dcb8853ec66fa.css"
-					],
-					"common-action-device-grey-CA": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey-CA_75598c6f5ee37fc14be5ee14289af43f.css"
-					],
-					"common-action-device-grey-region": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-grey-region_84f5e5c85d08c4e00a59f07035eb170f.css"
-					],
-					"common-action-device-skin-CA": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin-CA_f4b124a8fca6b20791defb278281d0b6.css"
-					],
-					"common-action-device-skin-region": [
-						"/static/shakerdemo/assets/r/primary_default_common-action-device-skin-region_1e477436870f00543f0dcb8853ec66fa.css"
-					]
-				},
-				"meta": {
-					"order": [
-						"common-action-device-skin-region"
-					],
-					"dimensions": {
-						"common": {
-							"files": [
-								"./mojits/primary/assets/common/primary.css"
-							]
-						},
-						"skin": {
-							"grey": {
-								"files": [
-									"./mojits/primary/assets/skin/grey/primary-grey.css"
-								]
-							},
-							"skin": {
-								"files": []
-							}
-						},
-						"region": {
-							"CA": {
-								"files": [
-									"./mojits/primary/assets/region/CA/primary-CA.css"
-								]
-							},
-							"region": {
-								"files": []
-							}
-						},
-						"action": {
-							"action": {
-								"files": []
-							},
-							"*": {
-								"files": []
-							}
-						},
-						"device": {
-							"device": {
 								"files": []
 							}
 						}
@@ -307,6 +307,9 @@ YUI._mojito._cache.shaker.meta =
 						"action": {
 							"action": {
 								"files": []
+							},
+							"*": {
+								"files": []
 							}
 						}
 					},
@@ -319,52 +322,52 @@ YUI._mojito._cache.shaker.meta =
 		"*": {
 			"shaken": {
 				"common": [
-					"/static/shakerdemo/assets/r/app_default_common_0c684fd302a22293b6a4606b76337198.css"
+					"/static/shakerdemo/assets/r/app_default_common_6d9176e2c840759c775c44a2bc00b167.css"
 				],
 				"common-action": [
-					"/static/shakerdemo/assets/r/app_default_common-action_0c684fd302a22293b6a4606b76337198.css"
+					"/static/shakerdemo/assets/r/app_default_common-action_6d9176e2c840759c775c44a2bc00b167.css"
 				],
 				"common-action-device": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device_0c684fd302a22293b6a4606b76337198.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device_6d9176e2c840759c775c44a2bc00b167.css"
 				],
 				"common-action-smartphone": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone_682ebb86231e1026fd107d30937933f0.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone_23ed962a92e4e177290921144c8a2de9.css"
 				],
 				"common-action-device-skin": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_0c684fd302a22293b6a4606b76337198.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin_6d9176e2c840759c775c44a2bc00b167.css"
 				],
 				"common-action-device-grey": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey_e746d90a86a5d475b6110799220a3862.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey_1e6ea8db260544a6a6af2285b137694a.css"
 				],
 				"common-action-smartphone-skin": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin_682ebb86231e1026fd107d30937933f0.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin_23ed962a92e4e177290921144c8a2de9.css"
 				],
 				"common-action-smartphone-grey": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey_ee743cc7584486651e3f219574b844a1.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey_34bafd12f8e68e3c099d4a551a0893dc.css"
 				],
 				"common-action-device-skin-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_0c684fd302a22293b6a4606b76337198.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-region_6d9176e2c840759c775c44a2bc00b167.css"
 				],
 				"common-action-device-skin-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-CA_94f9941d57857959a781544cfb602af9.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-skin-CA_194e17472342cadae92d4b469eb648f8.css"
 				],
 				"common-action-device-grey-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-region_e746d90a86a5d475b6110799220a3862.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-region_1e6ea8db260544a6a6af2285b137694a.css"
 				],
 				"common-action-device-grey-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-CA_565d75bcaeb83ca4dd70d5a1fed23265.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-device-grey-CA_7b9628253182f281154db2631c681474.css"
 				],
 				"common-action-smartphone-skin-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-region_682ebb86231e1026fd107d30937933f0.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-region_23ed962a92e4e177290921144c8a2de9.css"
 				],
 				"common-action-smartphone-skin-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-CA_6297bbbbdb19384c4b1e081bf8cefbb0.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-skin-CA_d889a8f57a76d76eb63a786063d804ac.css"
 				],
 				"common-action-smartphone-grey-region": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-region_ee743cc7584486651e3f219574b844a1.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-region_34bafd12f8e68e3c099d4a551a0893dc.css"
 				],
 				"common-action-smartphone-grey-CA": [
-					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-CA_378b66ae75bc07b48377f12841bdf5f9.css"
+					"/static/shakerdemo/assets/r/app_default_common-action-smartphone-grey-CA_b2e8b58e59deb4f9174239871bf80aee.css"
 				]
 			},
 			"meta": {
@@ -375,11 +378,12 @@ YUI._mojito._cache.shaker.meta =
 					"common": {
 						"files": [
 							"./assets/common/utils.css",
-							"./assets/common/yui-fonts.css",
 							"./assets/common/yui-base.css",
+							"./assets/common/yui-fonts.css",
 							"./assets/common/yui-reset.css",
 							"./mojits/master/assets/common/master.css",
-							"./mojits/primary/assets/common/primary.css"
+							"./mojits/primary/assets/common/primary.css",
+							"./mojits/secondary/assets/common/secondary.css"
 						]
 					},
 					"action": {
@@ -393,7 +397,8 @@ YUI._mojito._cache.shaker.meta =
 						},
 						"smartphone": {
 							"files": [
-								"./mojits/master/assets/device/smartphone/master-smartphone.css"
+								"./mojits/master/assets/device/smartphone/master-smartphone.css",
+								"./mojits/secondary/assets/device/smartphone/secondary-smartphone.css"
 							]
 						}
 					},
@@ -404,7 +409,8 @@ YUI._mojito._cache.shaker.meta =
 						"grey": {
 							"files": [
 								"./mojits/master/assets/skin/grey/master-grey.css",
-								"./mojits/primary/assets/skin/grey/primary-grey.css"
+								"./mojits/primary/assets/skin/grey/primary-grey.css",
+								"./mojits/secondary/assets/skin/grey/secondary-grey.css"
 							]
 						}
 					},
@@ -414,7 +420,8 @@ YUI._mojito._cache.shaker.meta =
 						},
 						"CA": {
 							"files": [
-								"./mojits/primary/assets/region/CA/primary-CA.css"
+								"./mojits/primary/assets/region/CA/primary-CA.css",
+								"./mojits/secondary/assets/region/CA/secondary-CA.css"
 							]
 						}
 					}
@@ -423,7 +430,8 @@ YUI._mojito._cache.shaker.meta =
 			},
 			"mojits": [
 				"master",
-				"primary"
+				"primary",
+				"secondary"
 			]
 		}
 	}
