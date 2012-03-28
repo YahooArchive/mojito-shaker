@@ -56,6 +56,8 @@ run = function(params, options, callback) {
 		store = new ResourceStore(cwd),
 		modules,rolledModules = [],rollupBody = '';
 
+    options = options || {};
+
 	//get and filter the files from the store
 	store.preload();
 	modules = store.getRollupsApp('client', {}).srcs;
