@@ -57,6 +57,7 @@ run = function(params, options, callback) {
 		modules,rolledModules = [],rollupBody = '';
 
     options = options || {};
+    options.stage = true;
 
 	//get and filter the files from the store
 	store.preload();
