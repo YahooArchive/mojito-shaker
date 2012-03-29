@@ -8,5 +8,8 @@
   "dependencies": {
     "buildy": "0.0.x",
     "mkdirp": "0.0.x"
+  },
+  "scripts": {
+    "postinstall": "./build.sh"
   }
 }
