@@ -1,6 +1,17 @@
 [{
     "settings": ["master"],
     
+    "middleware": [
+        "mojito-handler-static",
+        "mojito-parser-body",
+        "mojito-parser-cookies",
+        "mojito-contextualizer",
+        "mojito-handler-tunnel",
+        "mojito-router",
+        "mojito-shaker",
+        "mojito-handler-dispatcher"
+    ],
+
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",

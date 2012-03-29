@@ -1,68 +1,26 @@
-/*
-* Shaker command!
-*/
 var path = require('path'),
     utils = require('mojito/lib/management/utils'),
     fs = require('fs'),
-	ResourceStore = require('mojito/lib/store.server'),
+    ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
-    Shaker = require('./lib/core').Shaker,
+    ShakerCore = require('./lib/core').Shaker;
 
-    usage,
-    options,
-    run;
+function Shaker(options) {
+    this.options = options || {};
+}
 
-usage =  "mojito shaker {options} {type}\n" +
-       "\nOPTIONS: \n" +
-       "\t --rollup-mojito     :  remove all compiled files, instead of creating them\n" +
-       "\t  -rm                :  short for --rollup-mojito\n" +
-       "\t --output     :  send the output to a specific folder\n" +
-       "\t  -rm                :  short for --output\n" +
+Shaker.prototype.run = function() {
+    var opts = this.options,
+        cwd = process.cwd(),
+        store = new ResourceStore(cwd),
+        modules,rolledModules = [],rollupBody = '';
 
-		"\nTYPES: \n" +
-		"\t all                    performs all the other types\n";
-
-options = [
-    {
-        shortName: 'rm',
-        longName: 'rollup-mojito',
-        hasValue: false
-    },
-    {
-        shortName: 'o',
-        longName: 'output',
-        hasValue: false
-    },
-    {
-        shortName: 'st',
-        longName: 'stage',
-        hasValue: false
-    },
-    {
-        shortName: 's',
-        longName: 'setup',
-        hasValue: false
-    },
-    {
-        shortName: 'b',
-        longName: 'build',
-        hasValue: false
-    }
-];
-
-run = function(params, options, callback) {
-	var cwd = process.cwd(),
-		store = new ResourceStore(cwd),
-		modules,rolledModules = [],rollupBody = '';
-
-    options = options || {};
-
-	//get and filter the files from the store
-	store.preload();
-	modules = store.getRollupsApp('client', {}).srcs;
-	for(var j = 0; j < modules.length; j++){
-		if(cwd === modules[j].substr(0, cwd.length)) {
+    //get and filter the files from the store
+    store.preload();
+    modules = store.getRollupsApp('client', {}).srcs;
+    for(var j = 0; j < modules.length; j++){
+        if(cwd === modules[j].substr(0, cwd.length)) {
             //skip the app level files (Note: to override path: substr(cwd.length + 1);)
             continue;
         }
@@ -75,10 +33,10 @@ run = function(params, options, callback) {
         transformedRollup(filename);
     });
 
-    var shaker = new Shaker({root: './'});
+    var shaker = new ShakerCore({root: './'});
     utils.log('[SHAKER] - Analizying application assets to Shake... ');
     shaker.shakeAll(function(shaken){
-        if(options.stage || options.production){
+        if(opts.stage || opts.production){
             compress(shaken,function(shaken_p){
                 utils.log('[SHAKER] - Minifying and optimizing rollups... ');
                 writeMetaData(shaken_p,callback);
@@ -196,9 +154,7 @@ function processRollup(files, name, ext, callback) {
 }
 
 function buildShaker(params,options,callback){
-	require(process.cwd()+'/node_modules/shaker');
+    require(process.cwd()+'/node_modules/shaker');
 }
 
-exports.usage = usage;
-exports.options = options;
-exports.run = run;
+exports.Shaker = Shaker;
