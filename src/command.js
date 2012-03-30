@@ -1,44 +1,19 @@
 /*
 * Shaker command!
 */
-var usage,
+var Shaker = require('./lib/shaker').Shaker,
+    usage,
     options,
     run;
 
-usage =  "mojito shaker {options} {type}\n" +
+usage =  "mojito shaker {options}\n" +
        "\nOPTIONS: \n" +
-       "\t --rollup-mojito     :  remove all compiled files, instead of creating them\n" +
-       "\t  -rm                :  short for --rollup-mojito\n" +
-       "\t --output     :  send the output to a specific folder\n" +
-       "\t  -rm                :  short for --output\n" +
-
-		"\nTYPES: \n" +
-		"\t all                    performs all the other types\n";
+       "\t --stage     :  Rollup and minify assets\n";
 
 options = [
     {
-        shortName: 'rm',
-        longName: 'rollup-mojito',
-        hasValue: false
-    },
-    {
-        shortName: 'o',
-        longName: 'output',
-        hasValue: false
-    },
-    {
         shortName: 'st',
         longName: 'stage',
-        hasValue: false
-    },
-    {
-        shortName: 's',
-        longName: 'setup',
-        hasValue: false
-    },
-    {
-        shortName: 'b',
-        longName: 'build',
         hasValue: false
     }
 ];
