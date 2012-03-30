@@ -218,7 +218,7 @@ Shaker.prototype = {
             aux+= 'YUI._mojito._cache.shaker.meta = \n';
             aux += JSON.stringify(shaken,null,'\t');
             aux+= '});';
-        fs.writeFileSync('autoload/compiled/shaker/shaker-meta.server.js',aux);
+        fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js',aux);
     }
 };
 
