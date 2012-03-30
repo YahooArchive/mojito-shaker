@@ -7,6 +7,7 @@
   "version": "0.0.1",
   "dependencies": {
     "buildy": "0.0.x",
+    "async": "0.1.x",
     "mkdirp": "0.0.x"
   },
   "scripts": {

@@ -4,7 +4,8 @@ var path = require('path'),
     ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
-    ShakerCore = require('./core').Shaker;
+    ShakerCore = require('./core').Shaker,
+    async = require('async');
 
 function Rollup() {
     this._js = [];
@@ -93,10 +94,10 @@ Shaker.prototype = {
     onShake: function(shaken) {
         if (this._stage) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
-            compress(shaken, writeMetaData);
+            this.compress(shaken, this.writeMetaData);
         } else {
             utils.log('[SHAKER] - Processing assets for development env.');
-            this.rename(shaken, writeMetaData);
+            this.rename(shaken, this.writeMetaData);
         }
     },
 
@@ -124,66 +125,101 @@ Shaker.prototype = {
             }
         }
         callback(shaken);
-    }
-};
+    },
 
-function compress(shaken,callback){
-            var mojit,mojits,action,actions,dim,list,actionName,dimensions,counter = 0,
-                app = path.basename(process.cwd());
-                wrap = function(list,mojit,action,actionName,dim){
-                    var rollup = new Rollup();
-                    rollup.setCSS(list);
-                    // FIXME: WTF counter :(
-                    rollup.processCSS('assets/r/'+mojit+'_'+actionName+'_'+dim, function(fileName){
-                        if(mojit !== 'app'){
-                            shaken.mojits[mojit][action].shaken[dim] = ['/static/'+app+'/'+fileName];
-                        }else{
-                            shaken.app[action].shaken[dim] = ['/static/'+app+'/'+fileName];
-                        }
-                        if(!--counter) {
-                            callback(shaken);
-                        }
-                    });
-                };
+    _flattenMetaData: function(metadata) {
+        var mojit, action, dim, flattened = [];
 
-            for(mojit in (mojits = shaken.mojits)){
-                for(action in (actions = mojits[mojit])){
-                    for(dim in (dimensions = actions[action].shaken)){
-                        list = dimensions[dim];
-                        actionName = action == '*' ? 'default' : action;
-                        //console.log(counter +') '+mojit+'_'+actionName+'_'+dim);
-                        if(list.length) {
-                            counter++;
-                            wrap(list,mojit,action,actionName,dim);
-                        }
-                    }
-                }
-            }
-            for(action in (actions = shaken.app)){
-                for(dim in (dimensions = actions[action].shaken)){
-                    list = dimensions[dim];
-                    actionName = action == '*' ? 'default' : action;
-                    if(list.length) {
-                        counter++;
-                        wrap(list,'app',action,actionName,dim);
-                    }
+        for (mojit in metadata.mojits) {
+            for (action in metadata.mojits[mojit]) {
+                for (dim in metadata.mojits[mojit][action].shaken) {
+                    flattened.push({type: 'mojit', name: mojit, action: action, dim: dim, list: metadata.mojits[mojit][action].shaken[dim], meta: metadata.app[action].meta});
                 }
             }
         }
 
-function writeMetaData(shaken){
-    utils.log('[SHAKER] - Writing processed metadata in autoload.');
-     var aux = "";
-        aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
-        aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
-        aux+= 'YUI._mojito._cache.shaker.meta = \n';
-        aux += JSON.stringify(shaken,null,'\t');
-        aux+= '});';
-    fs.writeFileSync('autoload/compiled/shaker/shaker-meta.server.js',aux);
-}
+        for (action in metadata.app) {
+            for (dim in metadata.app[action].shaken) {
+                flattened.push({type: 'app', name: 'app', action: action, dim: dim, list: metadata.app[action].shaken[dim], meta: metadata.app[action].meta, app_mojits: metadata.app[action].mojits});
+            }
+        }
 
-function buildShaker(params,options,callback){
-    require(process.cwd()+'/node_modules/shaker');
-}
+        return flattened;
+    },
+
+    _unflattenMetaData: function(flattened) {
+        var metadata = {};
+
+        flattened.forEach(function(item) {
+            if (item.type == 'mojit') {
+                if (!metadata.mojits) {
+                    metadata.mojits = {};
+                }
+                if (!metadata.mojits[item.name]) {
+                    metadata.mojits[item.name] = {};
+                }
+                if (!metadata.mojits[item.name][item.action]) {
+                    metadata.mojits[item.name][item.action] = {shaken: {}, meta: {}};
+                }
+                if (!metadata.mojits[item.name][item.action].shaken[item.dim]) {
+                    metadata.mojits[item.name][item.action].shaken[item.dim] = [];
+                }
+
+                metadata.mojits[item.name][item.action].shaken[item.dim] = item.list;
+                metadata.mojits[item.name][item.action].meta = item.meta;
+            }
+            else if (item.type == 'app') {
+                if (!metadata.app) {
+                    metadata.app = {};
+                }
+                if (!metadata.app[item.action]) {
+                    metadata.app[item.action] = {shaken: {}, meta: {}};
+                }
+                if (!metadata.app[item.action].shaken[item.dim]) {
+                    metadata.app[item.action].shaken[item.dim] = [];
+                }
+
+                metadata.app[item.action].shaken[item.dim] = item.list;
+                metadata.app[item.action].meta = item.meta;
+                metadata.app[item.action].mojits = item.app_mojits;
+            }
+        });
+
+        return metadata;
+    },
+
+    compress: function(metadata, compressed) {
+        var app = path.basename(this._root);
+        var items = this._flattenMetaData(metadata);
+
+        async.forEach(items, function(item, callback) {
+            if (!item.list.length) {
+                callback();
+                return;
+            }
+            
+            var rollup = new Rollup();
+            rollup.setCSS(item.list);
+            var name = 'assets/r/' + item.name + '_' + (item.action == '*' ? 'default' : item.action) + '_' + item.dim;
+            rollup.processCSS(name, function(filename) {
+                item.list = ['/static/' + app + '/' + filename];
+                callback();
+            });
+        }, function(err) {
+            compressed(this._unflattenMetaData(items));
+        }.bind(this));
+    },
+    
+    writeMetaData: function(shaken) {
+        utils.log('[SHAKER] - Writing processed metadata in autoload.');
+         var aux = "";
+            aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
+            aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
+            aux+= 'YUI._mojito._cache.shaker.meta = \n';
+            aux += JSON.stringify(shaken,null,'\t');
+            aux+= '});';
+        fs.writeFileSync('autoload/compiled/shaker/shaker-meta.server.js',aux);
+    }
+};
 
 exports.Shaker = Shaker;
