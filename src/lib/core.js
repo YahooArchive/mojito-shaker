@@ -21,8 +21,9 @@ var APP_CONFIG_FILE = 'application.json', //app config file
         region: {},
         lang: {}
     },
+    SHAKER_DEFAULT_ORDER = 'common-action-device-skin-region-lang',
     SHAKER_DEFAULT_ACTION_CONFIG = {
-        '*': {order: 'common-action-device-skin-region-lang' }
+        '*': {order: SHAKER_DEFAULT_ORDER }
     };
 
 /* SHAKER OBJECT DEFINITION */
@@ -35,10 +36,9 @@ var Shaker = function (config){
 
 Shaker.prototype.constructor = Shaker;
 
-//DEBUG TO VISUALIZE JSON OBJECTS ToDo: Remove?
-Shaker.prototype.__debug = function(jsonobj,external,verbose){var obj = jsonobj || {nothing: 'nothing'};verbose && console.log(jsonobj);var js = 'var FUSE_OUTPUT=\'' + JSON.stringify(obj)+'\';';if(external)libfs.writeFile('shaker/debug/fuse/output.js',js,function(err){if(err){console.log(err)}});};
+/* LOGGING FUNCTION */
+Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': ' + err);} };
 
-Shaker.prototype._log = function(f,err){this._debugging && console.log(f + ': ' + err)}
 
 /*------------------------------------------*/
 /**
@@ -127,7 +127,7 @@ Shaker.prototype._getMojitShakerConfig = function(name,path){
 * @param {Object} Object where the dimensions are being copied.
 *
 * @protected
-* @return {Object} The source object will the matched dimensions files concatenated. 
+* @return {Object} The source object will the matched dimensions files concatenated.
 **/
 
 Shaker.prototype.mergeConcatDimensions = function(source,giver){
@@ -462,14 +462,10 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
         leftDim,rightDim,
         cache = {};
         
-    if(options.recursive){
-        action = 'action';
-        dimensions.action[action] = {files: []};
-    }
     if(parts.length == 1){//single dimension
         return selector == 'action' ? dimensions.action[selector] : dimensions[selector];
     }
-    
+
     if(parts.length > 1){
         parts.push('end');//we add that for proper end of the loop.
         left = parts.shift();
@@ -479,56 +475,44 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
         while(parts.length){
             rightDim = dimensions[right] || cache[right];
             leftDim = dimensions[left] || cache[left];
-            //if left part didnt exists, then we skip it (it only can happen with the first dimension in the chain but still)
+
+            //if left part doesnt exists, we create it empty
             if(!leftDim){
-                if(!options.recursive){
-                //skip it:
-                    left = right;
-                    right = parts.shift();
-                    continue;
-                }else{
-                //fill it with empty:
                 dimensions[left] = {files: []};
                 leftDim = dimensions[left];
-                }
+            }
+            //if dimension exist we create the same dimension name within the dimension for fallback purposes
+            if(rightDim && right!== 'action'){
+                dimensions[right][right] = dimensions[right][right] || {files:[]};
             }
              //if action is founded then we transform it to the actual value
             if(right == 'action'){
                 right = action;
-                rightDim = dimensions.action[right].files.length ? dimensions.action[right] : null;
+                rightDim = dimensions.action[right].files.length ? dimensions.action[right] : {files:[]};
             }else if(left == 'action'){
                 left = action;
-                rightDim = dimensions.action[left].files.length ? dimensions.action[left] : null;
+                rightDim = dimensions.action[left].files.length ? dimensions.action[left] : {files:[]};
             }
 
             if(!computed){//we compute alone the first dimenision
                 cache[left] = leftDim;
                 computed++;
             }
-
+            //if doesnt exists we create it nesting it
             if(!rightDim){
-                if(!options.recursive){
-                    right = parts.shift();
-                    continue;
-                }else{
                     dimensions[right] = {};
                     dimensions[right][right] = {files:[]};
                     rightDim = dimensions[right];
-                }
             }
-            //if rightDim is founded we compute it if not we skip it
-            if(rightDim){
-                dimensions[right][right] = {files:[]};
-                var tempDim =  left+'-'+right;
-                cache[tempDim] = this.mergeDimensionsRecursive(left,right,leftDim,rightDim);
-                computed++;
-                left+= "-"+ right;
-            }
+
+            var tempDim =  left+'-'+right;
+            cache[tempDim] = this.mergeDimensionsRecursive(left,right,leftDim,rightDim);
+            computed++;
+            left+= "-" + right;
+
+            //go next
             right = parts.shift();
         }
-        /*if(leftDim && !computed){
-            cache[left] = leftDim;
-        }*/
         return cache;
     }
 };
@@ -657,34 +641,26 @@ Shaker.prototype.calculateGeneratedSelectors = function(shaken){
 };
 
 Shaker.prototype.shakeMojit = function(name,path,callback,options){
-    options = options || {};
     var self = this,
-        resourcesPath = {assets: path+'/assets',
-                         autoload: path+'/autoload',
-                         binders: path+'/binders'
+        resourcesPath = {
+            assets: path+'/assets',
+            autoload: path+'/autoload',
+            binders: path+'/binders'
         };
+    //options default
+    options = options || {};
+    options.order = options.order || SHAKER_DEFAULT_ORDER;
+
     this._loadMojitResources(resourcesPath,function(resources){
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
             modules = self.precalculateAutoloads(resources.autoload),
             dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets),//files per dimension filtering
-            optSelectors = options.selectors,
-            actions,
-            default_order = shaker_config.actions['*'].order,
-            shaked = {};
-
+            order = options.order,
+            actions,shaked = {};
         for(var action in (actions = shaker_config.actions)){
-            var order = actions[action].order || default_order,
-                binder_dependencies = (action == '*') || options.skipBinders ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules);
-                dispatched = {};
-
-                if(optSelectors){//provide more selectors
-                    for(var i = 0; i< optSelectors.length; i++){
-                        dispatched[optSelectors[i]] = self.dispatchOrder(action,optSelectors[i],dimensions,options);
-                    }
-                }else{
-                    dispatched = self.dispatchOrder(action,order,dimensions,options);
-                }
-                var meta = {binder: binder_dependencies,dimensions: dispatched},
+                binder_dependencies = ((action == '*') || options.skipBinders) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
+                dispatched = self.dispatchOrder(action,order,dimensions),
+                meta = {binder: binder_dependencies,dimensions: dispatched},
                 listFiles = self.shakeAction(action,meta),
                 selectors = [];
                 for(var j in dispatched) {selectors.push(j.replace(action,'action'));}
@@ -695,14 +671,12 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 shaked[action] = {
                     shaken: listFiles,
                     meta:{
-                        order:selectors,
                         dimensions: dimensions,
                         dependencies: binder_dependencies
                     }
                 };
          }
          callback(shaked);
-
     });
 };
 
