@@ -92,6 +92,8 @@ Shaker.prototype = {
     },
 
     onShake: function(metadata) {
+        console.log(JSON.stringify(metadata,null,'\t'));
+
         if (this._stage) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this.compress(metadata, this.writeMetaData);
@@ -101,29 +103,33 @@ Shaker.prototype = {
         }
     },
 
-    rename: function(metadata,callback){
-        var mojit,mojits,action,actions,dim,list,actionName,dimensions,item,
-            app = path.basename(process.cwd());
-        for(mojit in (mojits = metadata.mojits)){
-            for(action in (actions = mojits[mojit])){
-                for(dim in (dimensions = actions[action].shaken)){
-                    for(item in (list = dimensions[dim])){
-                        list[item] = list[item].replace('./mojits','/static');
+    rename: function(metadata, callback){
+        var mojit, action, dim, item, list,
+            app = path.basename(this._root);
+
+        for (mojit in metadata.mojits) {
+            for (action in metadata.mojits[mojit]) {
+                for (dim in metadata.mojits[mojit][action].shaken) {
+                    for (item in metadata.mojits[mojit][action].shaken[dim]) {
+                        list = metadata.mojits[mojit][action].shaken[dim];
+                        list[item] = list[item].replace('./mojits', '/static');
                     }
                 }
             }
         }
-        for(action in (actions = metadata.app)){
-            for(dim in (dimensions = actions[action].shaken)){
-                for(item in (list = dimensions[dim])){
-                        var tmp = list[item];
-                        tmp = tmp.replace('./mojits/','/static/');
-                        tmp = tmp.replace('./','/static/'+app+'/');
-                        //console.log(list[item] + '=>' + tmp);
-                        list[item] = tmp;
+
+        for (action in metadata.app) {
+            for (dim in metadata.app[action].shaken) {
+                for (item in metadata.app[action].shaken[dim]) {
+                    list = metadata.app[action].shaken[dim];
+                    var tmp = list[item];
+                    tmp = tmp.replace('./mojits/','/static/');
+                    tmp = tmp.replace('./','/static/'+app+'/');
+                    list[item] = tmp;
                 }
             }
         }
+
         callback(metadata);
     },
 
@@ -147,12 +153,12 @@ Shaker.prototype = {
         return flattened;
     },
 
-    compress: function(metadata, compressed) {
+    compress: function(metadata, callback) {
         var app = path.basename(this._root);
 
-        async.forEach(this._flattenMetaData(metadata), function(item, callback) {
+        async.forEach(this._flattenMetaData(metadata), function(item, done) {
             if (!item.list.length) {
-                callback();
+                done();
                 return;
             }
             
@@ -162,22 +168,23 @@ Shaker.prototype = {
             rollup.processCSS(name, function(filename) {
                 item.list.length = 0;
                 item.list.push('/static/' + app + '/' + filename);
-                callback();
+                done();
             });
         }, function(err) {
-            compressed(metadata);
+            callback(metadata);
         }.bind(this));
     },
     
     writeMetaData: function(metadata) {
         utils.log('[SHAKER] - Writing processed metadata in autoload.');
-         var aux = "";
-            aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
-            aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
-            aux+= 'YUI._mojito._cache.shaker.meta = \n';
+        
+        var aux = 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
+            aux += 'YUI.namespace("_mojito._cache.shaker");\n';
+            aux += 'YUI._mojito._cache.shaker.meta = \n';
             aux += JSON.stringify(metadata,null,'\t');
-            aux+= '});';
-        fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js',aux);
+            aux += '});';
+
+        fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js', aux);
     }
 };
 
