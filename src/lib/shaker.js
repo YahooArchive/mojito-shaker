@@ -4,7 +4,7 @@ var path = require('path'),
     ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
-    ShakerCore = require('./core').Shaker,
+    ShakerCore = require('./core').ShakerCore,
     async = require('async');
 
 function Rollup() {
@@ -147,52 +147,10 @@ Shaker.prototype = {
         return flattened;
     },
 
-    _unflattenMetaData: function(flattened) {
-        var metadata = {};
-
-        flattened.forEach(function(item) {
-            if (item.type == 'mojit') {
-                if (!metadata.mojits) {
-                    metadata.mojits = {};
-                }
-                if (!metadata.mojits[item.name]) {
-                    metadata.mojits[item.name] = {};
-                }
-                if (!metadata.mojits[item.name][item.action]) {
-                    metadata.mojits[item.name][item.action] = {shaken: {}, meta: {}};
-                }
-                if (!metadata.mojits[item.name][item.action].shaken[item.dim]) {
-                    metadata.mojits[item.name][item.action].shaken[item.dim] = [];
-                }
-
-                metadata.mojits[item.name][item.action].shaken[item.dim] = item.list;
-                metadata.mojits[item.name][item.action].meta = item.meta;
-            }
-            else if (item.type == 'app') {
-                if (!metadata.app) {
-                    metadata.app = {};
-                }
-                if (!metadata.app[item.action]) {
-                    metadata.app[item.action] = {shaken: {}, meta: {}};
-                }
-                if (!metadata.app[item.action].shaken[item.dim]) {
-                    metadata.app[item.action].shaken[item.dim] = [];
-                }
-
-                metadata.app[item.action].shaken[item.dim] = item.list;
-                metadata.app[item.action].meta = item.meta;
-                metadata.app[item.action].mojits = item.app_mojits;
-            }
-        });
-
-        return metadata;
-    },
-
     compress: function(metadata, compressed) {
         var app = path.basename(this._root);
-        var items = this._flattenMetaData(metadata);
 
-        async.forEach(items, function(item, callback) {
+        async.forEach(this._flattenMetaData(metadata), function(item, callback) {
             if (!item.list.length) {
                 callback();
                 return;
@@ -200,13 +158,14 @@ Shaker.prototype = {
             
             var rollup = new Rollup();
             rollup.setCSS(item.list);
-            var name = 'assets/r/' + item.name + '_' + (item.action == '*' ? 'default' : item.action) + '_' + item.dim;
+            var name = 'assets/r/' + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
             rollup.processCSS(name, function(filename) {
-                item.list = ['/static/' + app + '/' + filename];
+                item.list.length = 0;
+                item.list.push('/static/' + app + '/' + filename);
                 callback();
             });
         }, function(err) {
-            compressed(this._unflattenMetaData(items));
+            compressed(metadata);
         }.bind(this));
     },
     
