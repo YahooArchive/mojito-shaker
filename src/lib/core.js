@@ -52,6 +52,7 @@ Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': '
 * @private
 * @return {Object} Return the parse JSON Object of application.json. If fails finding it returns null.
 **/
+
 Shaker.prototype._getAppConfig = function(){
     var file =  this._APP_ROOT + APP_CONFIG_FILE;
     try{
@@ -108,6 +109,7 @@ Shaker.prototype._getMojits = function(app_config){
 *                               If doesnt exist it returns undefined
 *
 **/
+
 Shaker.prototype._getMojitShakerConfig = function(name,path){
    try{
         return util.readConfigFile(path +'/'+SHAKER_CONFIG_NAME);
@@ -356,10 +358,11 @@ Shaker.prototype.precalculateAutoloads = function(autoloads){
 * @method filterResources
 * @params {array[strings]} A list of folders and files that a particular dimension has.
 * @params {array[strings]} The list of all the assets.
+* @params {string} The path to the mojit relative to the app level
 * @protected
 */
 
-Shaker.prototype.filterResources = function(list,resources){
+Shaker.prototype.filterResources = function(list,resources,mojitPath){
     var folders = list.filter(function(i){return libpath.extname(i) === "";}),
         files = list.filter(function(i){return libpath.extname(i) !== "";}),
         filtered = resources.filter(function(item){
@@ -370,10 +373,17 @@ Shaker.prototype.filterResources = function(list,resources){
             }
             return false;
         });
-        return filtered.concat(files);
+        for(j=0; j<files.length; j++){
+            var absPath = mojitPath +'/assets/'+ files[j];
+            console.log(absPath);
+            if(libpath.existsSync(absPath)){
+                filtered.push(absPath);
+            }
+        }
+        return filtered;
 };
 
-Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,resources,prefix){
+Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,resources,mojitPath,prefix){
     prefix = prefix || 'assets';
     var dim,res = {},children = 0;
     for(var i in (dim = shaker_dimensions)){
@@ -381,22 +391,22 @@ Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,
             continue;
         }
         children++;
-        res[i] = this.generateRecursiveShakerDimensions(dim[i],resources,prefix + '/' + i);
+        res[i] = this.generateRecursiveShakerDimensions(dim[i],resources,mojitPath,prefix + '/' + i);
     }
     if(!children) {
         var list = shaker_dimensions.include ? shaker_dimensions.include.concat([prefix]) : [prefix];
-        res.files = this.filterResources(list,resources);
+        res.files = this.filterResources(list,resources,mojitPath);
     }
     return res;
 };
 
-Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources){
+Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources,mojitPath){
     var dimensions = shaker_cfg.dimensions;
     dimensions.action = dimensions.action || {};
     for(var action in shaker_cfg.actions){
         dimensions.action[action] = {include: shaker_cfg.actions[action].include || [path+'/assets/action/'+action]  };
     }
-    return this.generateRecursiveShakerDimensions(dimensions,resources);
+    return this.generateRecursiveShakerDimensions(dimensions,resources,mojitPath);
 };
 
 Shaker.prototype.recursiveModuleCalculation = function(item,modules){
@@ -654,7 +664,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
     this._loadMojitResources(resourcesPath,function(resources){
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
             modules = self.precalculateAutoloads(resources.autoload),
-            dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets),//files per dimension filtering
+            dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets,path),//files per dimension filtering
             order = options.order,
             actions,shaked = {};
         for(var action in (actions = shaker_config.actions)){
@@ -663,14 +673,12 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 meta = {binder: binder_dependencies,dimensions: dispatched},
                 listFiles = self.shakeAction(action,meta),
                 selectors = [];
-                for(var j in dispatched) {selectors.push(j.replace(action,'action'));}
-                selectors.sort(self._orderSelectors);
-                selectors = self.cleanSelectors(selectors);
+                //for(var j in dispatched) {selectors.push(j.replace(action,'action'));}
                 //self._augmentRules(shaker_config,listFiles,selectors);
-
                 shaked[action] = {
                     shaken: listFiles,
                     meta:{
+                        //selectors : selectors,
                         dimensions: dimensions,
                         dependencies: binder_dependencies
                     }
@@ -686,7 +694,6 @@ Shaker.prototype.shakeApp = function(name,path,callback,options){
     this.shakeMojit('app',path.slice(0,-1),function(appShaken){
         callback(appShaken);
     },options);
-    
 };
 
 Shaker.prototype.shakeAllMojits = function(app,mojits,callback,options){
@@ -706,11 +713,14 @@ Shaker.prototype.shakeAllMojits = function(app,mojits,callback,options){
 };
 
 
-Shaker.prototype.bundleMojits = function(shaken,usel){
+Shaker.prototype.bundleMojits = function(shaken,options){
+    options = options || {};
     var app = this._getMojitShakerConfig('app',this._APP_ROOT),
-        dimensions = {};
+    dimensions = {};
+    options.order = options.order || SHAKER_DEFAULT_ORDER;
 
     if(!app) return shaken;
+
     for(var action in app.actions){
         var loadedMojits = app.actions[action].mojits,
             appShake = shaken.app[action].shaken,
@@ -751,17 +761,12 @@ Shaker.prototype.shakeAll = function(callback,options){
         self.shakeApp('app',self._APP_ROOT,function(appshaken){
             shaken.mojits = mojitShaken;
             shaken.app = appshaken;
-            var selectors = self.calculateGeneratedSelectors(shaken);
-            if(selectors.length>1 && !options.recursive){
-                selectors = [self.mergeSelectors(selectors)];
-                self.shakeAll(callback,{selectors: selectors,recursive: true});
-            }else{
-                shaken = self.bundleMojits(shaken,self.mergeSelectors(selectors));
-                callback(shaken);
-            }
+            shaken = self.bundleMojits(shaken);
+            callback(shaken);
+
         },options);
     },options);
 };
 
 
-module.exports.Shaker = Shaker;
+module.exports.ShakerCore = Shaker;
