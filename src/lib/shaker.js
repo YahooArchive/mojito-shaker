@@ -91,20 +91,20 @@ Shaker.prototype = {
         });
     },
 
-    onShake: function(shaken) {
+    onShake: function(metadata) {
         if (this._stage) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
-            this.compress(shaken, this.writeMetaData);
+            this.compress(metadata, this.writeMetaData);
         } else {
             utils.log('[SHAKER] - Processing assets for development env.');
-            this.rename(shaken, this.writeMetaData);
+            this.rename(metadata, this.writeMetaData);
         }
     },
 
-    rename: function(shaken,callback){
+    rename: function(metadata,callback){
         var mojit,mojits,action,actions,dim,list,actionName,dimensions,item,
             app = path.basename(process.cwd());
-        for(mojit in (mojits = shaken.mojits)){
+        for(mojit in (mojits = metadata.mojits)){
             for(action in (actions = mojits[mojit])){
                 for(dim in (dimensions = actions[action].shaken)){
                     for(item in (list = dimensions[dim])){
@@ -113,7 +113,7 @@ Shaker.prototype = {
                 }
             }
         }
-        for(action in (actions = shaken.app)){
+        for(action in (actions = metadata.app)){
             for(dim in (dimensions = actions[action].shaken)){
                 for(item in (list = dimensions[dim])){
                         var tmp = list[item];
@@ -124,7 +124,7 @@ Shaker.prototype = {
                 }
             }
         }
-        callback(shaken);
+        callback(metadata);
     },
 
     _flattenMetaData: function(metadata) {
@@ -169,13 +169,13 @@ Shaker.prototype = {
         }.bind(this));
     },
     
-    writeMetaData: function(shaken) {
+    writeMetaData: function(metadata) {
         utils.log('[SHAKER] - Writing processed metadata in autoload.');
          var aux = "";
             aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
             aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
             aux+= 'YUI._mojito._cache.shaker.meta = \n';
-            aux += JSON.stringify(shaken,null,'\t');
+            aux += JSON.stringify(metadata,null,'\t');
             aux+= '});';
         fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js',aux);
     }
