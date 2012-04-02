@@ -741,7 +741,7 @@ Shaker.prototype.bundleMojits = function(shaken,options){
             appDeps = appDeps.concat(mojitShaken.meta.dependencies);
 
         }
-        var dispatched = this.dispatchOrder(action,usel,appDim,{recursive:true}),
+        var dispatched = this.dispatchOrder(action,options.order,appDim),
             meta = {binder: appDeps,dimensions: dispatched},
             listFiles = this.shakeAction(action,meta);
         shaken.app[action].shaken = listFiles;
@@ -761,7 +761,7 @@ Shaker.prototype.shakeAll = function(callback,options){
         self.shakeApp('app',self._APP_ROOT,function(appshaken){
             shaken.mojits = mojitShaken;
             shaken.app = appshaken;
-            shaken = self.bundleMojits(shaken);
+            //shaken = self.bundleMojits(shaken);
             callback(shaken);
 
         },options);
