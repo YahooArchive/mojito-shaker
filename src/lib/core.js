@@ -761,7 +761,8 @@ Shaker.prototype.shakeAll = function(callback,options){
         self.shakeApp('app',self._APP_ROOT,function(appshaken){
             shaken.mojits = mojitShaken;
             shaken.app = appshaken;
-            //shaken = self.bundleMojits(shaken);
+            shaken = self.bundleMojits(shaken);
+            shaken.config = {order: SHAKER_DEFAULT_ORDER};
             callback(shaken);
 
         },options);
