@@ -78,7 +78,6 @@ Shaker.prototype = {
         var rollup = new Rollup(),
             files;
 
-        this._store.preload();
         files = this._store.getRollupsApp('client', {}).srcs;
 
         files.forEach(function(file) {
@@ -94,8 +93,6 @@ Shaker.prototype = {
     },
 
     onShake: function(metadata) {
-        console.log(this._config.deploy);
-
         if (this._config.deploy) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this.compress(metadata, this._callback);
