@@ -64,10 +64,8 @@ function Shaker(store) {
 
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
-    this._config.assets = this._config.assets || 'assets/compiled/';
+    this._config.assets = this._config.assets || 'assets/';
 }
-
-Shaker.ASSETS_DIR = 'assets/r/';
 
 Shaker.prototype = {
     run: function(callback) {
