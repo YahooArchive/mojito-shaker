@@ -13,7 +13,8 @@
     ],
 
     "shaker": {
-        "deploy": false
+        "deploy": false,
+        "assets": "assets/shaker/"
     },
 
     "specs": {
@@ -43,7 +44,8 @@
     "settings": ["environment:test"],
 
     "shaker": {
-        "deploy": true
+        "deploy": true,
+        "assets": "assets/shaker/compiled/"
     }
 }
 ]
