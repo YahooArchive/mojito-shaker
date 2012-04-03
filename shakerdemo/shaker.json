@@ -1,7 +1,0 @@
-{
-    "actions": {
-        "*": {
-            "mojits": ["master", "primary"]
-        }
-    }
-}

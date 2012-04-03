@@ -3,7 +3,7 @@
 */
 
 var YUITest = require('yuitest').YUITest,
-    Shaker = require('../../src/lib/core.js').Shaker,
+    Shaker = require('../../src/lib/core.js').ShakerCore,
     libfs = require('fs');
 
 var Assert = YUITest.Assert;

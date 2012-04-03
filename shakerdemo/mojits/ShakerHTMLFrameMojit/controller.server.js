@@ -89,6 +89,10 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                         meta.binders);
                 }
                 
+                for(var i in ac){
+                    Y.log(i);
+                }
+
                 ac.context = Y.merge(ac.context,ac.params.getFromUrl());
                 ac.shaker.shakeAll(meta);
                 // Attach assets found in the "meta" to the page

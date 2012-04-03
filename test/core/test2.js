@@ -3,7 +3,7 @@
 */
 
 var YUITest = require('yuitest').YUITest,
-    Shaker = require('../../src/lib/core.js').Shaker,
+    Shaker = require('../../src/lib/core.js').ShakerCore,
     libfs = require('fs');
 
 var Assert = YUITest.Assert;
@@ -89,10 +89,23 @@ suite.add( new YUITest.TestCase({
                 });
             });
             this.wait(1000);
-        },*/
+        },
         test_all_dimensions : function(){
             var mojitName  = this._mojits[4].name,
                 mojitPath  = this._mojits[4].path,
+                self = this;
+
+            this.shaker.shakeMojit(mojitName,mojitPath,function(data){
+                self.log(data);
+                self.resume(function(){
+                    Assert.isTrue(true);
+                });
+            });
+            this.wait(1000);
+        }*/
+        test_shaker_config_override_dimensions: function(){
+            var mojitName  = this._mojits[5].name,
+                mojitPath  = this._mojits[5].path,
                 self = this;
 
             this.shaker.shakeMojit(mojitName,mojitPath,function(data){

@@ -3,7 +3,7 @@
 */
 
 var YUITest = require('yuitest').YUITest,
-    Shaker = require('../../src/lib/core.js').Shaker,
+    Shaker = require('../../src/lib/core.js').ShakerCore,
     libfs = require('fs');
 
 var Assert = YUITest.Assert;
@@ -24,31 +24,7 @@ suite.add( new YUITest.TestCase({
         },
         tearDown : function () {
             delete this.shaker;
-        },
-        /*
-        test_shakeMojit : function(){
-            var self = this;
-            this.shaker.shakeMojit(this._m1, this._mojits[this._m1],function(shaken){
-                self.resume(function(){
-                    //console.log(JSON.stringify(shaken,null,'\t'));
-                    Assert.isTrue(true);
-                });
-            });
-		
-			this.wait(3000);
-        },
-        test_shakeMojit_autoloadtest: function(){
-            var self = this;
-            this.shaker.shakeMojit(this._m2, this._mojits[this._m2],function(shaken){
-                self.resume(function(){
-                    console.log(JSON.stringify(shaken,null,'\t'));
-                    Assert.isTrue(true);
-                });
-            });
-        
-            this.wait(3000);
-        },
-    
+        },/*
         test_app_shaker: function(){
             var self = this;
             this.shaker.shakeApp('app', './app1',function(shaken){

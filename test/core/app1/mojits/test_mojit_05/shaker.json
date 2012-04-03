@@ -1,0 +1,21 @@
+{
+	"dimensions": {
+		"common":{
+			"include":["mycommon"]
+		},
+		"device":{
+			"iphone": {
+				"include":["devices/iphone.css"]
+			},
+			"ipad":{
+				"include":["devices/ipad.css"]
+			}
+		}
+	},
+	"actions":{
+		"index":{
+			"include":["myindex.css"]
+		}
+
+	}
+}
