@@ -62,10 +62,9 @@ function Shaker(store) {
 
     this._config = this._store.getAppConfig(null, 'definition').shaker || {};
 
-    console.log(this._store.getAppConfig(null, 'definition'));
-
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
+    this._config.assets = this._config.assets || 'assets/compiled/';
 }
 
 Shaker.ASSETS_DIR = 'assets/r/';
@@ -75,7 +74,7 @@ Shaker.prototype = {
         this._callback = callback;
         this._rollupCore();
 
-        var shaker = new ShakerCore({root: this._store._root});
+        var shaker = new ShakerCore({root: './'});
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         shaker.shakeAll(this.onShake.bind(this));
     },
@@ -93,7 +92,7 @@ Shaker.prototype = {
             }
         }, this);
 
-        rollup.processJS(Shaker.ASSETS_DIR + 'mojito_core', function(filename) {
+        rollup.processJS(this._config.assets + 'mojito_core', function(filename) {
             utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
         });
     },
@@ -117,7 +116,7 @@ Shaker.prototype = {
                 for (dim in metadata.mojits[mojit][action].shaken) {
                     for (item in metadata.mojits[mojit][action].shaken[dim]) {
                         list = metadata.mojits[mojit][action].shaken[dim];
-                        list[item] = list[item].replace('./mojits', this._static_root);
+                        list[item] = list[item].replace('./mojits/', this._static_root);
                     }
                 }
             }
@@ -159,9 +158,7 @@ Shaker.prototype = {
     },
 
     compress: function(metadata, callback) {
-        var root = this._store._root,
-            app = path.basename(this._store._root),
-            static_root = this._static_root,
+        var app = path.basename(this._store._root),
             files = {};
 
         async.forEach(this._flattenMetaData(metadata), function(item, done) {
@@ -172,16 +169,16 @@ Shaker.prototype = {
             
             var rollup = new Rollup();
             rollup.setCSS(item.list);
-            var name = Shaker.ASSETS_DIR + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
+            var name = this._config.assets + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
             rollup.processCSS(name, function(filename) {
                 var new_filename = this._static_root + app + '/' + filename;
 
                 item.list.length = 0;
                 item.list.push(new_filename);
-                files[new_filename] = root + '/' + filename;
+                files[new_filename] = this._store._root + '/' + filename;
                 done();
-            });
-        }, function(err) {
+            }.bind(this));
+        }.bind(this), function(err) {
             callback(metadata, files);
         }.bind(this));
     }
