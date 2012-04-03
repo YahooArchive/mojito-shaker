@@ -3,7 +3,7 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
-var Shaker = require('shaker');
+var Shaker = require('./lib/shaker').Shaker;
 
 /**
  * The request contextualizer. Middleware which adds context to a request.
@@ -14,9 +14,7 @@ function ShakerMiddleware() {
 
 ShakerMiddleware.prototype = {
     handle: function(config) {
-        console.log('Shaker Load');
-
-
+        new Shaker(config.store).run();
 
         return function(req, res, next) {
             console.log('Shaker Request');

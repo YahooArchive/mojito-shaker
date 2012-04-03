@@ -1,7 +1,6 @@
 var path = require('path'),
     utils = require('mojito/lib/management/utils'),
     fs = require('fs'),
-    ResourceStore = require('mojito/lib/store.server'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
     ShakerCore = require('./core').ShakerCore,
@@ -56,10 +55,15 @@ Rollup.prototype = {
     }
 };
 
-function Shaker(options) {
-    var opts = options || {};
-    this._root = opts.root || process.cwd();
-    this._stage = opts.stage || false;
+function Shaker(store) {
+    this._store = store;
+    this._root = process.cwd();
+    
+    this._config = this._store.getAppConfig(null, 'definition').shaker || {};
+    this._config.deploy = this._config.deploy || false;
+    this._config.minify = this._config.minify || false;
+
+    console.log(this._config);
 }
 
 Shaker.prototype = {
@@ -72,12 +76,11 @@ Shaker.prototype = {
     },
 
     rollupMojito: function() {
-        var store = new ResourceStore(this._root),
-            rollup = new Rollup(),
+        var rollup = new Rollup(),
             files;
 
-        store.preload();
-        files = store.getRollupsApp('client', {}).srcs;
+        this._store.preload();
+        files = this._store.getRollupsApp('client', {}).srcs;
 
         files.forEach(function(file) {
             // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
@@ -92,9 +95,7 @@ Shaker.prototype = {
     },
 
     onShake: function(metadata) {
-        console.log(JSON.stringify(metadata,null,'\t'));
-
-        if (this._stage) {
+        if (this._config.deploy) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this.compress(metadata, this.writeMetaData);
         } else {

@@ -12,6 +12,10 @@
         "mojito-handler-dispatcher"
     ],
 
+    "shaker": {
+        "deploy": false
+    },
+
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
@@ -34,4 +38,12 @@
             }
         }
     }
-}]
+},
+{
+    "settings": ["environment:test"],
+
+    "shaker": {
+        "deploy": true
+    }
+}
+]
