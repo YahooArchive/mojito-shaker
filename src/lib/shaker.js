@@ -57,24 +57,30 @@ Rollup.prototype = {
 
 function Shaker(store) {
     this._store = store;
-    this._root = process.cwd();
+
+    this._static_root = '/static/';
 
     this._config = this._store.getAppConfig(null, 'definition').shaker || {};
+
+    console.log(this._store.getAppConfig(null, 'definition'));
+
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
 }
 
+Shaker.ASSETS_DIR = 'assets/r/';
+
 Shaker.prototype = {
     run: function(callback) {
         this._callback = callback;
-        this.rollupMojito();
+        this._rollupCore();
 
-        var shaker = new ShakerCore({root: './'});
+        var shaker = new ShakerCore({root: this._store._root});
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         shaker.shakeAll(this.onShake.bind(this));
     },
 
-    rollupMojito: function() {
+    _rollupCore: function() {
         var rollup = new Rollup(),
             files;
 
@@ -82,12 +88,12 @@ Shaker.prototype = {
 
         files.forEach(function(file) {
             // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
-            if (this._root !== file.substr(0, this._root.length)) {
+            if (this._store._root !== file.substr(0, this._store._root.length)) {
                 rollup.addJS(file);
             }
         }, this);
 
-        rollup.processJS('assets/mojito/mojito_rollup_full', function(filename) {
+        rollup.processJS(Shaker.ASSETS_DIR + 'mojito_core', function(filename) {
             utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
         });
     },
@@ -104,14 +110,14 @@ Shaker.prototype = {
 
     rename: function(metadata, callback){
         var mojit, action, dim, item, list,
-            app = path.basename(this._root);
+            app = path.basename(this._store._root);
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
                     for (item in metadata.mojits[mojit][action].shaken[dim]) {
                         list = metadata.mojits[mojit][action].shaken[dim];
-                        list[item] = list[item].replace('./mojits', '/static');
+                        list[item] = list[item].replace('./mojits', this._static_root);
                     }
                 }
             }
@@ -122,8 +128,8 @@ Shaker.prototype = {
                 for (item in metadata.app[action].shaken[dim]) {
                     list = metadata.app[action].shaken[dim];
                     var tmp = list[item];
-                    tmp = tmp.replace('./mojits/','/static/');
-                    tmp = tmp.replace('./','/static/'+app+'/');
+                    tmp = tmp.replace('./mojits/', this._static_root);
+                    tmp = tmp.replace('./', this._static_root + app + '/');
                     list[item] = tmp;
                 }
             }
@@ -153,9 +159,10 @@ Shaker.prototype = {
     },
 
     compress: function(metadata, callback) {
-        var app = path.basename(this._root);
-        var files = {};
-        var cwd = process.cwd();
+        var root = this._store._root,
+            app = path.basename(this._store._root),
+            static_root = this._static_root,
+            files = {};
 
         async.forEach(this._flattenMetaData(metadata), function(item, done) {
             if (!item.list.length) {
@@ -165,13 +172,13 @@ Shaker.prototype = {
             
             var rollup = new Rollup();
             rollup.setCSS(item.list);
-            var name = 'assets/r/' + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
+            var name = Shaker.ASSETS_DIR + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
             rollup.processCSS(name, function(filename) {
-                var new_filename = '/static/' + app + '/' + filename;
+                var new_filename = this._static_root + app + '/' + filename;
 
                 item.list.length = 0;
                 item.list.push(new_filename);
-                files[new_filename] = cwd + '/' + filename;
+                files[new_filename] = root + '/' + filename;
                 done();
             });
         }, function(err) {
