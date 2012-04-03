@@ -36,7 +36,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
         _init:function(ac){
             this._app = this._setAppConfig(ac);
-            this._meta = YUI._mojito._cache.shaker.meta;
+            this._meta = ac.context.shaker_data;
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};

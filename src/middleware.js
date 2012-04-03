@@ -14,10 +14,14 @@ function ShakerMiddleware() {
 
 ShakerMiddleware.prototype = {
     handle: function(config) {
-        new Shaker(config.store).run();
+        var data = {};
+
+        new Shaker(config.store).run(function(metadata) {
+            data = metadata;
+        });
 
         return function(req, res, next) {
-            console.log('Shaker Request');
+            req.context.shaker_data = data;
             next();
         };
     }

@@ -70,5 +70,7 @@ exports.run = function(params, options, callback) {
     var store = new ResourceStore(root);
     store.preload(context);
 
-    new Shaker(store).run();
+    new Shaker(store).run(function(metadata) {
+        console.log(metadata);
+    });
 };

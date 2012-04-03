@@ -58,16 +58,15 @@ Rollup.prototype = {
 function Shaker(store) {
     this._store = store;
     this._root = process.cwd();
-    
+
     this._config = this._store.getAppConfig(null, 'definition').shaker || {};
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
-
-    console.log(this._config);
 }
 
 Shaker.prototype = {
-    run: function() {
+    run: function(callback) {
+        this._callback = callback;
         this.rollupMojito();
 
         var shaker = new ShakerCore({root: './'});
@@ -95,12 +94,14 @@ Shaker.prototype = {
     },
 
     onShake: function(metadata) {
+        console.log(this._config.deploy);
+
         if (this._config.deploy) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
-            this.compress(metadata, this.writeMetaData);
+            this.compress(metadata, this._callback);
         } else {
             utils.log('[SHAKER] - Processing assets for development env.');
-            this.rename(metadata, this.writeMetaData);
+            this.rename(metadata, this._callback);
         }
     },
 
@@ -174,18 +175,6 @@ Shaker.prototype = {
         }, function(err) {
             callback(metadata);
         }.bind(this));
-    },
-    
-    writeMetaData: function(metadata) {
-        utils.log('[SHAKER] - Writing processed metadata in autoload.');
-        
-        var aux = 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
-            aux += 'YUI.namespace("_mojito._cache.shaker");\n';
-            aux += 'YUI._mojito._cache.shaker.meta = \n';
-            aux += JSON.stringify(metadata,null,'\t');
-            aux += '});';
-
-        fs.writeFile('autoload/compiled/shaker/shaker-meta.server.js', aux);
     }
 };
 
