@@ -16,11 +16,15 @@ ShakerMiddleware.prototype = {
     handle: function(config) {
         var data = {};
 
-        new Shaker(config.store).run(function(metadata) {
+        new Shaker(config.store).run(function(metadata, files) {
             data = metadata;
+            config.store._staticURLs = config.store._mergeRecursive(config.store._staticURLs, files);
         });
 
         return function(req, res, next) {
+            if (!req.context) {
+                req.context = {};
+            }
             req.context.shaker_data = data;
             next();
         };

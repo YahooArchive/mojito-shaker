@@ -129,7 +129,7 @@ Shaker.prototype = {
             }
         }
 
-        callback(metadata);
+        callback(metadata, {});
     },
 
     _flattenMetaData: function(metadata) {
@@ -154,6 +154,8 @@ Shaker.prototype = {
 
     compress: function(metadata, callback) {
         var app = path.basename(this._root);
+        var files = {};
+        var cwd = process.cwd();
 
         async.forEach(this._flattenMetaData(metadata), function(item, done) {
             if (!item.list.length) {
@@ -165,12 +167,15 @@ Shaker.prototype = {
             rollup.setCSS(item.list);
             var name = 'assets/r/' + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
             rollup.processCSS(name, function(filename) {
+                var new_filename = '/static/' + app + '/' + filename;
+
                 item.list.length = 0;
-                item.list.push('/static/' + app + '/' + filename);
+                item.list.push(new_filename);
+                files[new_filename] = cwd + '/' + filename;
                 done();
             });
         }, function(err) {
-            callback(metadata);
+            callback(metadata, files);
         }.bind(this));
     }
 };
