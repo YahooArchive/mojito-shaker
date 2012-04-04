@@ -10,8 +10,7 @@ var libpath = require('path'),
     util = require('./utils.js');
 
 /*GLOBAL CONFIGS*/
-var APP_CONFIG_FILE = 'application.json', //app config file
-    SHAKER_CONFIG_NAME = 'shaker.json',
+var SHAKER_CONFIG_NAME = 'shaker.json',
     //DEFAULT TEMPLATE SHAKER CONFIG
     SHAKER_DEFAULT_DIM_CONFIG = {
         common: {},
@@ -38,31 +37,6 @@ Shaker.prototype.constructor = Shaker;
 
 /* LOGGING FUNCTION */
 Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': ' + err);} };
-
-
-/*------------------------------------------*/
-/**
-*
-* Gets the Mojito application.json configuration.
-* The path from where the file is looked depends on:
-*       The path defined in the constructor as APP_ROOT (which points to the app level root regarding the proccess execution)
-*       The name of the file defined in the global APP_CONFIG_FILE
-*
-* @method _getAppConfig
-* @private
-* @return {Object} Return the parse JSON Object of application.json. If fails finding it returns null.
-**/
-
-Shaker.prototype._getAppConfig = function(){
-    var file =  this._store._root + APP_CONFIG_FILE;
-    try{
-        return JSON.parse(libfs.readFileSync(file));
-        
-    }catch(error){
-        this._log('_getAppConfig' + error);
-        
-    }
-};
 
 /**
 *
@@ -768,7 +742,7 @@ Shaker.prototype.bundleMojits = function(shaken,options){
 
 Shaker.prototype.shakeAll = function(callback,options){
     options = options || {};
-    var app = this._getAppConfig(),
+    var app = this._store.getAppConfig(null, 'definition'),
         mojits = this._getMojits(),
         self = this,
         shaken = {};
