@@ -196,12 +196,38 @@ Shaker.prototype._walkResources = function(dir, done,options) {
     });
 };
 
-Shaker.prototype.includeResources = function(includes,resources){
-
+Shaker.prototype.includeResources = function(includes,resources,absolutePath){
+var folders = includes.filter(function(i){return libpath.extname(i) === "";}),
+        files = includes.filter(function(i){return libpath.extname(i) !== "";}),
+        //take all resources that are contained in the given folders
+        filtered = resources.filter(function(item){
+            for(var j = 0;j < folders.length; j++){
+                if(item.indexOf(folders[j]) !== -1){
+                    return true;
+                }
+            }
+            return false;
+        });
+        //include individual files if exists if FS
+        for(j=0; j<files.length; j++){
+            var filePath = absolutePath + files[j];
+            if(libpath.existsSync(filePath)){
+                filtered.push(filePath);
+            }
+        }
+        return filtered;
 };
 
-Shaker.prototype.excludeResources = function(excludes,resources){
-
+Shaker.prototype.excludeResources = function(excludes,resources, absPath){
+    var filtered = resources.filter(function(item){
+        for(var i=0; i<excludes.length; i++){
+            if(item.indexOf(excludes[i])!== -1){
+                return false;
+            }
+        }
+        return true;
+    });
+    return filtered;
 };
 
 Shaker.prototype.replaceResources = function(replaces, resources){
@@ -324,6 +350,7 @@ Shaker.prototype.preCalcModule = function(filePath) {
                     }
                 }
             };
+
         try {
             libvm.runInNewContext(file, ctx, filePath);
             return ctx.YUI.m;
@@ -356,31 +383,18 @@ Shaker.prototype.precalculateAutoloads = function(autoloads){
 * Filter the resources from a specific set of folders and files.
 * For each item in resources we check if belongs to any folder, and then we add the rest of the files given.
 * @method filterResources
-* @params {array[strings]} A list of folders and files that a particular dimension has.
+* @params {Object} A list of patterns (folders and files) to apply agains the resources to gerete the final list per dimension.
 * @params {array[strings]} The list of all the assets.
 * @params {string} The path to the mojit relative to the app level
 * @protected
 */
 
-Shaker.prototype.filterResources = function(list,resources,mojitPath){
-    var folders = list.filter(function(i){return libpath.extname(i) === "";}),
-        files = list.filter(function(i){return libpath.extname(i) !== "";}),
-        filtered = resources.filter(function(item){
-            for(var j=0;j<folders.length;j++){
-                if(item.indexOf(folders[j]) !== -1){
-                    return true;
-                }
-            }
-            return false;
-        });
-        for(j=0; j<files.length; j++){
-            var absPath = mojitPath +'/assets/'+ files[j];
-            console.log(absPath);
-            if(libpath.existsSync(absPath)){
-                filtered.push(absPath);
-            }
-        }
-        return filtered;
+Shaker.prototype.filterResources = function(patterns,resources,mojitPath){
+    var assetspath = mojitPath +'/assets/',
+        included = this.includeResources(patterns.include,resources, assetspath),
+        afterExclude = this.excludeResources(patterns.exclude,included,mojitPath);
+
+   return afterExclude;
 };
 
 Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,resources,mojitPath,prefix){
@@ -394,8 +408,12 @@ Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,
         res[i] = this.generateRecursiveShakerDimensions(dim[i],resources,mojitPath,prefix + '/' + i);
     }
     if(!children) {
-        var list = shaker_dimensions.include ? shaker_dimensions.include.concat([prefix]) : [prefix];
-        res.files = this.filterResources(list,resources,mojitPath);
+        var patterns = {
+                include : shaker_dimensions.include ? shaker_dimensions.include.concat([prefix]) : [prefix],
+                exclude : shaker_dimensions.exclude || [],
+                replace : shaker_dimensions.replace || []
+        };
+        res.files = this.filterResources(patterns,resources,mojitPath);
     }
     return res;
 };
@@ -672,9 +690,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 dispatched = self.dispatchOrder(action,order,dimensions),
                 meta = {binder: binder_dependencies,dimensions: dispatched},
                 listFiles = self.shakeAction(action,meta),
-                selectors = [];
-                //for(var j in dispatched) {selectors.push(j.replace(action,'action'));}
-                //self._augmentRules(shaker_config,listFiles,selectors);
+                //self._augmentRules(shaker_config,listFiles,order);
                 shaked[action] = {
                     shaken: listFiles,
                     meta:{
@@ -768,6 +784,5 @@ Shaker.prototype.shakeAll = function(callback,options){
         },options);
     },options);
 };
-
 
 module.exports.ShakerCore = Shaker;

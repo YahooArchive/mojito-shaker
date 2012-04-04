@@ -88,10 +88,6 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
-                
-                for(var i in ac){
-                    Y.log(i);
-                }
 
                 ac.context = Y.merge(ac.context,ac.params.getFromUrl());
                 ac.shaker.shakeAll(meta);

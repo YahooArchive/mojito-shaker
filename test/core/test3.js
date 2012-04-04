@@ -24,23 +24,11 @@ suite.add( new YUITest.TestCase({
         },
         tearDown : function () {
             delete this.shaker;
-        },/*
-        test_app_shaker: function(){
-            var self = this;
-            this.shaker.shakeApp('app', './app1',function(shaken){
-                self.resume(function(){
-                    console.log(JSON.stringify(shaken,null,'\t'));
-                    Assert.isTrue(true);
-                });
-            });
-        
-            this.wait(3000);
-        },*/
+        },
         test_all_mojits_shaker: function(){
             var self = this;
             this.shaker.shakeAll(function(shaken){
                 self.resume(function(){
-                    console.log(JSON.stringify(shaken,null,'\t'));
                     Assert.isTrue(true);
                 });
             });

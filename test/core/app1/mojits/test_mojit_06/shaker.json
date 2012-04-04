@@ -1,0 +1,14 @@
+{
+	"dimensions": {
+		"common":{
+			"exclude":["common/othercommon.css"]
+		},
+		"device":{
+		}
+	},
+	"actions":{
+		"index":{
+		}
+
+	}
+}
