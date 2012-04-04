@@ -1,0 +1,15 @@
+{
+	"augments":[
+		{
+			"on": {
+				"region": "US",
+				"lang": "en",
+				"skin": "blue",
+				"device": "smartphone",
+				"action": "index"
+			},
+			"include":["toInclude/otherToInclude.css"],
+			"exclude": ["lang/"]
+		}
+	]
+}
