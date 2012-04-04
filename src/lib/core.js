@@ -30,7 +30,7 @@ var APP_CONFIG_FILE = 'application.json', //app config file
 
 var Shaker = function (config){
     config = config || {};
-    this._APP_ROOT = config.root || './'; //ROOT APP FOLDER
+    this._store = config.store;
     this._debugging = false;
 };
 
@@ -54,7 +54,7 @@ Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': '
 **/
 
 Shaker.prototype._getAppConfig = function(){
-    var file =  this._APP_ROOT + APP_CONFIG_FILE;
+    var file =  this._store._root + APP_CONFIG_FILE;
     try{
         return JSON.parse(libfs.readFileSync(file));
         
@@ -84,7 +84,7 @@ Shaker.prototype._getMojits = function(app_config){
         };
         for(var i = 0; i<mojitFolders.length; i++){
         try{
-            var folder = this._APP_ROOT + mojitFolders[i],
+            var folder = this._store._root + '/' + mojitFolders[i],
                 dir = libfs.readdirSync(folder).filter(filter_function);
             //add the mojit and his path.
             for(var j = 0; j < dir.length; j++){
@@ -731,7 +731,7 @@ Shaker.prototype.shakeAllMojits = function(app,mojits,callback,options){
 
 Shaker.prototype.bundleMojits = function(shaken,options){
     options = options || {};
-    var app = this._getMojitShakerConfig('app',this._APP_ROOT),
+    var app = this._getMojitShakerConfig('app',this._store._root),
     dimensions = {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
@@ -774,7 +774,7 @@ Shaker.prototype.shakeAll = function(callback,options){
         shaken = {};
 
     this.shakeAllMojits(app,mojits,function(mojitShaken){
-        self.shakeApp('app',self._APP_ROOT,function(appshaken){
+        self.shakeApp('app', self._store._root + '/',function(appshaken){
             shaken.mojits = mojitShaken;
             shaken.app = appshaken;
             shaken = self.bundleMojits(shaken);

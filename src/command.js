@@ -71,6 +71,5 @@ exports.run = function(params, options, callback) {
     store.preload(context);
 
     new Shaker(store).run(function(metadata) {
-        console.log(metadata);
     });
 };

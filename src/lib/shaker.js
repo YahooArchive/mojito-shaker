@@ -72,7 +72,7 @@ Shaker.prototype = {
         this._callback = callback;
         this._rollupCore();
 
-        var shaker = new ShakerCore({root: './'});
+        var shaker = new ShakerCore({store: this._store});
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         shaker.shakeAll(this.onShake.bind(this));
     },
@@ -96,6 +96,7 @@ Shaker.prototype = {
     },
 
     onShake: function(metadata) {
+        //console.log(JSON.stringify(metadata));
         if (this._config.deploy) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this.compress(metadata, this._callback);
@@ -114,7 +115,7 @@ Shaker.prototype = {
                 for (dim in metadata.mojits[mojit][action].shaken) {
                     for (item in metadata.mojits[mojit][action].shaken[dim]) {
                         list = metadata.mojits[mojit][action].shaken[dim];
-                        list[item] = list[item].replace('./mojits/', this._static_root);
+                        list[item] = list[item].replace(this._store._root + '/mojits/', this._static_root);
                     }
                 }
             }
@@ -124,10 +125,7 @@ Shaker.prototype = {
             for (dim in metadata.app[action].shaken) {
                 for (item in metadata.app[action].shaken[dim]) {
                     list = metadata.app[action].shaken[dim];
-                    var tmp = list[item];
-                    tmp = tmp.replace('./mojits/', this._static_root);
-                    tmp = tmp.replace('./', this._static_root + app + '/');
-                    list[item] = tmp;
+                    list[item] = list[item].replace(this._store._root, this._static_root + app);
                 }
             }
         }
