@@ -195,7 +195,9 @@ var folders = includes.filter(function(i){return libpath.extname(i) === "";}),
 Shaker.prototype.excludeResources = function(excludes,resources, absPath){
     var filtered = resources.filter(function(item){
         for(var i=0; i<excludes.length; i++){
-            if(item.indexOf(excludes[i])!== -1){
+            var fullItem = absPath + excludes[i];
+            //console.log('REM:' + fullItem);
+            if(item.indexOf(fullItem)!== -1){
                 return false;
             }
         }
@@ -366,7 +368,7 @@ Shaker.prototype.precalculateAutoloads = function(autoloads){
 Shaker.prototype.filterResources = function(patterns,resources,mojitPath){
     var assetspath = mojitPath +'/assets/',
         included = this.includeResources(patterns.include,resources, assetspath),
-        afterExclude = this.excludeResources(patterns.exclude,included,mojitPath);
+        afterExclude = this.excludeResources(patterns.exclude,included,assetspath);
 
    return afterExclude;
 };
@@ -533,12 +535,12 @@ Shaker.prototype.shakeAction = function (name,meta,cache){
     return cache;
 };
 
-Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selectors){
+Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selector,mojitPath){
     if(!shaker_cfg.augments) return;
 
     var rules = shaker_cfg.augments,
-        parts = selector.split('-');
-
+        parts = selector.split('-'),
+        absPath = mojitPath + '/assets/';
     for(var rule in rules){
         var discriminants = rules[rule].on;
         for(var rollup in shaken){
@@ -547,27 +549,33 @@ Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selectors){
             for(var disc in discriminants){
                 var value = discriminants[disc],
                     pos = util.isInList(value,rollups_dimensions);
-                    //if we found it in the correct postition, we keep checking next discriminants if not we break
-                    if(pos !== -1 && parts[pos] == disc){
-                        //console.log('Rollup: ' + rollup + ' meets dicriminant: ' + disc);
-                        continue;
-                    }else{
+                    //if we dont found it or doesnt match the right dimension we break
+                    if(pos === -1 || parts[pos] !== disc){
                         fulfill = false;
                         break;
                     }
-            }//discriminants
-            if(fulfill){//if the rollup fulfill all the discriminants we apply the actions of the rule
+            }
+
+            //if the rollup fulfill all the discriminants we apply the actions of the rule
+            if(fulfill){
                 var execRule = rules[rule];
+                //ToDO: Only supporting files right now
+                //Filter in the store for the actual mojit to be able to include folders.
                 if(execRule.include){
-                    //ToDo: Call _includeResources...
+                    execRule.include.push(absPath);
+                    shaken[rollup] = this.includeResources(execRule.include,shaken[rollup],absPath);
                 }
                 if(execRule.exclude){
-
+                    shaken[rollup] = this.excludeResources(execRule.exclude,shaken[rollup],absPath);
                 }
                 if(execRule.replace){
-
+                    //ToDo!
                 }
+                //console.log('Augmented: ' + rollup);
+                //console.log(shaken[rollup]);
             }
+            //console.log('----------------------------------');
+
         }//rollup
 
     }//rule
@@ -664,7 +672,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 dispatched = self.dispatchOrder(action,order,dimensions),
                 meta = {binder: binder_dependencies,dimensions: dispatched},
                 listFiles = self.shakeAction(action,meta),
-                //self._augmentRules(shaker_config,listFiles,order);
+                self._augmentRules(shaker_config,listFiles,order,path);
                 shaked[action] = {
                     shaken: listFiles,
                     meta:{
