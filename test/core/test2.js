@@ -178,7 +178,7 @@ suite.add( new YUITest.TestCase({
                 action = 'index';
 
             this.shaker.shakeMojit(mojitName,mojitPath,function(data){
-                //self.log(data);
+               // self.log(data);
                 self.resume(function(){
                     Assert.isNotUndefined(data[action]);
                     Assert.isTrue(data[action].meta.dimensions.common.files.length === 1);
@@ -193,9 +193,11 @@ suite.add( new YUITest.TestCase({
                 action = 'index';
 
             this.shaker.shakeMojit(mojitName,mojitPath,function(data){
-                //self.log(data);
                 self.resume(function(){
-                    Assert.isTrue(true);
+                    var list = data[action].shaken['common-index-smartphone-blue-US-en'];
+                    //ToDo: More exhaustive checking
+                    Assert.isTrue(libpath.basename(list[list.length-1]) === 'otherToInclude.css');
+                    Assert.isTrue(list.length == 7);//because we remove lang!
                 });
             });
             this.wait(1000);
