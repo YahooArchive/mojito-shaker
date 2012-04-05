@@ -139,14 +139,14 @@ Shaker.prototype = {
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
-                    flattened.push({type: 'mojit', name: mojit, action: action, dim: dim, list: metadata.mojits[mojit][action].shaken[dim], meta: metadata.app[action].meta});
+                    flattened.push({type: 'mojit', name: mojit, action: action, dim: dim, list: metadata.mojits[mojit][action].shaken[dim]});
                 }
             }
         }
 
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
-                flattened.push({type: 'app', name: 'app', action: action, dim: dim, list: metadata.app[action].shaken[dim], meta: metadata.app[action].meta, app_mojits: metadata.app[action].mojits});
+                flattened.push({type: 'app', name: 'app', action: action, dim: dim, list: metadata.app[action].shaken[dim]});
             }
         }
 
