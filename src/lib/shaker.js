@@ -96,7 +96,7 @@ Shaker.prototype = {
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
         this._rollupCore();
-        
+
         if (this._config.deploy) {
             utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this._compress(metadata, callback);
@@ -135,7 +135,7 @@ Shaker.prototype = {
         aux+= '});';
 
         mkdirp.mkdirp(self._store._root + '/autoload/compiled', 0777 & (~process.umask()), function(err, made) {
-            fs.writeFile(self._store._root + 'autoload/compiled/shaker.server.js', aux, function(err) {
+            fs.writeFile(self._store._root + '/autoload/compiled/shaker.server.js', aux, function(err) {
                 utils.log('[SHAKER] - Writting Addon file with the metadata ');
             });
         });
