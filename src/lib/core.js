@@ -116,58 +116,6 @@ Shaker.prototype.mergeConcatDimensions = function(source,giver){
         }
     }
     return source;
-}
-
-
-/**
-* This function takes a path (relative to the app level) and generates a list of files within that path.
-* By default option recursive is set to true. If you want files per level, change it to false
-*
-* @method _walkResources
-* @param {String} Directory path (Relative to where the path the application is being executed).
-* @param {function} Callback when finish
-* @param {Object} Options to pass to the function:
-*                 If recursive is true, it will return a list of all the files.
-*                 If false it will return the files by level.
-* @protected
-* @return {string[]|| Object} Will return all the files within a given path.
-**/
-
-Shaker.prototype._walkResources = function(dir, done,options) {
-    options = options || {recursive: true};
-    var results = options.recursive ? [] : {files:[]},self = this;
-    libfs.readdir(dir, function(err, list) {
-        if (err) return done(err);
-        var pending = list.length;
-        if (!pending) return done(null, results);//empty
-        list.forEach(function(file) {
-            var fpath = dir + '/' + file;
-            if(file.charAt(0) == "."){//filter hidden files and folders
-                if (!--pending) done(null, results);return;
-            }
-            libfs.stat(fpath, function(err, stat) {
-                if (stat && stat.isDirectory()) {
-                    self._walkResources(fpath, function(err, res) {
-                        if(options.recursive){
-                            results = results.concat(res);
-                        }else{
-                            results[libpath.basename(fpath)] = res;
-                        }
-                        if (!--pending) done(null, results);
-                    },options);
-                }else{//is a file
-                    if(util.isInList(libpath.extname(file),['.js','.css']) >= 0){//filter by extension ToDo: add option
-                        if(options.recursive){
-                            results.push(fpath);
-                        }else{
-                            results.files.push(fpath);
-                        }
-                    }
-                    if (!--pending) done(null, results);
-                }
-            });
-        });
-    });
 };
 
 Shaker.prototype.includeResources = function(includes,resources,absolutePath){
@@ -208,36 +156,6 @@ Shaker.prototype.excludeResources = function(excludes,resources, absPath){
 
 Shaker.prototype.replaceResources = function(replaces, resources){
 
-};
-
-/**
-* Returns all the assets (js and css) from specific paths.
-* It takes an object where the key is a string for identify the resources type;
-* and the value is the path associated (relative to the app level).
-*
-* @method _loadMojitResources
-* @param {Object} Resources bundle where key is an abstract name and value the path asociated to that.
-* @param {function} Callback function to execute when we have al the results back.
-* @protected
-* @return {Object} Containing an array with the assets founded for the particular folder asocciated by the resource key
-*
-**/
-
-Shaker.prototype._loadMojitResources = function(resourcesPath,callback){
-    var pending = 0,
-        resources = {},
-        self = this,
-        walking = function(res){
-            self._walkResources(path,function(e,adata){
-                resources[res] = adata || [];
-                if(!--pending) callback(resources);
-            });
-        };
-    for(var res in resourcesPath){
-        var path = resourcesPath[res];
-        pending++;
-        walking(res);
-    }
 };
 
 /**
@@ -661,7 +579,9 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
-    this._loadMojitResources(resourcesPath,function(resources){
+    libfs.readdir('./', function(err, list) {
+        resources = self._resources[name];
+
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
             modules = self.precalculateAutoloads(resources.autoload),
             dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets,path),//files per dimension filtering
@@ -748,7 +668,45 @@ Shaker.prototype.bundleMojits = function(shaken,options){
     return shaken;
 };
 
+Shaker.prototype._mojitResources = function() {
+    var mojits = this._store.listAllMojits('server').slice(3); // FIXME: 3
+
+    var resources = {};
+    mojits.forEach(function(mojit) {
+        resources[mojit] = {assets: [], binders: [], autoload: []};
+    });
+    resources['app'] = {assets: [], binders: [], autoload: []};
+
+    var exts = {'.js': 1, '.css': 1};
+
+    for (var url in this._store._staticURLs) {
+        var base = url.substring('/static/'.length);
+        var split = base.split('/', 2);
+        var filename = this._store._staticURLs[url];
+
+        if (split[0] == 'shakerdemo') {
+            if (split[1] in resources['app']) {
+                if (libpath.extname(filename) in exts) {
+                    resources['app'][split[1]].push(this._store._staticURLs[url]);
+                }
+            }
+        }
+
+        if (split[0] in resources) { // mojit
+            if (split[1] in resources[split[0]]) {  // asset type
+                if (libpath.extname(filename) in exts) {
+                    resources[split[0]][split[1]].push(this._store._staticURLs[url]);
+                }
+            }
+        }
+    }
+
+    return resources;
+};
+
 Shaker.prototype.shakeAll = function(callback,options){
+    this._resources = this._mojitResources();
+
     options = options || {};
     var app = this._store.getAppConfig(null, 'definition'),
         mojits = this._getMojits(),
