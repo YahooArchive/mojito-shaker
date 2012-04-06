@@ -36,11 +36,17 @@ Rollup.prototype = {
         if (this._js.length) {
             this._process(name, this._js, '.js', callback);
         }
+        else {
+            callback(true);
+        }
     },
 
     processCSS: function(name, callback) {
         if (this._css.length) {
             this._process(name, this._css, '.css', callback);
+        }
+        else {
+            callback(true);
         }
     },
 
@@ -51,9 +57,16 @@ Rollup.prototype = {
 
         queue.on('taskComplete', function(data) {
             if (data.task.type === 'checksumwrite') {
-                callback(data.result);
+                callback(null, data.result);
             }
         });
+        /*queue.on('queueComplete', function(data) {
+            callback(queue);
+        });
+        queue.on('queueFailed', function(data) {
+            callback(queue);
+        });
+        this.emit('queueFailed',*/
 
         queue.task('files', files)
             .task('concat')
@@ -98,8 +111,10 @@ Shaker.prototype = {
             }
         }, this);
 
-        rollup.processJS(this._config.assets + 'mojito_core.js', function(filename) {
-            utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
+        rollup.processJS(this._config.assets + 'mojito_core.js', function(err, filename) {
+            if (filename) {
+                utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
+            }
         });
     },
 
@@ -181,14 +196,22 @@ Shaker.prototype = {
             // Write rollup files for CSS and JS in parallel
             async.parallel([
                 function(callback) {    // Write CSS rollup
-                    rollup.processCSS(name + '.css', function(filename) {
+                    rollup.processCSS(name + '.css', function(err, filename) {
+                        if (err) {
+                            callback(true);
+                            return;
+                        }
                         var url = self._static_root + app + '/' + filename;
                         static_files[url] = self._store._root + '/' + filename;
                         callback(null, url);
                     });
                 },
                 function(callback) {    // Write JS rollup
-                    rollup.processJS(name + '.js', function(filename) {
+                    rollup.processJS(name + '.js', function(err, filename) {
+                        if (err) {
+                            callback(true);
+                            return;
+                        }
                         var url = self._static_root + app + '/' + filename;
                         static_files[url] = self._store._root + '/' + filename;
                         callback(null, url);
