@@ -31,6 +31,12 @@ var Shaker = function (config){
     config = config || {};
     this._store = config.store;
     this._debugging = false;
+    this._app = this._store.getAppConfig(null, 'definition');
+
+    this._urlPrefix = '/static';
+    if (typeof this._app.prefix !== 'undefined') {
+        this._urlPrefix = this._app.prefix ? '/' + this._app.prefix : '';
+    }
 };
 
 Shaker.prototype.constructor = Shaker;
@@ -614,7 +620,7 @@ Shaker.prototype.shakeApp = function(name,path,callback,options){
     },options);
 };
 
-Shaker.prototype.shakeAllMojits = function(app,mojits,callback,options){
+Shaker.prototype.shakeAllMojits = function(mojits,callback,options){
     var self = this,
         shaken = {},
         count = 0,
@@ -668,8 +674,9 @@ Shaker.prototype.bundleMojits = function(shaken,options){
     return shaken;
 };
 
+// Look through Mojito store static files for mojit assets to roll up
 Shaker.prototype._mojitResources = function() {
-    var mojits = this._store.listAllMojits('server').slice(3); // FIXME: 3
+    var mojits = this._store.listAllMojits('server').slice(3); // FIXME: Ignore 'DaliProxy','HTMLFrameMojit', 'LazyLoad'
 
     var resources = {};
     mojits.forEach(function(mojit) {
@@ -677,16 +684,16 @@ Shaker.prototype._mojitResources = function() {
     });
     resources['app'] = {assets: [], binders: [], autoload: []};
 
-    var exts = {'.js': 1, '.css': 1};
+    var EXTS = {'.js': 1, '.css': 1};
 
     for (var url in this._store._staticURLs) {
-        var base = url.substring('/static/'.length);
-        var split = base.split('/', 2);
+        var base = url.substring(this._urlPrefix.length + 1);
+        var split = base.split('/', 2); // [mojit_name, subdir]
         var filename = this._store._staticURLs[url];
 
-        if (split[0] == 'shakerdemo') {
+        if (split[0] == this._store._shortRoot) {
             if (split[1] in resources['app']) {
-                if (libpath.extname(filename) in exts) {
+                if (libpath.extname(filename) in EXTS) {
                     resources['app'][split[1]].push(this._store._staticURLs[url]);
                 }
             }
@@ -694,7 +701,7 @@ Shaker.prototype._mojitResources = function() {
 
         if (split[0] in resources) { // mojit
             if (split[1] in resources[split[0]]) {  // asset type
-                if (libpath.extname(filename) in exts) {
+                if (libpath.extname(filename) in EXTS) {
                     resources[split[0]][split[1]].push(this._store._staticURLs[url]);
                 }
             }
@@ -708,19 +715,17 @@ Shaker.prototype.shakeAll = function(callback,options){
     this._resources = this._mojitResources();
 
     options = options || {};
-    var app = this._store.getAppConfig(null, 'definition'),
-        mojits = this._getMojits(),
+    var mojits = this._getMojits(),
         self = this,
         shaken = {};
 
-    this.shakeAllMojits(app,mojits,function(mojitShaken){
+    this.shakeAllMojits(mojits,function(mojitShaken){
         self.shakeApp('app', self._store._root + '/',function(appshaken){
             shaken.mojits = mojitShaken;
             shaken.app = appshaken;
             shaken = self.bundleMojits(shaken);
             shaken.config = {order: SHAKER_DEFAULT_ORDER};
             callback(shaken);
-
         },options);
     },options);
 };
