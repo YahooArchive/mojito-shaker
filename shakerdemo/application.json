@@ -12,11 +12,6 @@
         "mojito-handler-dispatcher"
     ],
 
-    "shaker": {
-        "deploy": false,
-        "assets": "assets/shaker/"
-    },
-
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
@@ -45,7 +40,7 @@
 
     "shaker": {
         "deploy": true,
-        "assets": "assets/shaker/compiled/"
+        "assets": "compiled/"
     }
 }
 ]
