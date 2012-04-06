@@ -5,7 +5,8 @@
 var YUITest = require('yuitest').YUITest,
     Shaker = require('../../src/lib/core.js').ShakerCore,
     libfs = require('fs');
-    libpath = require('path');
+    libpath = require('path'),
+    ResourceStore = require('mojito/lib/store.server');
 
 var Assert = YUITest.Assert;
 var suite = new YUITest.TestSuite("Shake Mojits - Default configuration");
@@ -18,42 +19,48 @@ suite.add( new YUITest.TestCase({
                 console.log(JSON.stringify(obj,null,'\t'));
             };
 
-            this._appPath = './app1/';
-            this.shaker = new Shaker({root: this._appPath});
+            var root = libpath.join(process.cwd(), 'app1'),
+                store = new ResourceStore(root),
+                context = {};
+                store.preload(context);
+
+            this.shaker = new Shaker({store:store});
+            this.shaker._resources =  this.shaker._mojitResources();
+
             this.defaultAction = '*';
             this.defaultOrder = 'common-index-device-skin-region-lang';
 
             this._mojits = [{
                                 name: 'fake_mojit',
-                                path: this._appPath + 'fakeMojit'
+                                path: root +'/'+ 'fakeMojit'
                             },
                             {
                                 name: 'test_mojit_01',
-                                path: this._appPath + 'mojits/test_mojit_01'
+                                path: root +'/'+ 'mojits/test_mojit_01'
                             },
                             {
                                 name: 'test_mojit_02',
-                                path: this._appPath + 'mojits/test_mojit_02'
+                                path: root +'/'+ 'mojits/test_mojit_02'
                             },
                             {
                                 name: 'test_mojit_03',
-                                path: this._appPath + 'mojits/test_mojit_03'
+                                path: root +'/'+ 'mojits/test_mojit_03'
                             },
                             {
                                 name: 'test_mojit_04',
-                                path: this._appPath + 'mojits/test_mojit_04'
+                                path: root +'/'+ 'mojits/test_mojit_04'
                             },
                             {
                                 name: 'test_mojit_05',
-                                path: this._appPath + 'mojits/test_mojit_05'
+                                path: root +'/'+ 'mojits/test_mojit_05'
                             },
                             {
                                 name: 'test_mojit_06',
-                                path: this._appPath + 'mojits/test_mojit_06'
+                                path: root +'/'+ 'mojits/test_mojit_06'
                             },
                             {
                                 name: 'test_mojit_07',
-                                path: this._appPath + 'mojits/test_mojit_07'
+                                path: root +'/'+ 'mojits/test_mojit_07'
                             }
             ];
             
@@ -68,15 +75,11 @@ suite.add( new YUITest.TestCase({
                 self = this;
 
 			this.shaker.shakeMojit(mojitName,mojitPath,function(data){
-                //self.log(data);
-				self.resume(function(){
-					Assert.isNotUndefined(data[this.defaultAction].meta.dimensions.common);
-                    Assert.isTrue(data[this.defaultAction].meta.dimensions.common.files.length === 1);
-                    Assert.isTrue(libpath.basename(data[this.defaultAction].meta.dimensions.common.files[0]) == 'common.css');
-				});
+					Assert.isNotUndefined(data[self.defaultAction].meta.dimensions.common);
+                    Assert.isTrue(data[self.defaultAction].meta.dimensions.common.files.length === 1);
+                    Assert.isTrue(libpath.basename(data[self.defaultAction].meta.dimensions.common.files[0]) == 'common.css');
 			});
-			this.wait(1000);
-        },
+        },/*
         test_mojit_only_action_dimension : function(){
             var mojitName  = this._mojits[2].name,
                 mojitPath  = this._mojits[2].path,
@@ -137,7 +140,6 @@ suite.add( new YUITest.TestCase({
             });
             this.wait(1000);
         },
-
         test_app_shaker: function(){
             var self = this;
             this.shaker.shakeApp('app', './app1/',function(data){
@@ -201,7 +203,7 @@ suite.add( new YUITest.TestCase({
                 });
             });
             this.wait(1000);
-        },
+        },*/
         test_todo_test: function(){
             Assert.isTrue(true);
         }

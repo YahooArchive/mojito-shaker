@@ -27,22 +27,7 @@ YUI.add('secondary', function(Y, NAME) {
          *        to the Mojito API.
          */
         index: function(ac) {
-            var dim = ac.params.getFromUrl();
-            
-            ac.assets.addCss('/static/' + NAME + '/assets/common/' + NAME + '.css');
-            
-            dim.device && ac.assets.addCss(this.cssPath('device',   dim.device));
-            dim.region && ac.assets.addCss(this.cssPath('region', dim.region));
-            dim.skin   && ac.assets.addCss(this.cssPath('skin',   dim.skin));
-
-            ac.done();
-        },
-        
-        cssPath: function (dim, val) {
-            val || (val = dim);
-            
-            return '/static/' + NAME + '/assets/' + dim + '/' + val + '/' + 
-                NAME + '-' + val + '.css';
+            ac.done({'title': 'secondary'});
         }
 
     };

@@ -25,7 +25,7 @@ ShakerMiddleware.prototype = {
             if (!req.context) {
                 req.context = {};
             }
-            req.context.shaker_data = data;
+            //req.context.shaker_data = data;
             next();
         };
     }

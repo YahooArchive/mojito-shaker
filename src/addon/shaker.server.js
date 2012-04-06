@@ -1,6 +1,7 @@
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
     var libfs = require('fs'),libpath = require('path');
 
+
     function filterAssets(appConfig,list){
             var app = appConfig,
                 regularExp = '/' + app.prefix +'/([^/]+)/.*',
@@ -28,15 +29,40 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         this._ac = ac;// the future action context of the mojit (not attached yet if mojit created dynamically)
         this._adapter = adapter;// where the functions done and error live before attach them to the ac.
         this._command = command;//all the configuration for the mojit
-        this._init(ac);
+        this._init(ac,adapter);
     }
 
     ShakerAddon.prototype = {
         namespace: 'shaker',
 
-        _init:function(ac){
+        _init:function(ac,adapter){
+            var store = adapter.req.app.store;
+
             this._app = this._setAppConfig(ac);
-            this._meta = ac.context.shaker_data;
+            this._meta = YUI._mojito._cache.shaker.meta;
+        },
+        _hookDoneMethod: function(obj){
+        var adapter = obj,
+            orig = adapter.done,
+            self = this;
+        adapter.done = function(){
+            console.log('DONE');
+            orig.apply(adapter,arguments);
+      };
+    },
+        _initShaker: function(store,callback){
+            var Shaker = require(__dirname +'/../../src/lib/shaker').Shaker,
+                self = this,
+                wait = true;
+
+            console.log('INIT');
+            new Shaker(store).run(function(metadata, files) {
+                store._mergeRecursive(store._staticURLs, files);
+                self._meta = YUI._mojito._cache.shaker = metadata;
+                wait = false;
+            });
+
+            while(wait){}
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};
@@ -134,8 +160,11 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         shakeAll: function(meta){
             var ac = this._ac,
-                assets = ac.assets.getAssets(),
-                topjs = assets.top && assets.top.js || [],
+                assets = ac.assets.getAssets();
+
+            assets.top = assets.top || [];
+
+            var topjs = assets.top.js || [],
                 js = topjs.concat(assets.bottom && assets.bottom.js || []),
                 groups = filterAssets(this._app,js),
                 loadedMojits = {},rollupsMojits = [],rollupsApp,

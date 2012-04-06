@@ -1,35 +1,18 @@
 [{
     "settings": ["master"],
-    
-    "middleware": [
-        "mojito-shaker",
-        "mojito-handler-static",
-        "mojito-parser-body",
-        "mojito-parser-cookies",
-        "mojito-contextualizer",
-        "mojito-handler-tunnel",
-        "mojito-router",
-        "mojito-handler-dispatcher"
-    ],
 
+    "shaker":{
+        "writemeta": true
+    },
+    
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
             "config": {
-                "deploy": false,
+                "deploy": true,
                 "title": "Shaker Demo",
                 "child": {
                     "type": "master"
-                },
-                "assets": {
-                    "top": {
-                        "css": [
-                            "/static/shakerdemo/assets/common/yui-reset.css",
-                            "/static/shakerdemo/assets/common/yui-fonts.css",
-                            "/static/shakerdemo/assets/common/yui-base.css",
-                            "/static/shakerdemo/assets/common/utils.css"
-                        ]
-                    }
                 }
             }
         }
@@ -40,7 +23,8 @@
 
     "shaker": {
         "deploy": true,
-        "assets": "compiled/"
+        "assets": "compiled/",
+        "writemeta": true
     }
 }
 ]

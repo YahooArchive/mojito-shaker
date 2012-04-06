@@ -32,8 +32,7 @@ var DIMENSIONS = {
          *        to the Mojito API.
          */
         index: function(ac) {
-            var dims = ac.params.getFromUrl(),
-                self = this,
+            var self = this;
             
                 config = {
                     view: 'index',
@@ -49,43 +48,9 @@ var DIMENSIONS = {
                     }
                 };
                 
-            ac.assets.addCss('/static/' + NAME + '/assets/common/' + NAME + '.css');
-                
-            dims.device && ac.assets.addCss(this.cssPath('device',   dims.device));
-            // dims.region && ac.assets.addCss(this.cssPath('region', dims.region));
-            dims.skin   && ac.assets.addCss(this.cssPath('skin',   dims.skin));
-
             ac.composite.execute(config, function (data, meta) {
-                data.buttons = self.createButtons(ac, dims);
                 ac.done(data, meta);
             });
-        },
-        
-        cssPath: function (dim, val) {
-            return '/static/' + NAME + '/assets/' + dim + '/' + val + '/' +
-                NAME + '-' + val + '.css';
-        },
-        
-        createButtons: function (ac, dims) {
-            var buttons = [],
-                className,
-                label,
-                url;
-            
-            Y.each(Y.Object.keys(DIMENSIONS), function (dim) {
-                var params = Y.merge({}, dims);
-                
-                className = 'nav nav-' + dim + (dims[dim] ? ' active' : '');
-                params[dim] ? delete params[dim] : params[dim] = DIMENSIONS[dim];
-                
-                url = ac.url.make('htmlframe', 'index', null, 'GET', params);
-                
-                label = dim.substring(0,1).toUpperCase() + dim.substring(1);
-                
-                buttons.push('<a href="'+url+'" class="'+className+'">'+label+'</a>');
-            });
-            
-            return buttons.join('\n');
         }
     };
 

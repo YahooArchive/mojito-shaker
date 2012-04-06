@@ -575,17 +575,11 @@ Shaker.prototype.calculateGeneratedSelectors = function(shaken){
 };
 
 Shaker.prototype.shakeMojit = function(name,path,callback,options){
-    var self = this,
-        resourcesPath = {
-            assets: path+'/assets',
-            autoload: path+'/autoload',
-            binders: path+'/binders'
-        };
+    var self = this;
     //options default
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
-    libfs.readdir('./', function(err, list) {   // FIXME: WTF race condition!
         resources = self._resources[name];
 
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
@@ -609,7 +603,6 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                 };
          }
          callback(shaked);
-    });
 };
 
 Shaker.prototype.shakeApp = function(name,path,callback,options){
@@ -677,7 +670,6 @@ Shaker.prototype.bundleMojits = function(shaken,options){
 // Look through Mojito store static files for mojit assets to roll up
 Shaker.prototype._mojitResources = function() {
     var mojits = this._store.listAllMojits('server').slice(3); // FIXME: Ignore 'DaliProxy','HTMLFrameMojit', 'LazyLoad'
-
     var resources = {};
     mojits.forEach(function(mojit) {
         resources[mojit] = {assets: [], binders: [], autoload: []};
