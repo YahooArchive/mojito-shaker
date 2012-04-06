@@ -95,9 +95,10 @@ Shaker.prototype = {
         this._callback = callback;
         this._rollupCore();
 
-        var shaker = new ShakerCore({store: this._store});
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
-        shaker.shakeAll(this.onShake.bind(this));
+        var shaker = new ShakerCore({store: this._store}),
+            shaken = shaker.shakeAll();
+            this.onShake(shaken);
     },
 
     _rollupCore: function() {

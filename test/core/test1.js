@@ -170,7 +170,6 @@ suite.add( new YUITest.TestCase({
         test_todo_test: function(){
             Assert.isTrue(true);
         }
-        
        }));
 
 YUITest.TestRunner.add(suite);

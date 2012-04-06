@@ -574,7 +574,7 @@ Shaker.prototype.calculateGeneratedSelectors = function(shaken){
    
 };
 
-Shaker.prototype.shakeMojit = function(name,path,callback,options){
+Shaker.prototype.shakeMojit = function(name,path,options){
     var self = this;
     //options default
     options = options || {};
@@ -602,31 +602,23 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
                     }
                 };
          }
-         callback(shaked);
+         return shaked;
 };
 
-Shaker.prototype.shakeApp = function(name,path,callback,options){
+Shaker.prototype.shakeApp = function(name,path,options){
     options = options || {};
     options.skipBinders = true;
-    this.shakeMojit('app',path.slice(0,-1),function(appShaken){
-        callback(appShaken);
-    },options);
+    return this.shakeMojit('app',path.slice(0,-1),options);
+    
 };
 
-Shaker.prototype.shakeAllMojits = function(mojits,callback,options){
+Shaker.prototype.shakeAllMojits = function(mojits,options){
     var self = this,
-        shaken = {},
-        count = 0,
-        wrap = function(mojitName,mojitUrl){
-            self.shakeMojit(mojit,mojits[mojit],function(shaked){
-            shaken[mojitName] = shaked;
-            if(!--count) callback(shaken);
-            },options);
-        };
+        shaken = {};
     for(var mojit in mojits){
-        count++;
-        wrap(mojit,mojits[mojit]);
+        shaken[mojit] = this.shakeMojit(mojit,mojits[mojit],options);
     }
+    return shaken;
 };
 
 
@@ -682,9 +674,8 @@ Shaker.prototype._mojitResources = function() {
         var base = url.substring(this._urlPrefix.length + 1);
         var split = base.split('/', 2); // [mojit_name, subdir]
         var filename = this._store._staticURLs[url];
-
         if (split[0] == this._store._shortRoot) {
-            if (split[1] in resources['app']) {
+            if (split[1] in resources['app']){
                 if (libpath.extname(filename) in EXTS) {
                     resources['app'][split[1]].push(this._store._staticURLs[url]);
                 }
@@ -699,27 +690,20 @@ Shaker.prototype._mojitResources = function() {
             }
         }
     }
-
     return resources;
 };
 
-Shaker.prototype.shakeAll = function(callback,options){
-    this._resources = this._mojitResources();
-
+Shaker.prototype.shakeAll = function(options){
     options = options || {};
     var mojits = this._getMojits(),
-        self = this,
         shaken = {};
 
-    this.shakeAllMojits(mojits,function(mojitShaken){
-        self.shakeApp('app', self._store._root + '/',function(appshaken){
-            shaken.mojits = mojitShaken;
-            shaken.app = appshaken;
-            shaken = self.bundleMojits(shaken);
-            shaken.config = {order: SHAKER_DEFAULT_ORDER};
-            callback(shaken);
-        },options);
-    },options);
+    this._resources = this._mojitResources();
+    shaken.mojits = this.shakeAllMojits(mojits);
+    shaken.app = this.shakeApp('app', this._store._root + '/');
+    shaken = this.bundleMojits(shaken);
+    shaken.config = {order: SHAKER_DEFAULT_ORDER};
+    return shaken;
 };
 
 module.exports.ShakerCore = Shaker;
