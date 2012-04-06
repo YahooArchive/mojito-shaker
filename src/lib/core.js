@@ -579,7 +579,7 @@ Shaker.prototype.shakeMojit = function(name,path,callback,options){
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
-    libfs.readdir('./', function(err, list) {
+    libfs.readdir('./', function(err, list) {   // FIXME: WTF race condition!
         resources = self._resources[name];
 
         var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
