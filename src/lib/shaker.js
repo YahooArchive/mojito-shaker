@@ -16,24 +16,32 @@ Rollup.prototype = {
         this._js.push(file);
     },
 
-    setJS: function(files) {
-        this._js = files;
-    },
-
-    processJS: function(name, callback) {
-        this._process(name, this._js, '.js', callback);
-    },
-
     addCSS: function(file) {
         this._css.push(file);
     },
 
-    setCSS: function(files) {
-        this._css = files;
+    add: function(files) {
+        files.forEach(function(file) {
+            var ext = path.extname(file);
+            if (ext === '.js') {
+                this.addJS(file);
+            }
+            else if (ext === '.css') {
+                this.addCSS(file);
+            }
+        }, this);
+    },
+
+    processJS: function(name, callback) {
+        if (this._js) {
+            this._process(name, this._js, '.js', callback);
+        }
     },
 
     processCSS: function(name, callback) {
-        this._process(name, this._css, '.css', callback);
+        if (this._css) {
+            this._process(name, this._css, '.css', callback);
+        }
     },
 
     _process: function(name, files, ext, callback) {
@@ -50,7 +58,7 @@ Rollup.prototype = {
         queue.task('files', files)
             .task('concat')
             .task(ext === '.js' ? 'jsminify' : 'cssminify')
-            .task('checksumwrite', {name: name + '_{checksum}' + ext})
+            .task('checksumwrite', {name: name})
             .run();
     }
 };
@@ -90,7 +98,7 @@ Shaker.prototype = {
             }
         }, this);
 
-        rollup.processJS(this._config.assets + 'mojito_core', function(filename) {
+        rollup.processJS(this._config.assets + 'mojito_core.js', function(filename) {
             utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
         });
     },
@@ -153,30 +161,47 @@ Shaker.prototype = {
         return flattened;
     },
 
-    compress: function(metadata, callback) {
+    compress: function(metadata, compresscb) {
         var app = path.basename(this._store._root),
-            files = {};
+            static_files = {},
+            self = this;
 
-        async.forEach(this._flattenMetaData(metadata), function(item, done) {
+        // Convert lists of intermingled JS/CSS files into separate JS/CSS rollups.
+        async.forEach(this._flattenMetaData(metadata), function(item, listcb) {
             if (!item.list.length) {
-                done();
+                listcb();
                 return;
             }
             
             var rollup = new Rollup();
-            rollup.setCSS(item.list);
-            var name = this._config.assets + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default');
-            rollup.processCSS(name, function(filename) {
-                var new_filename = this._static_root + app + '/' + filename;
+            rollup.add(item.list);
 
+            var name = self._config.assets + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default') + '_{checksum}';
+
+            // Write rollup files for CSS and JS in parallel
+            async.parallel([
+                function(callback) {    // Write CSS rollup
+                    rollup.processCSS(name + '.css', function(filename) {
+                        var url = self._static_root + app + '/' + filename;
+                        static_files[url] = self._store._root + '/' + filename;
+                        callback(null, url);
+                    });
+                },
+                function(callback) {    // Write JS rollup
+                    rollup.processJS(name + '.js', function(filename) {
+                        var url = self._static_root + app + '/' + filename;
+                        static_files[url] = self._store._root + '/' + filename;
+                        callback(null, url);
+                    });
+                }
+            ], function(err, urls) {
                 item.list.length = 0;
-                item.list.push(new_filename);
-                files[new_filename] = this._store._root + '/' + filename;
-                done();
-            }.bind(this));
-        }.bind(this), function(err) {
-            callback(metadata, files);
-        }.bind(this));
+                item.list.concat(urls);
+                listcb();
+            });
+        }, function(err) {
+            compresscb(metadata, static_files);
+        });
     }
 };
 
