@@ -92,13 +92,18 @@ function Shaker(store) {
 
 Shaker.prototype = {
     run: function(callback) {
-        this._callback = callback;
-        this._rollupCore();
-
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
-        var shaker = new ShakerCore({store: this._store}),
-            shaken = shaker.shakeAll();
-            this.onShake(shaken);
+        var metadata = new ShakerCore({store: this._store}).shakeAll();
+
+        this._rollupCore();
+        
+        if (this._config.deploy) {
+            utils.log('[SHAKER] - Minifying and optimizing rollups...');
+            this._compress(metadata, callback);
+        } else {
+            utils.log('[SHAKER] - Processing assets for development env.');
+            this._rename(metadata, callback);
+        }
     },
 
     _rollupCore: function() {
@@ -121,34 +126,22 @@ Shaker.prototype = {
         });
     },
 
-        
-    onShake: function(metadata) {
-        var callback = this._config.writemeta? this.outputMeta.bind(this) : this._callback;
-
-        if (this._config.deploy) {
-            utils.log('[SHAKER] - Minifying and optimizing rollups...');
-            this.compress(metadata, callback);
-        } else {
-            utils.log('[SHAKER] - Processing assets for development env.');
-            this.rename(metadata, callback);
-        }
-    },
-
-    outputMeta:function(meta,list){
-        var aux = "";
+    _outputMeta:function(meta){
+        var self = this, aux = "";
         aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
         aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
         aux+= 'YUI._mojito._cache.shaker.meta = \n';
         aux += JSON.stringify(meta,null,'\t');
         aux+= '});';
-        
-        mkdirp.sync('autoload/compiled');
-        fs.writeFileSync('autoload/compiled/shaker.server.js',aux);
-        utils.log('[SHAKER] - Writting Addon file with the metadata ');
-        this._callback(meta,list);
+
+        mkdirp.mkdirp(self._store._root + '/autoload/compiled', 0777 & (~process.umask()), function(err, made) {
+            fs.writeFile(self._store._root + 'autoload/compiled/shaker.server.js', aux, function(err) {
+                utils.log('[SHAKER] - Writting Addon file with the metadata ');
+            });
+        });
     },
 
-    rename: function(metadata, callback){
+    _rename: function(metadata, callback){
         var mojit, action, dim, item, list,
             app = path.basename(this._store._root);
 
@@ -195,7 +188,7 @@ Shaker.prototype = {
         return flattened;
     },
 
-    compress: function(metadata, compresscb) {
+    _compress: function(metadata, compresscb) {
         var app = path.basename(this._store._root),
             static_files = {},
             self = this;
@@ -242,6 +235,10 @@ Shaker.prototype = {
                 listcb();
             });
         }, function(err) {
+            if (self._config.writemeta) {
+                self._outputMeta(metadata, static_files);
+            }
+
             compresscb(metadata, static_files);
         });
     }
