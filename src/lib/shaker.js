@@ -33,13 +33,13 @@ Rollup.prototype = {
     },
 
     processJS: function(name, callback) {
-        if (this._js) {
+        if (this._js.length) {
             this._process(name, this._js, '.js', callback);
         }
     },
 
     processCSS: function(name, callback) {
-        if (this._css) {
+        if (this._css.length) {
             this._process(name, this._css, '.css', callback);
         }
     },
