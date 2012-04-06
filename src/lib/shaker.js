@@ -164,6 +164,10 @@ Shaker.prototype = {
                 }
             }
         }
+        
+        if (this._config.writemeta) {
+            this._outputMeta(metadata, {});
+        }
 
         callback(metadata, {});
     },
