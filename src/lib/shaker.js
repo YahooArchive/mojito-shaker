@@ -98,7 +98,7 @@ Shaker.prototype = {
             metadata = this._rename(metadata);
 
             if (this._config.writemeta) {
-                this._writeMeta(metadata, {});
+                this._writeMeta(metadata);
             }
 
             callback(metadata);
