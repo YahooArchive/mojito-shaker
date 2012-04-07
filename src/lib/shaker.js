@@ -95,7 +95,13 @@ Shaker.prototype = {
         if (this._config.deploy) {
             this._compress(metadata, callback);
         } else {
-            this._rename(metadata, callback);
+            metadata = this._rename(metadata);
+
+            if (this._config.writemeta) {
+                this._writeMeta(metadata, {});
+            }
+
+            callback(metadata);
         }
     },
 
@@ -126,12 +132,8 @@ Shaker.prototype = {
                 }
             }
         }
-        
-        if (this._config.writemeta) {
-            this._writeMeta(metadata, {});
-        }
 
-        callback(metadata, {});
+        return metadata;
     },
 
     _createRollups: function(metadata) {
@@ -166,7 +168,6 @@ Shaker.prototype = {
 
     _compress: function(metadata, compresscb) {
         var app = path.basename(this._store._root),
-            static_files = {},
             self = this;
 
         utils.log('[SHAKER] - Minifying and optimizing rollups...');
@@ -188,10 +189,10 @@ Shaker.prototype = {
             });
         }, function(err) {
             if (self._config.writemeta) {
-                self._writeMeta(metadata, static_files);
+                self._writeMeta(metadata);
             }
 
-            compresscb(metadata, static_files);
+            compresscb(metadata);
         });
     },
 
