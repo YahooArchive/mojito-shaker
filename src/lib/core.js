@@ -209,16 +209,16 @@ Shaker.prototype._matchDefaultDimensions = function(assetspath){
 * @method _mergeShakerConfig
 * @param {string} the name of the mojit
 * @param {string} the path of the mojit (relative to the app level)
-* @param {Object} an object with the resources (assets files)
+* @param {Object} an object with the binder files
 * @private
 */
 
-Shaker.prototype._mergeShakerConfig = function(name,path,resources){
+Shaker.prototype._mergeShakerConfig = function(name,path,binders){
     var shaker_config = this._getMojitShakerConfig(name,path) || {},//get shaker.json
     default_dim = this._matchDefaultDimensions(path + '/assets'),
-    binders = resources.binders, default_config,
+        default_config,
     default_actions = util.simpleClone(SHAKER_DEFAULT_ACTION_CONFIG);//default '*' action
-    for(var i = 0; i< binders.length;i++){
+    for(var i in binders){
         default_actions[libpath.basename(binders[i],'.js')] = {};
     }
     default_config = {dimensions: default_dim, actions: default_actions};
@@ -272,7 +272,7 @@ Shaker.prototype.preCalcModule = function(filePath) {
 Shaker.prototype.precalculateAutoloads = function(autoloads){
     autoloads = autoloads || [];
     var appPath = process.cwd() + '/',modules = {};
-    for(var i = 0; i<autoloads.length; i++){
+    for(var i in autoloads){
         var m = this.preCalcModule(autoloads[i],modules);
         modules[m.name] = m;
     }
@@ -290,8 +290,13 @@ Shaker.prototype.precalculateAutoloads = function(autoloads){
 */
 
 Shaker.prototype.filterResources = function(patterns,resources,mojitPath){
+    var filenames = [];
+    for (var i in resources) {
+        filenames.push(resources[i]);
+    }
+
     var assetspath = mojitPath +'/assets/',
-        included = this.includeResources(patterns.include,resources, assetspath),
+        included = this.includeResources(patterns.include,filenames, assetspath),
         afterExclude = this.excludeResources(patterns.exclude,included,assetspath);
 
    return afterExclude;
@@ -321,6 +326,7 @@ Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,
 Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources,mojitPath){
     var dimensions = shaker_cfg.dimensions;
     dimensions.action = dimensions.action || {};
+
     for(var action in shaker_cfg.actions){
         dimensions.action[action] = {include: shaker_cfg.actions[action].include || [path+'/assets/action/'+action]  };
     }
@@ -580,29 +586,29 @@ Shaker.prototype.shakeMojit = function(name,path,options){
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
-        resources = self._resources[name];
+    resources = self._resources[name];
 
-        var shaker_config = self._mergeShakerConfig(name,path,resources),//we get the final merged shaker config
-            modules = self.precalculateAutoloads(resources.autoload),
-            dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets,path),//files per dimension filtering
-            order = options.order,
-            actions,shaked = {};
-        for(var action in (actions = shaker_config.actions)){
-                binder_dependencies = ((action == '*') || options.skipBinders) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
-                dispatched = self.dispatchOrder(action,order,dimensions),
-                meta = {binder: binder_dependencies,dimensions: dispatched},
-                listFiles = self.shakeAction(action,meta),
-                self._augmentRules(shaker_config,listFiles,order,path);
-                shaked[action] = {
-                    shaken: listFiles,
-                    meta:{
-                        //selectors : selectors,
-                        dimensions: dimensions,
-                        dependencies: binder_dependencies
-                    }
-                };
-         }
-         return shaked;
+    var shaker_config = self._mergeShakerConfig(name,path,resources.binders),//we get the final merged shaker config
+        modules = self.precalculateAutoloads(resources.autoload),
+        dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets,path),//files per dimension filtering
+        order = options.order,
+        actions,shaked = {};
+    for(var action in (actions = shaker_config.actions)){
+            binder_dependencies = ((action == '*') || options.skipBinders) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
+            dispatched = self.dispatchOrder(action,order,dimensions),
+            meta = {binder: binder_dependencies,dimensions: dispatched},
+            listFiles = self.shakeAction(action,meta),
+            self._augmentRules(shaker_config,listFiles,order,path);
+            shaked[action] = {
+                shaken: listFiles,
+                meta:{
+                    //selectors : selectors,
+                    dimensions: dimensions,
+                    dependencies: binder_dependencies
+                }
+            };
+     }
+     return shaked;
 };
 
 Shaker.prototype.shakeApp = function(name,path,options){
@@ -660,13 +666,14 @@ Shaker.prototype.bundleMojits = function(shaken,options){
 };
 
 // Look through Mojito store static files for mojit assets to roll up
+// Files are mapped by URL -> filename
 Shaker.prototype._mojitResources = function() {
     var mojits = this._store.listAllMojits('server').slice(3); // FIXME: Ignore 'DaliProxy','HTMLFrameMojit', 'LazyLoad'
     var resources = {};
     mojits.forEach(function(mojit) {
-        resources[mojit] = {assets: [], binders: [], autoload: []};
+        resources[mojit] = {assets: {}, binders: {}, autoload: {}};
     });
-    resources['app'] = {assets: [], binders: [], autoload: []};
+    resources['app'] = {assets: {}, binders: {}, autoload: {}};
 
     var EXTS = {'.js': 1, '.css': 1};
 
@@ -677,7 +684,7 @@ Shaker.prototype._mojitResources = function() {
         if (split[0] == this._store._shortRoot) {
             if (split[1] in resources['app']){
                 if (libpath.extname(filename) in EXTS) {
-                    resources['app'][split[1]].push(this._store._staticURLs[url]);
+                    resources['app'][split[1]][url] = this._store._staticURLs[url];
                 }
             }
         }
@@ -685,7 +692,7 @@ Shaker.prototype._mojitResources = function() {
         if (split[0] in resources) { // mojit
             if (split[1] in resources[split[0]]) {  // asset type
                 if (libpath.extname(filename) in EXTS) {
-                    resources[split[0]][split[1]].push(this._store._staticURLs[url]);
+                    resources[split[0]][split[1]][url] = this._store._staticURLs[url];
                 }
             }
         }
