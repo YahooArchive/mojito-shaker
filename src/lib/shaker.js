@@ -7,51 +7,25 @@ var path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp');
 
-function Rollup() {
+function Rollup(name, files) {
+    this._name = name;
+    this._files = files;
     this._js = [];
     this._css = [];
+
+    this._files.forEach(function(file) {
+        var ext = path.extname(file);
+        if (ext === '.js') {
+            this._js.push(file);
+        }
+        else if (ext === '.css') {
+            this._css.push(file);
+        }
+    }, this);
 }
 
 Rollup.prototype = {
-    addJS: function(file) {
-        this._js.push(file);
-    },
-
-    addCSS: function(file) {
-        this._css.push(file);
-    },
-
-    add: function(files) {
-        files.forEach(function(file) {
-            var ext = path.extname(file);
-            if (ext === '.js') {
-                this.addJS(file);
-            }
-            else if (ext === '.css') {
-                this.addCSS(file);
-            }
-        }, this);
-    },
-
-    processJS: function(name, callback) {
-        if (this._js.length) {
-            this._process(name, this._js, '.js', callback);
-        }
-        else {
-            callback(true);
-        }
-    },
-
-    processCSS: function(name, callback) {
-        if (this._css.length) {
-            this._process(name, this._css, '.css', callback);
-        }
-        else {
-            callback(true);
-        }
-    },
-
-    _process: function(name, files, ext, callback) {
+    _writeRollup: function(name, files, minify, callback) {
         var registry = new Registry();
         registry.load(__dirname + '/tasks/checksumwrite.js');
         var queue = new Queue('MojitoRollup', {registry: registry});
@@ -62,18 +36,41 @@ Rollup.prototype = {
             }
         });
         /*queue.on('queueComplete', function(data) {
-            callback(queue);
         });
         queue.on('queueFailed', function(data) {
-            callback(queue);
-        });
-        this.emit('queueFailed',*/
+        });*/
 
         queue.task('files', files)
             .task('concat')
-            .task(ext === '.js' ? 'jsminify' : 'cssminify')
+            .task(minify)
             .task('checksumwrite', {name: name})
             .run();
+    },
+
+    // Write rollup files for CSS and JS in parallel
+    rollup: function(rollupcb) {
+        var self = this,
+            tasks = [];
+
+        if (this._css.length) {
+            tasks.push(function(callback) {
+                self._writeRollup(self._name + '.css', self._css, 'cssminify', function(err, filename) {
+                    callback(null, filename);
+                });
+            });
+        }
+
+        if (this._js.length) {
+            tasks.push(function(callback) {
+                self._writeRollup(self._name + '.js', self._js, 'jsminify', function(err, filename) {
+                    callback(null, filename);
+                });
+            });
+        }
+
+        async.parallel(tasks, function(err, filenames) {
+            rollupcb(err, filenames);
+        });
     }
 };
 
@@ -137,26 +134,34 @@ Shaker.prototype = {
         callback(metadata, {});
     },
 
-    _flattenMetaData: function(metadata) {
-        var item, mojit, action, dim, flattened = [];
+    _createRollups: function(metadata) {
+        var mojit, action, dim, name, list, rollups = [];
 
-        flattened.push({type: 'core', name: 'core', action: '', dim: '', list: metadata.core});
+        rollups.push(new Rollup(this._config.assets + 'mojito_core', metadata.core));
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
-                    flattened.push({type: 'mojit', name: mojit, action: action, dim: dim, list: metadata.mojits[mojit][action].shaken[dim]});
+                    name = this._config.assets + mojit + '_' + action.replace('*', 'default') + '_' + dim.replace('*', 'default') + '_{checksum}';
+                    list = metadata.mojits[mojit][action].shaken[dim];
+                    if (list.length) {
+                        rollups.push(new Rollup(name, list));
+                    }
                 }
             }
         }
 
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
-                flattened.push({type: 'app', name: 'app', action: action, dim: dim, list: metadata.app[action].shaken[dim]});
+                name = this._config.assets + 'app_' + action.replace('*', 'default') + '_' + dim.replace('*', 'default') + '_{checksum}';
+                list = metadata.app[action].shaken[dim];
+                if (list.length) {
+                    rollups.push(new Rollup(name, list));
+                }
             }
         }
 
-        return flattened;
+        return rollups;
     },
 
     _compress: function(metadata, compresscb) {
@@ -166,51 +171,20 @@ Shaker.prototype = {
 
         utils.log('[SHAKER] - Minifying and optimizing rollups...');
 
-        // Convert lists of intermingled JS/CSS files into separate JS/CSS rollups.
-        async.forEach(this._flattenMetaData(metadata), function(item, listcb) {
-            if (!item.list.length) {
-                listcb();
-                return;
-            }
-            
-            var rollup = new Rollup();
-            rollup.add(item.list);
+        // Process rollup assets
+        async.forEach(this._createRollups(metadata), function(rollup, processedcb) {
+            rollup.rollup(function(err, filenames) {
+                var files = rollup._files;
+                var urls = filenames.map(function(filename) {
+                    return self._static_root + app + '/' + filename;
+                });
 
-            var name = self._config.assets + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default') + '_{checksum}';
+                // Modify the metadata list reference
+                files.length = 0;
+                // FIXME: files.concat(urls) is not working :(
+                for (var i = 0; i < urls.length; i++) {files.push(urls[i]);}
 
-            var urls = [];
-
-            // Write rollup files for CSS and JS in parallel
-            async.parallel([
-                function(callback) {    // Write CSS rollup
-                    rollup.processCSS(name + '.css', function(err, filename) {
-                        if (err) {
-                            callback(null);
-                            return;
-                        }
-                        var url = self._static_root + app + '/' + filename;
-                        static_files[url] = self._store._root + '/' + filename;
-                        urls.push(url);
-                        callback(null);
-                    });
-                },
-                function(callback) {    // Write JS rollup
-                    rollup.processJS(name + '.js', function(err, filename) {
-                        if (err) {
-                            callback(null);
-                            return;
-                        }
-                        var url = self._static_root + app + '/' + filename;
-                        static_files[url] = self._store._root + '/' + filename;
-                        urls.push(url);
-                        callback(null);
-                    });
-                }
-            ], function(err) {
-                item.list.length = 0;
-                // FIXME: item.list.concat(urls) is not working :(
-                for (var i = 0; i < urls.length; i++) {item.list.push(urls[i]);}
-                listcb();
+                processedcb();
             });
         }, function(err) {
             if (self._config.writemeta) {
