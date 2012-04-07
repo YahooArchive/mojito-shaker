@@ -23,7 +23,7 @@
 
     "shaker": {
         "deploy": true,
-        "assets": "compiled/",
+        "assets": "assets/compiled/",
         "writemeta": true
     }
 }

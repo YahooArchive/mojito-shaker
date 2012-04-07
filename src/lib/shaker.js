@@ -126,21 +126,6 @@ Shaker.prototype = {
         });
     },
 
-    _outputMeta:function(meta){
-        var self = this, aux = "";
-        aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
-        aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
-        aux+= 'YUI._mojito._cache.shaker.meta = \n';
-        aux += JSON.stringify(meta,null,'\t');
-        aux+= '});';
-
-        mkdirp.mkdirp(self._store._root + '/autoload/compiled', 0777 & (~process.umask()), function(err, made) {
-            fs.writeFile(self._store._root + '/autoload/compiled/shaker.server.js', aux, function(err) {
-                utils.log('[SHAKER] - Writting Addon file with the metadata ');
-            });
-        });
-    },
-
     _rename: function(metadata, callback){
         var mojit, action, dim, item, list,
             app = path.basename(this._store._root);
@@ -166,7 +151,7 @@ Shaker.prototype = {
         }
         
         if (this._config.writemeta) {
-            this._outputMeta(metadata, {});
+            this._writeMeta(metadata, {});
         }
 
         callback(metadata, {});
@@ -209,44 +194,63 @@ Shaker.prototype = {
 
             var name = self._config.assets + item.name + '_' + item.action.replace('*', 'default') + '_' + item.dim.replace('*', 'default') + '_{checksum}';
 
+            var urls = [];
+
             // Write rollup files for CSS and JS in parallel
             async.parallel([
                 function(callback) {    // Write CSS rollup
                     rollup.processCSS(name + '.css', function(err, filename) {
                         if (err) {
-                            callback(true);
+                            callback(null);
                             return;
                         }
                         var url = self._static_root + app + '/' + filename;
                         static_files[url] = self._store._root + '/' + filename;
-                        callback(null, url);
+                        urls.push(url);
+                        callback(null);
                     });
                 },
                 function(callback) {    // Write JS rollup
                     rollup.processJS(name + '.js', function(err, filename) {
                         if (err) {
-                            callback(true);
+                            callback(null);
                             return;
                         }
                         var url = self._static_root + app + '/' + filename;
                         static_files[url] = self._store._root + '/' + filename;
-                        callback(null, url);
+                        urls.push(url);
+                        callback(null);
                     });
                 }
-            ], function(err, urls) {
+            ], function(err) {
                 item.list.length = 0;
-                item.list.concat(urls);
+                // FIXME: item.list.concat(urls) is not working :(
+                for (var i = 0; i < urls.length; i++) {item.list.push(urls[i]);}
                 listcb();
             });
         }, function(err) {
             if (self._config.writemeta) {
-                self._outputMeta(metadata, static_files);
+                self._writeMeta(metadata, static_files);
             }
-
+            
             compresscb(metadata, static_files);
         });
-    }
+    },
 
+    _writeMeta:function(metadata){
+        var self = this, aux = "";
+        aux+= 'YUI.add("shaker/metaMojits", function(Y, NAME) { \n';
+        aux+= 'YUI.namespace("_mojito._cache.shaker");\n';
+        aux+= 'YUI._mojito._cache.shaker.meta = \n';
+        aux += JSON.stringify(metadata,null,'\t');
+        aux+= '});';
+
+        mkdirp.mkdirp(self._store._root + '/autoload/compiled', 0777 & (~process.umask()), function(err, made) {
+            fs.writeFile(self._store._root + '/autoload/compiled/shaker.server.js', aux, function(err) {
+                utils.log('[SHAKER] - Writting Addon file with the metadata ');
+            });
+        });
+    }
 };
 
 exports.Shaker = Shaker;
