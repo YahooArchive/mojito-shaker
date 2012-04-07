@@ -95,40 +95,20 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
-        this._rollupCore();
-
         if (this._config.deploy) {
-            utils.log('[SHAKER] - Minifying and optimizing rollups...');
             this._compress(metadata, callback);
         } else {
-            utils.log('[SHAKER] - Processing assets for development env.');
             this._rename(metadata, callback);
         }
-    },
-
-    _rollupCore: function() {
-        var rollup = new Rollup(),
-            files;
-
-        files = this._store.getRollupsApp('client', {}).srcs;
-
-        files.forEach(function(file) {
-            // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
-            if (this._store._root !== file.substr(0, this._store._root.length)) {
-                rollup.addJS(file);
-            }
-        }, this);
-
-        rollup.processJS(this._config.assets + 'mojito_core.js', function(err, filename) {
-            if (filename) {
-                utils.log('[SHAKER] - Created rollup for mojito-core in: ' + filename);
-            }
-        });
     },
 
     _rename: function(metadata, callback){
         var mojit, action, dim, item, list,
             app = path.basename(this._store._root);
+
+        utils.log('[SHAKER] - Processing assets for development env.');
+
+        // Process core
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
@@ -158,7 +138,9 @@ Shaker.prototype = {
     },
 
     _flattenMetaData: function(metadata) {
-        var mojit, action, dim, flattened = [];
+        var item, mojit, action, dim, flattened = [];
+
+        flattened.push({type: 'core', name: 'core', action: '', dim: '', list: metadata.core});
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
@@ -181,6 +163,8 @@ Shaker.prototype = {
         var app = path.basename(this._store._root),
             static_files = {},
             self = this;
+
+        utils.log('[SHAKER] - Minifying and optimizing rollups...');
 
         // Convert lists of intermingled JS/CSS files into separate JS/CSS rollups.
         async.forEach(this._flattenMetaData(metadata), function(item, listcb) {
@@ -232,7 +216,7 @@ Shaker.prototype = {
             if (self._config.writemeta) {
                 self._writeMeta(metadata, static_files);
             }
-            
+
             compresscb(metadata, static_files);
         });
     },
