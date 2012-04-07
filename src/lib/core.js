@@ -270,8 +270,8 @@ Shaker.prototype.preCalcModule = function(filePath) {
 * @protected
 */
 Shaker.prototype.precalculateAutoloads = function(autoloads){
-    autoloads = autoloads || [];
-    var appPath = process.cwd() + '/',modules = {};
+    autoloads = autoloads || {};
+    var modules = {};
     for(var i in autoloads){
         var m = this.preCalcModule(autoloads[i],modules);
         modules[m.name] = m;
