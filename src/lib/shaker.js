@@ -95,6 +95,7 @@ Shaker.prototype = {
         if (this._config.deploy) {
             this._compress(metadata, callback);
         } else {
+            // TODO: rename should be unnecessary if core keeps mapping of urls -> files
             metadata = this._rename(metadata);
 
             if (this._config.writemeta) {
