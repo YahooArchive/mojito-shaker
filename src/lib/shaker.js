@@ -206,11 +206,9 @@ Shaker.prototype = {
         aux += JSON.stringify(metadata,null,'\t');
         aux+= '});';
 
-        mkdirp.mkdirp(self._store._root + '/autoload/compiled', 0777 & (~process.umask()), function(err, made) {
-            fs.writeFile(self._store._root + '/autoload/compiled/shaker.server.js', aux, function(err) {
-                utils.log('[SHAKER] - Writting Addon file with the metadata ');
-            });
-        });
+        utils.log('[SHAKER] - Writting Addon file with the metadata ');
+        mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
+        fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
     }
 };
 

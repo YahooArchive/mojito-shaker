@@ -6,6 +6,7 @@
 
 var Shaker = require('./lib/shaker').Shaker,
     utils = require('mojito/lib/management/utils'),
+    start = require('mojito/lib/management/commands/start'),
     ResourceStore = require('mojito/lib/store.server');
 
 /**
@@ -71,5 +72,6 @@ exports.run = function(params, options, callback) {
     store.preload(context);
 
     new Shaker(store).run(function(metadata) {
+        start.run(params,options,callback);
     });
 };
