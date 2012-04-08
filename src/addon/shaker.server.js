@@ -34,35 +34,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
     ShakerAddon.prototype = {
         namespace: 'shaker',
-
         _init:function(ac,adapter){
-            var store = adapter.req.app.store;
-
-            this._app = this._setAppConfig(ac);
+            this._appConfig = this._setAppConfig(ac);
             this._meta = YUI._mojito._cache.shaker.meta;
-        },
-        _hookDoneMethod: function(obj){
-        var adapter = obj,
-            orig = adapter.done,
-            self = this;
-        adapter.done = function(){
-            console.log('DONE');
-            orig.apply(adapter,arguments);
-      };
-    },
-        _initShaker: function(store,callback){
-            var Shaker = require(__dirname +'/../../src/lib/shaker').Shaker,
-                self = this,
-                wait = true;
-
-            console.log('INIT');
-            new Shaker(store).run(function(metadata, files) {
-                store._mergeRecursive(store._staticURLs, files);
-                self._meta = YUI._mojito._cache.shaker = metadata;
-                wait = false;
-            });
-
-            while(wait){}
+            this._deploy = ac.config.get('deploy') === true;
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};
@@ -158,48 +133,61 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 return this._getAppRollup(selector,action);
 
         },
-        shakeAll: function(meta){
-            var ac = this._ac,
-                assets = ac.assets.getAssets();
-
-            assets.top = assets.top || [];
-
-            var topjs = assets.top.js || [],
-                js = topjs.concat(assets.bottom && assets.bottom.js || []),
-                groups = filterAssets(this._app,js),
-                loadedMojits = {},rollupsMojits = [],rollupsApp,
-                diff = function(loaded,hc){
-                    for(var i=0; i<hc.length;i++){
+        _diffMojits:function(loaded,hc){
+            for(var i=0; i<hc.length;i++){
                         if(loaded[hc[i]]){
                             delete loaded[hc[i]];
                         }
-                    }
-                    return loaded;
-                };
-                
-                //get all mojits
-                for(var m in meta.children){
-                    var mojit = meta.children[m];
-                    loadedMojits[mojit.base || mojit.type] = meta.children[m].action;
                 }
-
-                var app = this._meta.app,
-                    hcMojits = (app[ac.action] || app['*']).mojits || [];
-                    
-                    loadedMojits = diff(loadedMojits,hcMojits);
-
-                if(loadedMojits){
-                    rollupsMojits = this._shakeMojits(loadedMojits,groups.mojits);
-                }
-
-                rollupsApp = this._shakeApp(groups.app);
-
-                var all = rollupsApp.concat(rollupsMojits);
-                assets.top.css = all;
-
+            return loaded;
         },
-        shakeList: function(assets,type,location){
+        shakeAll: function(meta){
+            var ac = this._ac,
+                assets = ac.assets.getAssets(),
+                appMeta = this._meta.app,
+                mojitoCore = this._meta.core,
+                bundleMojits = (appMeta[ac.action] || appMeta['*']).mojits || [],
+                rolledCSS, rolledJS;
 
+            assets.top = assets.top || [];
+            assets.bottom = assets.bottom || [];
+
+            //get all resources
+            var topjs = assets.top.js || [],
+                bottomjs = assets.bottom.js || [],
+                js = topjs.concat(bottomjs),
+                topcss = assets.top.css || [],
+                bottomcss = assets.bottom.css | [],
+                css = topcss.concat(bottomcss),
+
+                groupsJS = filterAssets(this._appConfig,js),
+                loadedMojits = {},
+                rollupsMojits = [],
+                rollupsApp = [],
+                noBundledMojits,
+                allRollups;
+
+            //get all mojits and map the action
+            for(var m in meta.children){
+                var mojit = meta.children[m];
+                loadedMojits[mojit.base || mojit.type] = meta.children[m].action;
+            }
+            //we just need to rollup the low-coverage Mojits
+            noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
+
+            if(noBundledMojits){
+                rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
+            }
+            rollupsApp = this._shakeApp(groupsJS.app);
+            allRollups = rollupsApp.concat(rollupsMojits);
+
+            rolledCSS = allRollups.filter(function(i){return libpath.extname(i) === '.css';});
+            rolledJS = allRollups.filter(function(i){return libpath.extname(i) === '.js';});
+            //if deploy to true add the mojitoCore
+            rolledJS = this._deploy ? mojitoCore.concat(rolledJS) : rolledJS;
+
+            assets.bottom.js = rolledJS;// Override. ToDo: We will need to check the dependencies at some point
+            assets.top.css = (assets.top.css && assets.top.css.concat(rolledCSS)) || rolledCSS;
         }
     };
 
