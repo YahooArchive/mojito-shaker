@@ -127,9 +127,10 @@ Shaker.prototype = {
 
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
-                for (item in metadata.app[action].shaken[dim]) {
-                    list = metadata.app[action].shaken[dim];
-                    list[item] = list[item].replace(this._store._root, this._static_root + app);
+                for (item in (list = metadata.app[action].shaken[dim])) {
+                    var aux = list[item].replace(this._store._root, this._static_root + app);
+                    aux = aux.replace(this._static_root+app+'/mojits/',this._static_root);
+                    list[item] = aux;
                 }
             }
         }

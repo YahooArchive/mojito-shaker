@@ -37,7 +37,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         _init:function(ac,adapter){
             this._appConfig = this._setAppConfig(ac);
             this._meta = YUI._mojito._cache.shaker.meta;
-            this._deploy = ac.config.get('deploy') === true;
+            this._deployClient = ac.config.get('deploy') === true;
+            this._shakerDeploy = ac.app.config.shaker && ac.app.config.shaker.deploy;
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};
@@ -173,7 +174,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 loadedMojits[mojit.base || mojit.type] = meta.children[m].action;
             }
             //we just need to rollup the low-coverage Mojits
-            noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
+            noBundledMojits = this._diffMojits(loadedMojits, this._shakerDeploy ? bundleMojits: []);
 
             if(noBundledMojits){
                 rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
@@ -184,9 +185,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             rolledCSS = allRollups.filter(function(i){return libpath.extname(i) === '.css';});
             rolledJS = allRollups.filter(function(i){return libpath.extname(i) === '.js';});
             //if deploy to true add the mojitoCore
-            rolledJS = this._deploy ? mojitoCore.concat(rolledJS) : rolledJS;
+            rolledJS = this._deployClient ? mojitoCore.concat(rolledJS) : rolledJS;
 
-            assets.bottom.js = rolledJS;// Override. ToDo: We will need to check the dependencies at some point
+            // Override. ToDo: We will need to check the dependencies at some point
+            assets.bottom.js = this._shakerDeploy ? rolledJS : assets.bottom.js;
             assets.top.css = (assets.top.css && assets.top.css.concat(rolledCSS)) || rolledCSS;
         }
     };

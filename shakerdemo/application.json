@@ -2,7 +2,8 @@
     "settings": ["master"],
 
     "shaker":{
-        "writemeta": true
+        "writemeta": true,
+        "deploy" : false
     },
     
     "specs": {
