@@ -27,11 +27,11 @@ function Rollup(name, files) {
 Rollup.prototype = {
     _writeRollup: function(name, files, minify, callback) {
         var registry = new Registry();
-        registry.load(__dirname + '/tasks/checksumwrite.js');
+        registry.load(__dirname + '/tasks/local.js');
         var queue = new Queue('MojitoRollup', {registry: registry});
 
         queue.on('taskComplete', function(data) {
-            if (data.task.type === 'checksumwrite') {
+            if (data.task.type === 'local') {
                 callback(null, data.result);
             }
         });
@@ -43,7 +43,7 @@ Rollup.prototype = {
         queue.task('files', files)
             .task('concat')
             .task(minify)
-            .task('checksumwrite', {name: name})
+            .task('local', {name: name})
             .run();
     },
 
