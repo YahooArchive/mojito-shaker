@@ -627,7 +627,18 @@ Shaker.prototype.shakeAllMojits = function(mojits,options){
     return shaken;
 };
 
+Shaker.prototype._cleanUp = function(shaken){
+    var mojit, mojits,action,actions;
+    for(mojit in (mojits = shaken.mojits)){
+        for(action in (actions = mojits[mojit])){
+            delete actions[action].meta.dimensions;
+        }
+    }
+    for(action in (actions = shaken.app)){
+        delete actions[action].meta.dimensions;
+    }
 
+};
 Shaker.prototype.bundleMojits = function(shaken,options){
     options = options || {};
     var app = this._getMojitShakerConfig('app',this._store._root),
@@ -635,6 +646,7 @@ Shaker.prototype.bundleMojits = function(shaken,options){
     options.order = options.order || SHAKER_DEFAULT_ORDER;
 
     if(!app) return shaken;
+    //console.log(JSON.stringify(shaken,null,'\t'));
 
     for(var action in app.actions){
         var loadedMojits = app.actions[action].mojits,
@@ -642,6 +654,7 @@ Shaker.prototype.bundleMojits = function(shaken,options){
             appDim = shaken.app[action].meta.dimensions,
             originalAppShake = util.simpleClone(appShake),
             appDeps = shaken.app[action].meta.dependencies;
+            shaken.app[action].mojits = [];
 
         for(var i in loadedMojits){
             var mojit = loadedMojits[i],
@@ -651,17 +664,19 @@ Shaker.prototype.bundleMojits = function(shaken,options){
                 mojitShaken = shaken.mojits[mojitName][mojitAction],
                 mojitDim = mojitShaken.meta.dimensions;
                 mojitDim.action[action] = mojitDim.action[mojitAction] || {files:[]};
+                shaken.app[action].mojits.push(parts[0]);
 
             appDim = this.mergeConcatDimensions(appDim,mojitDim);
             appDeps = appDeps.concat(mojitShaken.meta.dependencies);
-
         }
+
         var dispatched = this.dispatchOrder(action,options.order,appDim),
             meta = {binder: appDeps,dimensions: dispatched},
             listFiles = this.shakeAction(action,meta);
         shaken.app[action].shaken = listFiles;
-        shaken.app[action].mojits = loadedMojits;
+        shaken.app[action].meta.dependencies = appDeps;
     }
+    this._cleanUp(shaken);
     return shaken;
 };
 

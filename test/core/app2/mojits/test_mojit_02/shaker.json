@@ -1,0 +1,7 @@
+{
+	"actions":{
+		"index":{
+			"mojits":["test_mojit_01","test_mojit_02"]
+			}
+	}
+}

@@ -1,7 +1,7 @@
 {
 	"actions":{
 		"index":{
-			"mojits":["master","primary","secondary"]
+			"mojits":["master","primary.index","secondary.index"]
 			},
 		"search":{}
 	}

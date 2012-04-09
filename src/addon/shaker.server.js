@@ -38,7 +38,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             this._appConfig = this._setAppConfig(ac);
             this._meta = YUI._mojito._cache.shaker.meta;
             this._deployClient = ac.config.get('deploy') === true;
-            this._shakerDeploy = ac.app.config.shaker && ac.app.config.shaker.deploy;
+            this._shakerDeploy = ac.app.config.shaker && true;
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};
@@ -179,10 +179,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
             //we just need to rollup the low-coverage Mojits
             noBundledMojits = this._diffMojits(loadedMojits, this._shakerDeploy ? bundleMojits: []);
-
-            if(noBundledMojits){
-                rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
-            }
+            rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
+            
             rollupsApp = this._shakeApp(groupsJS.app);
             allRollups = rollupsApp.concat(rollupsMojits);
 
