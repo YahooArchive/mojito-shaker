@@ -65,7 +65,7 @@ function localTask(options, status, logger) {
                 status.emit('failed', 'local', 'error writing destination file: ' + err);
             } else {
                 self._state.set(State.TYPES.FILES, [ filename ]);
-                status.emit('complete', 'local', filename);
+                status.emit('complete', 'local', options.config.root + filename);
             }
         });
     }

@@ -112,9 +112,17 @@ function Shaker(store) {
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
     this._config.compile = this._config.compile || false;
-    this._config.assets = this._config.assets || 'assets/compiled/';
+    this._config.assets = 'assets/compiled/';
     this._config.writemeta = this._config.writemeta || true;
     this._config.push = this._config.push || {type: 'local'};
+
+    if (this._config.push.type === 'local') {
+        var app = path.basename(this._store._root);
+
+        this._config.push.config = this._config.push.config || {
+            root: this._static_root + app + '/'
+        };
+    }
 }
 
 Shaker.prototype = {
@@ -199,26 +207,23 @@ Shaker.prototype = {
     },
 
     _compress: function(metadata, compresscb) {
-        var app = path.basename(this._store._root),
-            self = this;
+        var self = this;
 
         utils.log('[SHAKER] - Minifying and optimizing rollups...');
 
         // Process rollup assets
-        async.forEach(this._createRollups(metadata), function(rollup, processedcb) {
-            rollup.rollup({push: self._config.push}, function(err, filenames) {
-                var files = rollup._files;
-                var urls = filenames.map(function(filename) {
-                    return self._static_root + app + '/' + filename;
+        async.forEachSeries(this._createRollups(metadata), function(rollup, processedcb) {
+            setTimeout(function() {
+                rollup.rollup({push: self._config.push}, function(err, urls) {
+                    console.log(urls);
+                    var files = rollup._files;
+                    // Modify the metadata list reference
+                    files.length = 0;
+                    // FIXME: files.concat(urls) is not working :(
+                    for (var i = 0; i < urls.length; i++) {files.push(urls[i]);}
+                    processedcb();
                 });
-
-                // Modify the metadata list reference
-                files.length = 0;
-                // FIXME: files.concat(urls) is not working :(
-                for (var i = 0; i < urls.length; i++) {files.push(urls[i]);}
-
-                processedcb();
-            });
+            }, 200);
         }, function(err) {
             if (self._config.writemeta) {
                 self._writeMeta(metadata);

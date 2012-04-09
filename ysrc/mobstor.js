@@ -51,14 +51,23 @@ function mobstorTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        client.storeFile(filename, data, function(err, content) {
-            if (err) {
-                status.emit('failed', 'mobstor', 'error sending file: ' + err);
-            } else {
-                self._state.set(State.TYPES.STRING, data);
-                status.emit('complete', 'mobstor', filename);
-            }
-        });
+        var url = 'http://' + options.config.host + '/' + filename;
+
+        try {
+            client.checkFile(filename, function(error, status, cb) {});
+
+            client.storeFile(filename, data, function(err, content) {
+                if (err) {
+                    status.emit('failed', 'mobstor', 'error sending file: ' + err);
+                } else {
+                    self._state.set(State.TYPES.STRING, data);
+                    status.emit('complete', 'mobstor', url);
+                }
+            });
+        }
+        catch(exception) {
+            status.emit('complete', 'mobstor', url);
+        }
     }
 
     switch (this._state.get().type) {
