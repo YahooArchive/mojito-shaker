@@ -44,7 +44,7 @@ var State = require('buildy').State,
  * @return {undefined}
  * @public
  */
-function checksumwriteTask(options, status, logger) {
+function localTask(options, status, logger) {
     var self = this,
         pathname = path.resolve(path.dirname(options.name)),
         name = options.name,
@@ -62,10 +62,10 @@ function checksumwriteTask(options, status, logger) {
 
         fs.writeFile(filename, data, encoding, function(err) {
             if (err) {
-                status.emit('failed', 'checksumwrite', 'error writing destination file: ' + err);
+                status.emit('failed', 'local', 'error writing destination file: ' + err);
             } else {
                 self._state.set(State.TYPES.FILES, [ filename ]);
-                status.emit('complete', 'checksumwrite', filename);
+                status.emit('complete', 'local', filename);
             }
         });
     }
@@ -95,7 +95,7 @@ function checksumwriteTask(options, status, logger) {
         case State.TYPES.FILES:
             mkdirIfNotExist(pathname, function(err) {
                 if (err) {
-                    status.emit('failed', 'checksumwrite', 'error creating destination directory: ' + err);
+                    status.emit('failed', 'local', 'error creating destination directory: ' + err);
                 } else {
                     writeFile(name, self._state.get().value.join("\n"));
                 }
@@ -105,7 +105,7 @@ function checksumwriteTask(options, status, logger) {
         case State.TYPES.STRING:
             mkdirIfNotExist(pathname, function(err) {
                 if (err) {
-                    status.emit('failed', 'checksumwrite', 'error creating destination directory: ' + err);
+                    status.emit('failed', 'local', 'error creating destination directory: ' + err);
                 } else {
                     writeFile(name, self._state.get().value);
                 }
@@ -115,7 +115,7 @@ function checksumwriteTask(options, status, logger) {
         case State.TYPES.STRINGS:
             mkdirIfNotExist(pathname, function(err) {
                 if (err) {
-                    status.emit('failed', 'checksumwrite', 'error creating destination directory: ' + err);
+                    status.emit('failed', 'local', 'error creating destination directory: ' + err);
                 } else {
                     writeFile(name, self._state.get().value.join(""));
                 }
@@ -125,7 +125,7 @@ function checksumwriteTask(options, status, logger) {
         case State.TYPES.UNDEFINED:
             mkdirIfNotExist(pathname, function(err) {
                 if (err) {
-                    status.emit('failed', 'checksumwrite', 'error creating destination directory: ' + err);
+                    status.emit('failed', 'local', 'error creating destination directory: ' + err);
                 } else {
                     writeFile(name, "");
                 }
@@ -133,13 +133,13 @@ function checksumwriteTask(options, status, logger) {
             break;
 
         default:
-            status.emit('failed', 'checksumwrite', 'unrecognised input type: ' + this._type);
+            status.emit('failed', 'local', 'unrecognised input type: ' + this._type);
             break;
     }
 }
 
 exports.tasks = {
-    'checksumwrite' : {
-        callback: checksumwriteTask
+    'local' : {
+        callback: localTask
     }
 };

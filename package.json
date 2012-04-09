@@ -8,7 +8,7 @@
   "dependencies": {
     "buildy": "0.0.x",
     "async": "0.1.x",
-    "mkdirp": "0.0.x"
+    "mkdirp": "0.3.x"
   },
   "scripts": {
     "install": "./build.sh"

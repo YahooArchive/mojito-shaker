@@ -1,9 +1,5 @@
 [{
     "settings": ["master"],
-
-    "shaker":{
-        "deploy" : false
-    },
     
     "specs": {
         "htmlframe": {
@@ -22,8 +18,28 @@
     "settings": ["environment:test"],
 
     "shaker": {
-        "deploy": true,
-        "assets": "assets/compiled/",
+        "push": {
+            "type": "local",
+            "config": {
+                "root": "assets/compiled/"
+            }
+        }
+    }
+},
+{
+    "settings": ["environment:prod"],
+
+    "shaker": {
+        "push": {
+            "type": "mobstor",
+            "config": {
+                "host": "playground.yahoofs.com",
+                "proxy": {
+                    "host": "yca-proxy.corp.yahoo.com",
+                    "port": 3128
+                }
+            }
+        }
     }
 }
 ]
