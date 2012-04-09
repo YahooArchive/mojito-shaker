@@ -176,7 +176,7 @@ Shaker.prototype = {
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
-                    name = this._config.assets + mojit + '_' + action.replace('*', 'default') + '_' + dim.replace('*', 'default') + '_{checksum}';
+                    name = this._config.assets + mojit + '_' + action.replace('*', 'default') + '_{checksum}';
                     list = metadata.mojits[mojit][action].shaken[dim];
                     if (list.length) {
                         rollups.push(new Rollup(name, list));
@@ -187,7 +187,7 @@ Shaker.prototype = {
 
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
-                name = this._config.assets + 'app_' + action.replace('*', 'default') + '_' + dim.replace('*', 'default') + '_{checksum}';
+                name = this._config.assets + 'app_' + action.replace('*', 'default') + '_{checksum}';
                 list = metadata.app[action].shaken[dim];
                 if (list.length) {
                     rollups.push(new Rollup(name, list));
