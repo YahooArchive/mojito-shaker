@@ -84,7 +84,7 @@ function Shaker(store) {
     this._config.deploy = this._config.deploy || false;
     this._config.minify = this._config.minify || false;
     this._config.assets = this._config.assets || 'compiled/';
-    this._config.writemeta = this._config.writemeta || false;
+    this._config.writemeta = this._config.writemeta || true;
 }
 
 Shaker.prototype = {

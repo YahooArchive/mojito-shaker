@@ -2,7 +2,6 @@
     "settings": ["master"],
 
     "shaker":{
-        "writemeta": true,
         "deploy" : false
     },
     
@@ -25,7 +24,6 @@
     "shaker": {
         "deploy": true,
         "assets": "assets/compiled/",
-        "writemeta": true
     }
 }
 ]
