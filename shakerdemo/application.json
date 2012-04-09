@@ -10,7 +10,7 @@
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
             "config": {
-                "deploy": true,
+                "deploy": false,
                 "title": "Shaker Demo",
                 "child": {
                     "type": "master"

@@ -150,8 +150,12 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 bundleMojits = (appMeta[ac.action] || appMeta['*']).mojits || [],
                 rolledCSS, rolledJS;
 
-            assets.top = assets.top || [];
-            assets.bottom = assets.bottom || [];
+            assets.top = assets.top || {};
+            assets.bottom = assets.bottom || {};
+            assets.top.js = assets.top.js || [];
+            assets.top.css = assets.top.css || [];
+            assets.bottom.js = assets.bottom.js || [];
+            assets.bottom.css = assets.bottom.css || [];
 
             //get all resources
             var topjs = assets.top.js || [],

@@ -4,7 +4,7 @@
  * See the accompanying LICENSE file for terms.
  */
 
-var Shaker = require('./lib/shaker').Shaker,
+var Shaker = require('./lib/shaker').Shaker, //ToDo: Fix for NPM Packaging
     utils = require('mojito/lib/management/utils'),
     start = require('mojito/lib/management/commands/start'),
     ResourceStore = require('mojito/lib/store.server');
@@ -51,6 +51,11 @@ exports.options = [
         longName: 'context',
         shortName: null,
         hasValue: true
+    },
+    {
+        longName: 'run',
+        shortName: null,
+        hasVlue:false
     }
 ];
 
@@ -61,10 +66,11 @@ exports.options = [
  * @param {function} callback An optional callback to invoke on completion.
  */
 exports.run = function(params, options, callback) {
+    options = options || {};
     var root = process.cwd(),
         context = {};
 
-    if (options && options.context) {
+    if (options.context) {
         context = contextCsvToObject(options.context);
     }
 
@@ -72,6 +78,9 @@ exports.run = function(params, options, callback) {
     store.preload(context);
 
     new Shaker(store).run(function(metadata) {
-        start.run(params,options,callback);
+        if(options.run){
+            delete options.run;
+            start.run(params,options,callback);
+        }
     });
 };
