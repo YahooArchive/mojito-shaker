@@ -18,11 +18,9 @@
     "settings": ["environment:test"],
 
     "shaker": {
+        "compile": true,
         "push": {
-            "type": "local",
-            "config": {
-                "root": "assets/compiled/"
-            }
+            "type": "local"
         }
     }
 },
@@ -30,6 +28,7 @@
     "settings": ["environment:prod"],
 
     "shaker": {
+        "compile": true,
         "push": {
             "type": "mobstor",
             "config": {
