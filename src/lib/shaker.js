@@ -38,17 +38,15 @@ Rollup.prototype = {
 
         queue.task('files', options.files);
 
-        if (options.concat) {
+        //if (options.push.concat) {
             queue.task('concat');
-        }
 
-        if (options.minify) {
-            queue.task(options.minify_task);
-        }
+        //}
+            queue.task(path.extname(options.name) === '.js' ? 'jsminify' : 'cssminify');
 
-        if (options.push) {
-            queue.task(options.push.type, {name: options.name, config: options.push.config});
-        }
+
+        options.push.config.name = options.name;
+        queue.task(options.push.type, options.push.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
             if (data.task.type === options.push.type) {
@@ -69,10 +67,7 @@ Rollup.prototype = {
                 var cssoptions = {
                     name: self._name + '.css',
                     files: self._css,
-                    concat: true,
-                    minify: true,
-                    minify_task: 'cssminify',
-                    push: options.push
+                    push: options
                 };
                 self._pushRollup(cssoptions, function(err, filename) {
                     callback(null, filename);
@@ -85,10 +80,7 @@ Rollup.prototype = {
                 var jsoptions = {
                     name: self._name + '.js',
                     files: self._js,
-                    concat: true,
-                    minify: true,
-                    minify_task: 'jsminify',
-                    push: options.push
+                    push: options
                 };
                 self._pushRollup(jsoptions, function(err, filename) {
                     callback(null, filename);
@@ -104,25 +96,28 @@ Rollup.prototype = {
 
 function Shaker(store) {
     this._store = store;
+    this._prefix = '/static';
 
-    this._static_root = '/static/';
+    var config = this._store.getAppConfig(null, 'definition').shaker || {},
+        specs = config.specs || {},
+        appConfig = specs.staticHandling || {};
 
-    this._config = this._store.getAppConfig(null, 'definition').shaker || {};
-
-    this._config.deploy = this._config.deploy || false;
-    this._config.minify = this._config.minify || false;
-    this._config.compile = this._config.compile || false;
-    this._config.assets = 'assets/compiled/';
-    this._config.writemeta = this._config.writemeta || true;
-    this._config.push = this._config.push || {type: 'local'};
-
-    if (this._config.push.type === 'local') {
-        var app = path.basename(this._store._root);
-
-        this._config.push.config = this._config.push.config || {
-            root: this._static_root + app + '/'
-        };
+    if (typeof appConfig.prefix !== 'undefined') {
+        this._prefix = appConfig.prefix ? '/' + appConfig.prefix : '';
     }
+
+    this._compile = config.compile || false;
+    this._writemeta = config.writemeta || true;
+
+    this._push = config.push || {};
+    this._push.type = this._push.type || 'local';
+    this._push.config = this._push.config || {};
+    this._push.config.parallel = this._push.config.parallel || 20;
+    this._push.config.delay = this._push.config.delay || 0;
+    this._push.config.concat = this._push.config.concat || true;
+    this._push.config.minify = this._push.config.minify || true;
+    this._push.config.root = this._push.config.root || 'assets/compiled/';
+    this._push.config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._push.config.root;
 }
 
 Shaker.prototype = {
@@ -130,13 +125,12 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
-        if (this._config.compile) {
-            this._compress(metadata, callback);
+        if (this._compile) {
+            this._compileRollups(metadata, callback);
         } else {
-            // TODO: rename should be unnecessary if core keeps mapping of urls -> files
-            metadata = this._rename(metadata);
+            metadata = this._rename(metadata); // TODO: rename should be unnecessary if core keeps mapping of urls -> files
 
-            if (this._config.writemeta) {
+            if (this._writemeta) {
                 this._writeMeta(metadata);
             }
 
@@ -145,19 +139,16 @@ Shaker.prototype = {
     },
 
     _rename: function(metadata, callback){
-        var mojit, action, dim, item, list,
-            app = path.basename(this._store._root);
-
         utils.log('[SHAKER] - Processing assets for development env.');
 
-        // Process core
+        var mojit, action, dim, item, list;
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
                     for (item in metadata.mojits[mojit][action].shaken[dim]) {
                         list = metadata.mojits[mojit][action].shaken[dim];
-                        list[item] = list[item].replace(this._store._root + '/mojits/', this._static_root);
+                        list[item] = list[item].replace(this._store._root + '/mojits', this._prefix);
                     }
                 }
             }
@@ -166,8 +157,8 @@ Shaker.prototype = {
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
                 for (item in (list = metadata.app[action].shaken[dim])) {
-                    var aux = list[item].replace(this._store._root, this._static_root + app);
-                    aux = aux.replace(this._static_root+app+'/mojits/',this._static_root);
+                    var aux = list[item].replace(this._store._root, this._prefix + '/' + this._store._shortRoot);
+                    aux = aux.replace(this._prefix + '/' + this._store._shortRoot + '/mojits', this._prefix);
                     list[item] = aux;
                 }
             }
@@ -176,56 +167,53 @@ Shaker.prototype = {
         return metadata;
     },
 
-    _createRollups: function(metadata) {
-        var mojit, action, dim, name, list, rollups = [];
+    _queueRollups: function(queue, metadata) {
+        var mojit, action, dim, files;
 
-        rollups.push(new Rollup(this._config.assets + 'mojito_core', metadata.core));
+        queue.push(new Rollup('mojito_core', metadata.core));
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
-                for (dim in metadata.mojits[mojit][action].shaken) {
-                    name = this._config.assets + mojit + '_' + action.replace('*', 'default') + '_{checksum}';
-                    list = metadata.mojits[mojit][action].shaken[dim];
-                    if (list.length) {
-                        rollups.push(new Rollup(name, list));
+                for (dim in (files = metadata.mojits[mojit][action].shaken)) {
+                    if (files[dim].length) {
+                        queue.push(new Rollup(mojit + '_' + action.replace('*', 'default') + '_{checksum}', files[dim]));
                     }
                 }
             }
         }
 
         for (action in metadata.app) {
-            for (dim in metadata.app[action].shaken) {
-                name = this._config.assets + 'app_' + action.replace('*', 'default') + '_{checksum}';
-                list = metadata.app[action].shaken[dim];
-                if (list.length) {
-                    rollups.push(new Rollup(name, list));
+            for (dim in (files = metadata.app[action].shaken)) {
+                if (files[dim].length) {
+                    queue.push(new Rollup('app_' + action.replace('*', 'default') + '_{checksum}', files[dim]));
                 }
             }
         }
-
-        return rollups;
     },
 
-    _compress: function(metadata, compresscb) {
-        utils.log('[SHAKER] - Minifying and optimizing rollups...');
+    _compileRollups: function(metadata, compressed) {
+        utils.log('[SHAKER] - Compiling rollups...');
 
         var self = this;
-        async.forEachSeries(this._createRollups(metadata), function(rollup, processedcb) {
+        var queue = async.queue(function(rollup, callback) {
             setTimeout(function() {
-                rollup.rollup({push: self._config.push}, function(err, urls) {
-                    utils.log('[SHAKER] - Pushing files ' + urls);
+                rollup.rollup(self._push, function(err, urls) {
+                    utils.log('[SHAKER] - Pushed files ' + urls);
                     rollup._files.length = 0; // Modify the original metadata list reference
                     urls.forEach(function(url) {rollup._files.push(url);});
-                    processedcb();
+                    callback();
                 });
-            }, 200);
-        }, function(err) {
-            if (self._config.writemeta) {
+            }, self._push.config.delay);
+        }, this._push.config.parallel);
+
+        queue.drain = function() {
+            if (self._writemeta) {
                 self._writeMeta(metadata);
             }
+            compressed(metadata);
+        };
 
-            compresscb(metadata);
-        });
+        this._queueRollups(queue, metadata);
     },
 
     _writeMeta:function(metadata){
@@ -236,7 +224,7 @@ Shaker.prototype = {
         aux += JSON.stringify(metadata,null,'\t');
         aux += '});';
 
-        utils.log('[SHAKER] - Writting Addon file with the metadata ');
+        utils.log('[SHAKER] - Writting Addon file with the metadata');
         mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
         fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
     }

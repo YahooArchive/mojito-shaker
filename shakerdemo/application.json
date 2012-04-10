@@ -20,7 +20,10 @@
     "shaker": {
         "compile": true,
         "push": {
-            "type": "local"
+            "type": "local",
+            "config": {
+                "root": "assets/compiled"
+            }
         }
     }
 },
@@ -32,10 +35,15 @@
         "push": {
             "type": "mobstor",
             "config": {
-                "host": "playground.yahoofs.com",
-                "proxy": {
-                    "host": "yca-proxy.corp.yahoo.com",
-                    "port": 3128
+                "parallel": 1,
+                "delay": 200,
+                "root": "assets/compiled",
+                "connection": {
+                    "host": "playground.yahoofs.com",
+                    "proxy": {
+                        "host": "yca-proxy.corp.yahoo.com",
+                        "port": 3128
+                    }
                 }
             }
         }

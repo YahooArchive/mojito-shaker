@@ -48,6 +48,8 @@ function localTask(options, status, logger) {
     var self = this,
         pathname = path.resolve(path.dirname(options.name)),
         name = options.name,
+        root = options && options.root || '',
+        staticRoot = options && options.staticRoot || '',
         encoding = options && options.encoding || 'utf8',
         mkdir = options && options.mkdir || true,
         dirmode = options && options.dirmode || '0755';
@@ -60,12 +62,12 @@ function localTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        fs.writeFile(filename, data, encoding, function(err) {
+        fs.writeFile(root + '/' + filename, data, encoding, function(err) {
             if (err) {
                 status.emit('failed', 'local', 'error writing destination file: ' + err);
             } else {
                 self._state.set(State.TYPES.FILES, [ filename ]);
-                status.emit('complete', 'local', options.config.root + filename);
+                status.emit('complete', 'local', staticRoot + '/' + filename);
             }
         });
     }

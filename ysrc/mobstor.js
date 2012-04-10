@@ -22,7 +22,7 @@ var Mobstor = require('mobstor'),
  *     .task('files', ['mobstor.js'])
  *     .task('concat')
  *     .task('jsminify')
- *     .task('mobstor', {name: '/foo/bar/baz.js', config: mobstor_config})
+ *     .task('mobstor', {name: '/foo/bar/baz.js', connection: mobstor_config})
  *     .task('write', {name: 'baz.js'})
  *     .task('inspect')
  *     .run();
@@ -32,7 +32,7 @@ var Mobstor = require('mobstor'),
  * @method mobstorTask
  * @param options {Object} MObStor task options.
  * @param options.name {String} Resource name.
- * @param options.config {Object} MObStor config (host, port, certificate, proxy).
+ * @param options.connection {Object} MObStor connection (host, port, certificate, proxy).
  * @param status {EventEmitter} Status object, handles 'complete' and 'failed' task exit statuses.
  * @param logger {winston.Logger} Logger instance, if additional logging required (other than task exit status)
  * @return {undefined}
@@ -41,7 +41,8 @@ var Mobstor = require('mobstor'),
 function mobstorTask(options, status, logger) {
     var self = this,
         name = options.name,
-        client = Mobstor.createClient(options.config);
+        root = options && options.root || '',
+        client = Mobstor.createClient(options.connection);
 
     // Send content to mobstor.
     function storeFile(filename, data) {
@@ -51,7 +52,8 @@ function mobstorTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        var url = 'http://' + options.config.host + '/' + filename;
+        filename = root + '/' + filename;
+        var url = 'http://' + options.connection.host + '/' + filename;
 
         try {
             client.checkFile(filename, function(err, status, d) {});
