@@ -7,6 +7,7 @@
 var libpath = require('path'),
     libvm = require('vm'),
     libfs = require('fs'),
+    mime = require('mime'),
     util = require('./utils.js');
 
 /*GLOBAL CONFIGS*/
@@ -585,8 +586,7 @@ Shaker.prototype.shakeMojit = function(name,path,options){
     //options default
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
-
-    resources = self._resources[name];
+    resources = options.app ? self._resources.app : self._resources.mojits[name];
 
     var shaker_config = self._mergeShakerConfig(name,path,resources.binders),//we get the final merged shaker config
         modules = self.precalculateAutoloads(resources.autoload),
@@ -594,7 +594,7 @@ Shaker.prototype.shakeMojit = function(name,path,options){
         order = options.order,
         actions,shaked = {};
     for(var action in (actions = shaker_config.actions)){
-            binder_dependencies = ((action == '*') || options.skipBinders) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
+            binder_dependencies = ((action == '*') || options.app) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
             dispatched = self.dispatchOrder(action,order,dimensions),
             meta = {binder: binder_dependencies,dimensions: dispatched},
             listFiles = self.shakeAction(action,meta),
@@ -613,9 +613,8 @@ Shaker.prototype.shakeMojit = function(name,path,options){
 
 Shaker.prototype.shakeApp = function(name,path,options){
     options = options || {};
-    options.skipBinders = true;
+    options.app = true;
     return this.shakeMojit('app',path.slice(0,-1),options);
-    
 };
 
 Shaker.prototype.shakeAllMojits = function(mojits,options){
@@ -683,35 +682,41 @@ Shaker.prototype.bundleMojits = function(shaken,options){
 // Look through Mojito store static files for mojit assets to roll up
 // Files are mapped by URL -> filename
 Shaker.prototype._mojitResources = function() {
+    var resources = {
+        'mojits': {},
+        'app': {assets: {}, binders: {}, autoload: {}},
+        'images': {}
+    };
     var mojits = this._store.listAllMojits('server').slice(3); // FIXME: Ignore 'DaliProxy','HTMLFrameMojit', 'LazyLoad'
-    var resources = {};
     mojits.forEach(function(mojit) {
-        resources[mojit] = {assets: {}, binders: {}, autoload: {}};
+        resources.mojits[mojit] = {assets: {}, binders: {}, autoload: {}};
     });
-    resources['app'] = {assets: {}, binders: {}, autoload: {}};
-
-    var EXTS = {'.js': 1, '.css': 1};
 
     for (var url in this._store._staticURLs) {
-        var base = url.substring(this._urlPrefix.length + 1);
-        var split = base.split('/', 2); // [mojit_name, subdir]
         var filename = this._store._staticURLs[url];
-        if (split[0] == this._store._shortRoot) {
-            if (split[1] in resources['app']){
-                if (libpath.extname(filename) in EXTS) {
-                    resources['app'][split[1]][url] = this._store._staticURLs[url];
+        var content_type = mime.lookup(filename);
+        var type = content_type.split('/')[0];
+
+        if (content_type in {'application/javascript': 1, 'text/css': 1}) {
+            var base = url.substring(this._urlPrefix.length + 1);
+            var split = base.split('/', 2); // [mojit_name, subdir]
+
+            if (split[0] === this._store._shortRoot) {
+                if (split[1] in resources.app){
+                    resources.app[split[1]][url] = filename;
+                }
+            }
+            else if (split[0] in resources.mojits) { // mojit
+                if (split[1] in resources.mojits[split[0]]) {  // asset type
+                    resources.mojits[split[0]][split[1]][url] = filename;
                 }
             }
         }
-
-        if (split[0] in resources) { // mojit
-            if (split[1] in resources[split[0]]) {  // asset type
-                if (libpath.extname(filename) in EXTS) {
-                    resources[split[0]][split[1]][url] = this._store._staticURLs[url];
-                }
-            }
+        else if (type === 'image') {
+            resources.images[url] = filename;
         }
     }
+
     return resources;
 };
 
@@ -733,6 +738,7 @@ Shaker.prototype.shakeAll = function(options){
     shaken.mojits = this.shakeAllMojits(mojits);
     shaken.app = this.shakeApp('app', this._store._root + '/');
     shaken.core = this.shakeCore();
+    shaken.images = this._resources.images;
     shaken = this.bundleMojits(shaken);
     shaken.config = {order: SHAKER_DEFAULT_ORDER};
     return shaken;
