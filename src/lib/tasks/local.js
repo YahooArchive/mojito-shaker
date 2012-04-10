@@ -62,12 +62,21 @@ function localTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        fs.writeFile(root + '/' + filename, data, encoding, function(err) {
-            if (err) {
-                status.emit('failed', 'local', 'error writing destination file: ' + err);
-            } else {
-                self._state.set(State.TYPES.FILES, [ filename ]);
+        var new_filename = root + '/' + filename;
+
+        path.exists(new_filename, function(exists) {
+            if (exists) {
                 status.emit('complete', 'local', staticRoot + '/' + filename);
+            }
+            else {
+                fs.writeFile(new_filename, data, encoding, function(err) {
+                    if (err) {
+                        status.emit('failed', 'local', 'error writing destination file: ' + err);
+                    } else {
+                        self._state.set(State.TYPES.FILES, [ filename ]);
+                        status.emit('complete', 'local', staticRoot + '/' + filename);
+                    }
+                });
             }
         });
     }
