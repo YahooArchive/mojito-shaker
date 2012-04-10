@@ -38,18 +38,19 @@ Rollup.prototype = {
 
         queue.task('files', options.files);
 
-        //if (options.push.concat) {
+        if (options.config.concat) {
             queue.task('concat');
+        }
 
-        //}
+        if (options.config.minify) {
             queue.task(path.extname(options.name) === '.js' ? 'jsminify' : 'cssminify');
+        }
 
-
-        options.push.config.name = options.name;
-        queue.task(options.push.type, options.push.config);
+        options.config.name = options.name;
+        queue.task(options.type, options.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
-            if (data.task.type === options.push.type) {
+            if (data.task.type === options.type) {
                 callback(null, data.result);
             }
         });
@@ -67,7 +68,8 @@ Rollup.prototype = {
                 var cssoptions = {
                     name: self._name + '.css',
                     files: self._css,
-                    push: options
+                    type: options.type,
+                    config: options.config
                 };
                 self._pushRollup(cssoptions, function(err, filename) {
                     callback(null, filename);
@@ -80,7 +82,8 @@ Rollup.prototype = {
                 var jsoptions = {
                     name: self._name + '.js',
                     files: self._js,
-                    push: options
+                    type: options.type,
+                    config: options.config
                 };
                 self._pushRollup(jsoptions, function(err, filename) {
                     callback(null, filename);
@@ -98,7 +101,7 @@ function Shaker(store) {
     this._store = store;
     this._prefix = '/static';
 
-    var config = this._store.getAppConfig(null, 'definition').shaker || {},
+    var config = this._store.getAppConfig(null, 'definition') || {},
         specs = config.specs || {},
         appConfig = specs.staticHandling || {};
 
@@ -106,18 +109,16 @@ function Shaker(store) {
         this._prefix = appConfig.prefix ? '/' + appConfig.prefix : '';
     }
 
-    this._compile = config.compile || false;
-    this._writemeta = config.writemeta || true;
-
-    this._push = config.push || {};
-    this._push.type = this._push.type || 'local';
-    this._push.config = this._push.config || {};
-    this._push.config.parallel = this._push.config.parallel || 20;
-    this._push.config.delay = this._push.config.delay || 0;
-    this._push.config.concat = this._push.config.concat || true;
-    this._push.config.minify = this._push.config.minify || true;
-    this._push.config.root = this._push.config.root || 'assets/compiled/';
-    this._push.config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._push.config.root;
+    var shaker = config.shaker;
+    this._type = shaker.type || 'local';
+    this._config = shaker.config || {};
+    this._config.compile = this._config.compile || false;
+    this._config.parallel = this._config.parallel || 20;
+    this._config.delay = this._config.delay || 0;
+    this._config.concat = this._config.concat || true;
+    this._config.minify = this._config.minify || true;
+    this._config.root = this._config.root || 'assets/compiled/';
+    this._config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._config.root;
 }
 
 Shaker.prototype = {
@@ -125,15 +126,11 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
-        if (this._compile) {
+        if (this._config.compile) {
             this._compileRollups(metadata, callback);
         } else {
             metadata = this._rename(metadata); // TODO: rename should be unnecessary if core keeps mapping of urls -> files
-
-            if (this._writemeta) {
-                this._writeMeta(metadata);
-            }
-
+            this._writeMeta(metadata);
             callback(metadata);
         }
     },
@@ -197,19 +194,17 @@ Shaker.prototype = {
         var self = this;
         var queue = async.queue(function(rollup, callback) {
             setTimeout(function() {
-                rollup.rollup(self._push, function(err, urls) {
+                rollup.rollup({type: self._type, config: self._config}, function(err, urls) {
                     utils.log('[SHAKER] - Pushed files ' + urls);
                     rollup._files.length = 0; // Modify the original metadata list reference
                     urls.forEach(function(url) {rollup._files.push(url);});
                     callback();
                 });
-            }, self._push.config.delay);
-        }, this._push.config.parallel);
+            }, self._config.delay);
+        }, this._config.parallel);
 
         queue.drain = function() {
-            if (self._writemeta) {
-                self._writeMeta(metadata);
-            }
+            self._writeMeta(metadata);
             compressed(metadata);
         };
 

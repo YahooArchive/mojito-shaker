@@ -18,12 +18,10 @@
     "settings": ["environment:test"],
 
     "shaker": {
-        "compile": true,
-        "push": {
-            "type": "local",
-            "config": {
-                "root": "assets/compiled"
-            }
+        "type": "local",
+        "config": {
+            "compile": true,
+            "root": "assets/compiled"
         }
     }
 },
@@ -31,19 +29,17 @@
     "settings": ["environment:prod"],
 
     "shaker": {
-        "compile": true,
-        "push": {
-            "type": "mobstor",
-            "config": {
-                "parallel": 1,
-                "delay": 200,
-                "root": "assets/compiled",
-                "connection": {
-                    "host": "playground.yahoofs.com",
-                    "proxy": {
-                        "host": "yca-proxy.corp.yahoo.com",
-                        "port": 3128
-                    }
+        "type": "mobstor",
+        "config": {
+            "compile": true,
+            "parallel": 1,
+            "delay": 200,
+            "root": "assets/compiled",
+            "connection": {
+                "host": "playground.yahoofs.com",
+                "proxy": {
+                    "host": "yca-proxy.corp.yahoo.com",
+                    "port": 3128
                 }
             }
         }
