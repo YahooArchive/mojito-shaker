@@ -1,50 +1,52 @@
-var Mobstor = require('mobstor'),
+var knox = require('knox'),
     State = require('buildy').State,
     Crypto = require('crypto');
 
 /**
- * Send content to MObStor. Simple Buildy wrapper for ynodejs_mobstor.
- * See http://devel.corp.yahoo.com/ynodejs_mobstor/
+ * Send content to s3. Simple Buildy wrapper for knox.
+ * See https://github.com/LearnBoost/knox
  *
  * Example:
  *
  * var Registry = require('../../node_modules/buildy').Registry,
  *     Queue = require('../../node_modules/buildy').Queue,
  *     reg = new Registry(),
- *     mobstor_config = {
- *         host: 'playground.yahoofs.com',
- *         proxy: {host : "yca-proxy.corp.yahoo.com", port : 3128}
+ *     knox_config = {
+            key: '<api-key-here>',
+            secret: '<secret-here>',
+            bucket: 'shaker'
  *     };
  *
- * reg.load(__dirname + '/mobstor.js'); // Mobstor task
+ * reg.load(__dirname + '/s3.js'); // s3 task
  *
  * new Queue('deploy', {registry: reg})
- *     .task('files', ['mobstor.js'])
+ *     .task('files', ['s3.js'])
  *     .task('concat')
  *     .task('jsminify')
- *     .task('mobstor', {name: '/foo/bar/baz.js', client: mobstor_config})
+ *     .task('s3', {name: '/foo/bar/baz.js', client: knox_config})
  *     .task('write', {name: 'baz.js'})
  *     .task('inspect')
  *     .run();
  *
  * View output here: http://playground.yahoofs.com/foo/bar/baz.js
  *
- * @method mobstorTask
- * @param options {Object} MObStor task options.
+ * @method s3Task
+ * @param options {Object} s3 task options.
  * @param options.name {String} Resource name.
- * @param options.client {Object} MObStor client (host, port, certificate, proxy).
+ * @param options.client {Object} s3 client (key, secret, bucket).
  * @param status {EventEmitter} Status object, handles 'complete' and 'failed' task exit statuses.
  * @param logger {winston.Logger} Logger instance, if additional logging required (other than task exit status)
  * @return {undefined}
  * @public
  */
-function mobstorTask(options, status, logger) {
+function s3Task(options, status, logger) {
+    console.log('S3');
     var self = this,
         name = options.name,
         root = options && options.root || '',
-        client = Mobstor.createClient(options.client);
+        client = knox.createClient(options.client);
 
-    // Send content to mobstor.
+    // Send content to s3.
     function storeFile(filename, data) {
         if (filename.indexOf('{checksum}') > -1) {  // Replace {checksum} with md5 string
             var md5sum = Crypto.createHash('md5');
@@ -53,24 +55,21 @@ function mobstorTask(options, status, logger) {
         }
 
         filename = root + '/' + filename;
-        var url = 'http://' + options.client.host + '/' + filename;
+        var url = 'https://s3.amazonaws.com/' + filename;
 
-        try {
-            client.checkFile(filename, function(err, status, d) {});
+        var req = client.put(filename, {'Content-Length': data.length, 'Content-Type': 'text/plain'});
 
-            client.storeFile(filename, data, function(err, content) {
-                if (err) {
-                    status.emit('failed', 'mobstor', 'error sending file: ' + err);
-                } else {
-                    self._state.set(State.TYPES.STRING, data);
-                    status.emit('complete', 'mobstor', url);
-                }
-            });
-        }
-        catch(exception) {
-            console.log(options, exception);
-            status.emit('complete', 'mobstor', url);
-        }
+        req.on('response', function(res) {
+            console.log(res.statusCode);
+            
+            if (res.statusCode === 200) {
+                self._state.set(State.TYPES.STRING, data);
+                status.emit('complete', 's3', url);
+            }
+            else {
+                status.emit('failed', 's3', 'error sending file: ' + res.statusCode);
+            }
+        });
     }
 
     switch (this._state.get().type) {
@@ -91,13 +90,13 @@ function mobstorTask(options, status, logger) {
             break;
 
         default:
-            status.emit('failed', 'mobstor', 'unrecognised input type: ' + this._type);
+            status.emit('failed', 's3', 'unrecognised input type: ' + this._type);
             break;
     }
 }
 
 exports.tasks = {
-    'mobstor' : {
-        callback: mobstorTask
+    's3' : {
+        callback: s3Task
     }
 };

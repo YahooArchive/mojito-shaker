@@ -34,13 +34,31 @@
             "compile": true,
             "parallel": 1,
             "delay": 200,
-            "root": "assets/compiled",
-            "connection": {
+            "root": "assets/compiled/test",
+            "client": {
                 "host": "playground.yahoofs.com",
                 "proxy": {
                     "host": "yca-proxy.corp.yahoo.com",
                     "port": 3128
                 }
+            }
+        }
+    }
+},
+{
+    "settings": ["environment:stage"],
+
+    "shaker": {
+        "type": "s3",
+        "config": {
+            "compile": true,
+            "parallel": 1,
+            "delay": 200,
+            "root": "test",
+            "client": {
+                "key": "AKIAIOPNYHFYPOICGK6Q",
+                "secret": "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",
+                "bucket": "shaker"
             }
         }
     }
