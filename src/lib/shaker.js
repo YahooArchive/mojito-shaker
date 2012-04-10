@@ -207,20 +207,15 @@ Shaker.prototype = {
     },
 
     _compress: function(metadata, compresscb) {
-        var self = this;
-
         utils.log('[SHAKER] - Minifying and optimizing rollups...');
 
-        // Process rollup assets
+        var self = this;
         async.forEachSeries(this._createRollups(metadata), function(rollup, processedcb) {
             setTimeout(function() {
                 rollup.rollup({push: self._config.push}, function(err, urls) {
-                    console.log(urls);
-                    var files = rollup._files;
-                    // Modify the metadata list reference
-                    files.length = 0;
-                    // FIXME: files.concat(urls) is not working :(
-                    for (var i = 0; i < urls.length; i++) {files.push(urls[i]);}
+                    utils.log('[SHAKER] - Pushing files ' + urls);
+                    rollup._files.length = 0; // Modify the original metadata list reference
+                    urls.forEach(function(url) {rollup._files.push(url);});
                     processedcb();
                 });
             }, 200);

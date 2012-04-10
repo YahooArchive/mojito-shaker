@@ -54,7 +54,7 @@ function mobstorTask(options, status, logger) {
         var url = 'http://' + options.config.host + '/' + filename;
 
         try {
-            client.checkFile(filename, function(error, status, cb) {});
+            client.checkFile(filename, function(err, status, d) {});
 
             client.storeFile(filename, data, function(err, content) {
                 if (err) {
@@ -66,6 +66,7 @@ function mobstorTask(options, status, logger) {
             });
         }
         catch(exception) {
+            console.log(options, exception);
             status.emit('complete', 'mobstor', url);
         }
     }
