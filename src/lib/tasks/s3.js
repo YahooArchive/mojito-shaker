@@ -1,6 +1,7 @@
 var knox = require('knox'),
     State = require('buildy').State,
-    Crypto = require('crypto');
+    Crypto = require('crypto'),
+    path = require('path');
 
 /**
  * Send content to s3. Simple Buildy wrapper for knox.
@@ -53,15 +54,12 @@ function s3Task(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        filename = '/' + filename;
-
-        console.log(filename);
-
-        var req = client.put(filename, {'Content-Length': data.length, 'Content-Type': 'text/plain'});
+        filename = '/' + root + '/' + filename;
+        
+        var content_type = path.extname(filename) === '.js' ? 'text/javascript' : 'text/css',
+            req = client.put(filename, {'Content-Length': data.length, 'Content-Type': content_type});
 
         req.on('response', function(res) {
-            console.log(res.statusCode);
-
             if (res.statusCode === 200) {
                 self._state.set(State.TYPES.STRING, data);
                 status.emit('complete', 's3', req.url);
@@ -70,6 +68,7 @@ function s3Task(options, status, logger) {
                 status.emit('failed', 's3', 'error sending file: ' + res.statusCode);
             }
         });
+        req.end(data);
     }
 
     switch (this._state.get().type) {

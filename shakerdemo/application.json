@@ -52,9 +52,9 @@
         "type": "s3",
         "config": {
             "compile": true,
-            "parallel": 1,
-            "delay": 200,
-            "root": "test",
+            "parallel": 8,
+            "delay": 0,
+            "root": "test5",
             "client": {
                 "key": "AKIAIOPNYHFYPOICGK6Q",
                 "secret": "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",
