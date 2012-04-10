@@ -33,20 +33,20 @@ Rollup.TASKS_DIR = __dirname + '/tasks/';
 Rollup.REGISTRY = null;
 
 Rollup.prototype = {
-    _pushRollup: function(options, callback) {
+    _pushRollup: function(name, files, options, callback) {
         var queue = new Queue('Rollup', {registry: Rollup.REGISTRY});
 
-        queue.task('files', options.files);
+        queue.task('files', files);
 
-        if (options.config.concat) {
+        if (options.concat) {
             queue.task('concat');
         }
 
-        if (options.config.minify) {
-            queue.task(path.extname(options.name) === '.js' ? 'jsminify' : 'cssminify');
+        if (options.minify) {
+            queue.task(path.extname(name) === '.js' ? 'jsminify' : 'cssminify');
         }
 
-        options.config.name = options.name;
+        options.config.name = name;
         queue.task(options.type, options.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
@@ -65,13 +65,7 @@ Rollup.prototype = {
 
         if (this._css.length) {
             tasks.push(function(callback) {
-                var cssoptions = {
-                    name: self._name + '.css',
-                    files: self._css,
-                    type: options.type,
-                    config: options.config
-                };
-                self._pushRollup(cssoptions, function(err, filename) {
+                self._pushRollup(self._name + '.css', self._css, options, function(err, filename) {
                     callback(null, filename);
                 });
             });
@@ -79,13 +73,7 @@ Rollup.prototype = {
 
         if (this._js.length) {
             tasks.push(function(callback) {
-                var jsoptions = {
-                    name: self._name + '.js',
-                    files: self._js,
-                    type: options.type,
-                    config: options.config
-                };
-                self._pushRollup(jsoptions, function(err, filename) {
+                self._pushRollup(self._name + '.js', self._js, options, function(err, filename) {
                     callback(null, filename);
                 });
             });
@@ -111,12 +99,12 @@ function Shaker(store) {
 
     var shaker = config.shaker || {};
     this._type = shaker.type || 'local';
+    this._compile = config.shaker !== undefined;
+    this._parallel = shaker.parallel || 20;
+    this._delay = shaker.delay || 0;
+    this._concat = shaker.concat || true;
+    this._minify = shaker.minify || true;
     this._config = shaker.config || {};
-    this._config.compile = this._config.compile || false;
-    this._config.parallel = this._config.parallel || 20;
-    this._config.delay = this._config.delay || 0;
-    this._config.concat = this._config.concat || true;
-    this._config.minify = this._config.minify || true;
     this._config.root = this._config.root || 'assets/compiled/';
     this._config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._config.root;
 }
@@ -126,7 +114,7 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
-        if (this._config.compile) {
+        if (this._compile) {
             this._compileRollups(metadata, callback);
         } else {
             metadata = this._rename(metadata); // TODO: rename should be unnecessary if core keeps mapping of urls -> files
@@ -137,7 +125,6 @@ Shaker.prototype = {
 
     _rename: function(metadata, callback){
         utils.log('[SHAKER] - Processing assets for development env.');
-
         var mojit, action, dim, item, list;
 
         for (mojit in metadata.mojits) {
@@ -194,14 +181,15 @@ Shaker.prototype = {
         var self = this;
         var queue = async.queue(function(rollup, callback) {
             setTimeout(function() {
-                rollup.rollup({type: self._type, config: self._config}, function(err, urls) {
+                var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
+                rollup.rollup(options, function(err, urls) {
                     utils.log('[SHAKER] - Pushed files ' + urls);
                     rollup._files.length = 0; // Modify the original metadata list reference
                     urls.forEach(function(url) {rollup._files.push(url);});
                     callback();
                 });
-            }, self._config.delay);
-        }, this._config.parallel);
+            }, self._delay);
+        }, this._parallel);
 
         queue.drain = function() {
             self._writeMeta(metadata);

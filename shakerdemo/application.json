@@ -20,7 +20,6 @@
     "shaker": {
         "type": "local",
         "config": {
-            "compile": true,
             "root": "assets/compiled"
         }
     }
@@ -30,10 +29,9 @@
 
     "shaker": {
         "type": "mobstor",
+        "parallel": 1,
+        "delay": 200,
         "config": {
-            "compile": true,
-            "parallel": 1,
-            "delay": 200,
             "root": "assets/compiled/test",
             "client": {
                 "host": "playground.yahoofs.com",
@@ -50,10 +48,9 @@
 
     "shaker": {
         "type": "s3",
+        "parallel": 8,
+        "delay": 0,
         "config": {
-            "compile": true,
-            "parallel": 8,
-            "delay": 0,
             "root": "test5",
             "client": {
                 "key": "AKIAIOPNYHFYPOICGK6Q",

@@ -41,8 +41,9 @@ var Mobstor = require('mobstor'),
 function mobstorTask(options, status, logger) {
     var self = this,
         name = options.name,
+        config = options.client,
         root = options && options.root || '',
-        client = Mobstor.createClient(options.client);
+        client = Mobstor.createClient(config);
 
     // Send content to mobstor.
     function storeFile(filename, data) {
@@ -53,7 +54,7 @@ function mobstorTask(options, status, logger) {
         }
 
         filename = root + '/' + filename;
-        var url = 'http://' + options.client.host + '/' + filename;
+        var url = 'http://' + config.host + '/' + filename;
 
         try {
             client.checkFile(filename, function(err, status, d) {});
@@ -68,7 +69,7 @@ function mobstorTask(options, status, logger) {
             });
         }
         catch(exception) {
-            console.log(options, exception);
+            console.log(exception);
             status.emit('complete', 'mobstor', url);
         }
     }
