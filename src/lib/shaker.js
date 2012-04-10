@@ -109,7 +109,7 @@ function Shaker(store) {
         this._prefix = appConfig.prefix ? '/' + appConfig.prefix : '';
     }
 
-    var shaker = config.shaker;
+    var shaker = config.shaker || {};
     this._type = shaker.type || 'local';
     this._config = shaker.config || {};
     this._config.compile = this._config.compile || false;
