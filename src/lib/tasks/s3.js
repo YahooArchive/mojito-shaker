@@ -55,16 +55,15 @@ function s3Task(options, status, logger) {
         }
 
         filename = root + '/' + filename;
-        var url = 'https://s3.amazonaws.com/' + filename;
 
         var req = client.put(filename, {'Content-Length': data.length, 'Content-Type': 'text/plain'});
 
         req.on('response', function(res) {
             console.log(res.statusCode);
-            
+
             if (res.statusCode === 200) {
                 self._state.set(State.TYPES.STRING, data);
-                status.emit('complete', 's3', url);
+                status.emit('complete', 's3', req.url);
             }
             else {
                 status.emit('failed', 's3', 'error sending file: ' + res.statusCode);
