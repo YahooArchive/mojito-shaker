@@ -40,7 +40,6 @@ var knox = require('knox'),
  * @public
  */
 function s3Task(options, status, logger) {
-    console.log('S3');
     var self = this,
         name = options.name,
         root = options && options.root || '',
@@ -54,7 +53,9 @@ function s3Task(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        filename = root + '/' + filename;
+        filename = '/' + filename;
+
+        console.log(filename);
 
         var req = client.put(filename, {'Content-Length': data.length, 'Content-Type': 'text/plain'});
 
