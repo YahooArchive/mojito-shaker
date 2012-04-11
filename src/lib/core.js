@@ -720,6 +720,14 @@ Shaker.prototype._mojitResources = function() {
     return resources;
 };
 
+Shaker.prototype.shakeImages = function() {
+    var images = [];
+    for (var image in this._resources.images) {
+        images.push(this._resources.images[image]);
+    }
+    return images;
+};
+
 Shaker.prototype.shakeCore = function(){
     var files = this._store.getRollupsApp('client', {}).srcs;
 
@@ -738,7 +746,7 @@ Shaker.prototype.shakeAll = function(options){
     shaken.mojits = this.shakeAllMojits(mojits);
     shaken.app = this.shakeApp('app', this._store._root + '/');
     shaken.core = this.shakeCore();
-    shaken.images = this._resources.images;
+    shaken.images = this.shakeImages();
     shaken = this.bundleMojits(shaken);
     shaken.config = {order: SHAKER_DEFAULT_ORDER};
     return shaken;

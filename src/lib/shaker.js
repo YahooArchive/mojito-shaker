@@ -7,6 +7,30 @@ var path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp');
 
+function Image(name, file) {
+    this._name = name;
+    this._file = file;
+}
+
+Image.prototype = {
+    push: function(registry, options, callback) {
+        var queue = new Queue('Rollup', {registry: registry});
+
+        queue.task('files', [this._file]);
+
+        options.config.name = this._name;
+        queue.task(options.type, options.config);
+
+        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
+            if (data.task.type === options.type) {
+                callback(null, data.result);
+            }
+        });
+
+        queue.run();
+    }
+};
+
 function Rollup(name, files) {
     this._name = name;
     this._files = files;
@@ -61,10 +85,9 @@ function Shaker(store) {
     this._config = shaker.config || {};
     this._config.root = this._config.root || 'assets/compiled/';
     this._config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._config.root;
-
-    this._registry = null,
-    this._tasks_dir = __dirname + '/tasks/';
 }
+
+Shaker.TASKS_DIR = __dirname + '/tasks/';
 
 Shaker.prototype = {
     run: function(callback) {
@@ -111,11 +134,9 @@ Shaker.prototype = {
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
-        // Images
-        for (var image in metadata.images) {
-            console.log(metadata.images[image]);
-            //queue.push({object: new Image(image), files: metadata.images});
-        }
+        metadata.images.forEach(function(image) {
+            queue.push({object: new Image(path.basename(image), image), files: metadata.images});
+        });
         metadata.images.length = 0;
 
         queue.push({object: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
@@ -178,14 +199,14 @@ Shaker.prototype = {
     _compileRollups: function(metadata, compressed) {
         utils.log('[SHAKER] - Compiling rollups...');
 
-        this._registry = new Registry();
-        this._registry.load(this._tasks_dir);
+        var registry = new Registry();
+        registry.load(Shaker.TASKS_DIR);
 
         var self = this;
         var queue = async.queue(function(item, callback) {
             setTimeout(function() {
                 var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
-                item.object.push(self._registry, options, function(err, url) {
+                item.object.push(registry, options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
                     callback();
