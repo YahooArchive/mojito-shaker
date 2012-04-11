@@ -10,19 +10,11 @@ var path = require('path'),
 function Rollup(name, files) {
     this._name = name;
     this._files = files;
-
-    if (!Rollup.REGISTRY) { // Cache registry
-        Rollup.REGISTRY = new Registry();
-        Rollup.REGISTRY.load(Rollup.TASKS_DIR);
-    }
 }
 
-Rollup.TASKS_DIR = __dirname + '/tasks/';
-Rollup.REGISTRY = null;
-
 Rollup.prototype = {
-    push: function(options, callback) {
-        var queue = new Queue('Rollup', {registry: Rollup.REGISTRY});
+    push: function(registry, options, callback) {
+        var queue = new Queue('Rollup', {registry: registry});
 
         queue.task('files', this._files);
 
@@ -69,6 +61,9 @@ function Shaker(store) {
     this._config = shaker.config || {};
     this._config.root = this._config.root || 'assets/compiled/';
     this._config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._config.root;
+
+    this._registry = null,
+    this._tasks_dir = __dirname + '/tasks/';
 }
 
 Shaker.prototype = {
@@ -117,12 +112,11 @@ Shaker.prototype = {
         var mojit, action, dim, files, name, filtered;
 
         // Images
-        /*
-        metdata.images.foreach(function(image) {
-            queue.push({object: new Image(image), files: metadata.images});
-        });
+        for (var image in metadata.images) {
+            console.log(metadata.images[image]);
+            //queue.push({object: new Image(image), files: metadata.images});
+        }
         metadata.images.length = 0;
-        */
 
         queue.push({object: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;
@@ -184,11 +178,14 @@ Shaker.prototype = {
     _compileRollups: function(metadata, compressed) {
         utils.log('[SHAKER] - Compiling rollups...');
 
+        this._registry = new Registry();
+        this._registry.load(this._tasks_dir);
+
         var self = this;
         var queue = async.queue(function(item, callback) {
             setTimeout(function() {
                 var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
-                item.object.push(options, function(err, url) {
+                item.object.push(self._registry, options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
                     callback();
