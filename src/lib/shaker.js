@@ -116,7 +116,15 @@ Shaker.prototype = {
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
-        queue.push({rollup: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
+        // Images
+        /*
+        metdata.images.foreach(function(image) {
+            queue.push({object: new Image(image), files: metadata.images});
+        });
+        metadata.images.length = 0;
+        */
+
+        queue.push({object: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;
 
         for (mojit in metadata.mojits) {
@@ -127,10 +135,10 @@ Shaker.prototype = {
                         filtered = this._filterFiles(files[dim]);
 
                         if (filtered.js.length) {
-                            queue.push({rollup: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                            queue.push({object: new Rollup(name + '.js', filtered.js), files: files[dim]});
                         }
                         if (filtered.css.length) {
-                            queue.push({rollup: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                            queue.push({object: new Rollup(name + '.css', filtered.css), files: files[dim]});
                         }
                         files[dim].length = 0;
                     }
@@ -145,10 +153,10 @@ Shaker.prototype = {
                     filtered = this._filterFiles(files[dim]);
 
                     if (filtered.js.length) {
-                        queue.push({rollup: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                        queue.push({object: new Rollup(name + '.js', filtered.js), files: files[dim]});
                     }
                     if (filtered.css.length) {
-                        queue.push({rollup: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                        queue.push({object: new Rollup(name + '.css', filtered.css), files: files[dim]});
                     }
                     files[dim].length = 0;
                 }
@@ -180,7 +188,7 @@ Shaker.prototype = {
         var queue = async.queue(function(item, callback) {
             setTimeout(function() {
                 var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
-                item.rollup.push(options, function(err, url) {
+                item.object.push(options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
                     callback();
