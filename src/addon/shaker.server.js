@@ -178,7 +178,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 loadedMojits[mojit.base || mojit.type] = meta.children[m].action;
             }
             //we just need to rollup the low-coverage Mojits
-            noBundledMojits = this._diffMojits(loadedMojits, this._shakerDeploy ? bundleMojits: []);
+            noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
             rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
             
             rollupsApp = this._shakeApp(groupsJS.app);
