@@ -10,18 +10,6 @@ var path = require('path'),
 function Rollup(name, files) {
     this._name = name;
     this._files = files;
-    this._js = [];
-    this._css = [];
-
-    this._files.forEach(function(file) {
-        var ext = path.extname(file);
-        if (ext === '.js') {
-            this._js.push(file);
-        }
-        else if (ext === '.css') {
-            this._css.push(file);
-        }
-    }, this);
 
     if (!Rollup.REGISTRY) { // Cache registry
         Rollup.REGISTRY = new Registry();
@@ -33,20 +21,20 @@ Rollup.TASKS_DIR = __dirname + '/tasks/';
 Rollup.REGISTRY = null;
 
 Rollup.prototype = {
-    _pushRollup: function(name, files, options, callback) {
+    push: function(options, callback) {
         var queue = new Queue('Rollup', {registry: Rollup.REGISTRY});
 
-        queue.task('files', files);
+        queue.task('files', this._files);
 
         if (options.concat) {
             queue.task('concat');
         }
 
         if (options.minify) {
-            queue.task(path.extname(name) === '.js' ? 'jsminify' : 'cssminify');
+            queue.task(path.extname(this._name) === '.js' ? 'jsminify' : 'cssminify');
         }
 
-        options.config.name = name;
+        options.config.name = this._name;
         queue.task(options.type, options.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
@@ -56,32 +44,6 @@ Rollup.prototype = {
         });
 
         queue.run();
-    },
-
-    // Push rollup files for CSS and JS in parallel
-    rollup: function(options, rollupcb) {
-        var self = this,
-            tasks = [];
-
-        if (this._css.length) {
-            tasks.push(function(callback) {
-                self._pushRollup(self._name + '.css', self._css, options, function(err, filename) {
-                    callback(null, filename);
-                });
-            });
-        }
-
-        if (this._js.length) {
-            tasks.push(function(callback) {
-                self._pushRollup(self._name + '.js', self._js, options, function(err, filename) {
-                    callback(null, filename);
-                });
-            });
-        }
-
-        async.parallel(tasks, function(err, filenames) {
-            rollupcb(err, filenames);
-        });
     }
 };
 
@@ -152,15 +114,25 @@ Shaker.prototype = {
     },
 
     _queueRollups: function(queue, metadata) {
-        var mojit, action, dim, files;
+        var mojit, action, dim, files, name, filtered;
 
-        queue.push(new Rollup('mojito_core', metadata.core));
+        queue.push({rollup: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
+        metadata.core.length = 0;
 
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in (files = metadata.mojits[mojit][action].shaken)) {
                     if (files[dim].length) {
-                        queue.push(new Rollup(mojit + '_' + action.replace('*', 'default') + '_{checksum}', files[dim]));
+                        name = mojit + '_' + action.replace('*', 'default') + '_{checksum}';
+                        filtered = this._filterFiles(files[dim]);
+
+                        if (filtered.js.length) {
+                            queue.push({rollup: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                        }
+                        if (filtered.css.length) {
+                            queue.push({rollup: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                        }
+                        files[dim].length = 0;
                     }
                 }
             }
@@ -169,23 +141,48 @@ Shaker.prototype = {
         for (action in metadata.app) {
             for (dim in (files = metadata.app[action].shaken)) {
                 if (files[dim].length) {
-                    queue.push(new Rollup('app_' + action.replace('*', 'default') + '_{checksum}', files[dim]));
+                    name = 'app_' + action.replace('*', 'default') + '_{checksum}';
+                    filtered = this._filterFiles(files[dim]);
+
+                    if (filtered.js.length) {
+                        queue.push({rollup: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                    }
+                    if (filtered.css.length) {
+                        queue.push({rollup: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                    }
+                    files[dim].length = 0;
                 }
             }
         }
+    },
+
+    _filterFiles: function(files) {
+        var js = [], css = [];
+
+        files.forEach(function(file) {
+            var ext = path.extname(file);
+
+            if (ext === '.js') {
+                js.push(file);
+            }
+            else if (ext === '.css') {
+                css.push(file);
+            }
+        });
+
+        return {'js': js, 'css': css};
     },
 
     _compileRollups: function(metadata, compressed) {
         utils.log('[SHAKER] - Compiling rollups...');
 
         var self = this;
-        var queue = async.queue(function(rollup, callback) {
+        var queue = async.queue(function(item, callback) {
             setTimeout(function() {
                 var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
-                rollup.rollup(options, function(err, urls) {
-                    utils.log('[SHAKER] - Pushed files ' + urls);
-                    rollup._files.length = 0; // Modify the original metadata list reference
-                    urls.forEach(function(url) {rollup._files.push(url);});
+                item.rollup.push(options, function(err, url) {
+                    utils.log('[SHAKER] - Pushed file ' + url);
+                    item.files.push(url);
                     callback();
                 });
             }, self._delay);

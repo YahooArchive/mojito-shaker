@@ -30,9 +30,9 @@
     "shaker": {
         "type": "mobstor",
         "parallel": 1,
-        "delay": 200,
+        "delay": 180,
         "config": {
-            "root": "assets/compiled/test",
+            "root": "assets/compiled/shaker10",
             "client": {
                 "host": "playground.yahoofs.com",
                 "proxy": {
