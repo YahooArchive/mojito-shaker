@@ -83,11 +83,12 @@ function Shaker(store) {
     this._concat = shaker.concat || true;
     this._minify = shaker.minify || true;
     this._config = shaker.config || {};
-    this._config.root = this._config.root || 'assets/compiled/';
-    this._config.staticRoot = this._prefix + '/' + this._store._shortRoot + '/' + this._config.root;
+    this._config.root = this._prefix + '/' + this._store._shortRoot + '/' + Shaker.ASSETS_DIR;
+    this._config.assets_dir = Shaker.ASSETS_DIR;
 }
 
 Shaker.TASKS_DIR = __dirname + '/tasks/';
+Shaker.ASSETS_DIR = 'assets/compiled/';
 
 Shaker.prototype = {
     run: function(callback) {

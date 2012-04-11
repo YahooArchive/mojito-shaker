@@ -18,10 +18,7 @@
     "settings": ["environment:test"],
 
     "shaker": {
-        "type": "local",
-        "config": {
-            "root": "assets/compiled"
-        }
+        "type": "local"
     }
 },
 {
@@ -32,7 +29,6 @@
         "parallel": 1,
         "delay": 180,
         "config": {
-            "root": "assets/compiled/shaker10",
             "client": {
                 "host": "playground.yahoofs.com",
                 "proxy": {
@@ -51,7 +47,6 @@
         "parallel": 8,
         "delay": 0,
         "config": {
-            "root": "test5",
             "client": {
                 "key": "AKIAIOPNYHFYPOICGK6Q",
                 "secret": "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",

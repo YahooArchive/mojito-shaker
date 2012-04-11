@@ -49,7 +49,7 @@ function localTask(options, status, logger) {
         pathname = path.resolve(path.dirname(options.name)),
         name = options.name,
         root = options && options.root || '',
-        staticRoot = options && options.staticRoot || '',
+        assets_dir = options && options.assets_dir || '',
         encoding = options && options.encoding || 'utf8',
         mkdir = options && options.mkdir || true,
         dirmode = options && options.dirmode || '0755';
@@ -62,19 +62,20 @@ function localTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        var new_filename = root + '/' + filename;
+        url = root + filename;
+        filename = assets_dir + filename;
 
-        path.exists(new_filename, function(exists) {
+        path.exists(filename, function(exists) {
             if (exists) {
-                status.emit('complete', 'local', staticRoot + '/' + filename);
+                status.emit('complete', 'local', url);
             }
             else {
-                fs.writeFile(new_filename, data, encoding, function(err) {
+                fs.writeFile(filename, data, encoding, function(err) {
                     if (err) {
                         status.emit('failed', 'local', 'error writing destination file: ' + err);
                     } else {
-                        self._state.set(State.TYPES.FILES, [ filename ]);
-                        status.emit('complete', 'local', staticRoot + '/' + filename);
+                        self._state.set(State.TYPES.FILES, [filename]);
+                        status.emit('complete', 'local', url);
                     }
                 });
             }
