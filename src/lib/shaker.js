@@ -144,7 +144,7 @@ Shaker.prototype = {
             metadata.images.length = 0;
         }
 
-        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
+        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core_{checksum}.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;
 
         for (mojit in metadata.mojits) {
