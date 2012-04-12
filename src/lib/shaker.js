@@ -76,8 +76,9 @@ function Shaker(store) {
     }
 
     var shaker = config.shaker || {};
-    this._type = shaker.type || 'local';
     this._compile = config.shaker !== undefined;
+    this._type = shaker.type || 'local';
+    this._images = shaker.images || false;
     this._parallel = shaker.parallel || 20;
     this._delay = shaker.delay || 0;
     this._concat = shaker.concat || true;
@@ -135,10 +136,12 @@ Shaker.prototype = {
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
-        metadata.images.forEach(function(image) {
-            queue.push({object: new Image(path.basename(image), image), files: metadata.images});
-        });
-        metadata.images.length = 0;
+        if (this._images) {
+            metadata.images.forEach(function(image) {
+                //queue.push({object: new Image(path.basename(image), image), files: metadata.images});
+            });
+            metadata.images.length = 0;
+        }
 
         queue.push({object: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;

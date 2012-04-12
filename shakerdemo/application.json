@@ -26,6 +26,7 @@
 
     "shaker": {
         "type": "mobstor",
+        "images": true,
         "parallel": 1,
         "delay": 180,
         "config": {
@@ -44,6 +45,7 @@
 
     "shaker": {
         "type": "s3",
+        "images": true,
         "parallel": 8,
         "delay": 0,
         "config": {
