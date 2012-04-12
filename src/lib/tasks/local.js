@@ -49,7 +49,6 @@ function localTask(options, status, logger) {
         pathname = path.resolve(path.dirname(options.name)),
         name = options.name,
         root = options && options.root || '',
-        assets_dir = options && options.assets_dir || '',
         encoding = options && options.encoding || 'utf8',
         mkdir = options && options.mkdir || true,
         dirmode = options && options.dirmode || '0755';
@@ -63,7 +62,6 @@ function localTask(options, status, logger) {
         }
 
         url = root + filename;
-        filename = assets_dir + filename;
 
         path.exists(filename, function(exists) {
             if (exists) {

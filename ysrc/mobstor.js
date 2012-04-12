@@ -53,8 +53,8 @@ function mobstorTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        filename = root + '/' + filename;
-        var url = 'http://' + config.host + '/' + filename;
+        filename = root + filename;
+        var url = 'http://' + config.host + filename;
 
         try {
             client.checkFile(filename, function(err, status, d) {});

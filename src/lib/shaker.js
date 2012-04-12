@@ -75,21 +75,22 @@ function Shaker(store) {
         this._prefix = appConfig.prefix ? '/' + appConfig.prefix : '';
     }
 
-    var shaker = config.shaker || {};
+    var shaker = config.shaker !== undefined ? config.shaker : {};
     this._compile = config.shaker !== undefined;
-    this._type = shaker.type || 'local';
-    this._images = shaker.images || false;
-    this._parallel = shaker.parallel || 20;
-    this._delay = shaker.delay || 0;
-    this._concat = shaker.concat || true;
-    this._minify = shaker.minify || true;
-    this._config = shaker.config || {};
-    this._config.root = this._prefix + '/' + this._store._shortRoot + '/' + Shaker.ASSETS_DIR;
-    this._config.assets_dir = Shaker.ASSETS_DIR;
+    this._type = shaker.type !== undefined ? shaker.type : 'local';
+    this._images = shaker.images !== undefined ? shaker.images : false;
+    this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;
+    this._delay = shaker.delay !== undefined ? shaker.delay : 0;
+    this._concat = shaker.concat !== undefined ? shaker.concat : true;
+    this._minify = shaker.minify !== undefined ? shaker.minify : true;
+    this._config = shaker.config !== undefined ? shaker.config : {};
+    this._config.root = this._prefix + '/' + this._store._shortRoot + '/';
 }
 
 Shaker.TASKS_DIR = __dirname + '/tasks/';
-Shaker.ASSETS_DIR = 'assets/compiled/';
+Shaker.ASSETS_DIR = 'assets/';
+Shaker.COMPILED_DIR = Shaker.ASSETS_DIR + 'compiled/';
+Shaker.IMAGES_DIR = Shaker.ASSETS_DIR + 'images/';
 
 Shaker.prototype = {
     run: function(callback) {
@@ -138,12 +139,12 @@ Shaker.prototype = {
 
         if (this._images) {
             metadata.images.forEach(function(image) {
-                //queue.push({object: new Image(path.basename(image), image), files: metadata.images});
+                queue.push({object: new Image(Shaker.IMAGES_DIR + path.basename(image), image), files: metadata.images});
             });
             metadata.images.length = 0;
         }
 
-        queue.push({object: new Rollup('mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
+        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;
 
         for (mojit in metadata.mojits) {
@@ -154,10 +155,10 @@ Shaker.prototype = {
                         filtered = this._filterFiles(files[dim]);
 
                         if (filtered.js.length) {
-                            queue.push({object: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.js', filtered.js), files: files[dim]});
                         }
                         if (filtered.css.length) {
-                            queue.push({object: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
                         }
                         files[dim].length = 0;
                     }
@@ -172,10 +173,10 @@ Shaker.prototype = {
                     filtered = this._filterFiles(files[dim]);
 
                     if (filtered.js.length) {
-                        queue.push({object: new Rollup(name + '.js', filtered.js), files: files[dim]});
+                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.js', filtered.js), files: files[dim]});
                     }
                     if (filtered.css.length) {
-                        queue.push({object: new Rollup(name + '.css', filtered.css), files: files[dim]});
+                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
                     }
                     files[dim].length = 0;
                 }
@@ -234,7 +235,7 @@ Shaker.prototype = {
         aux += JSON.stringify(metadata,null,'\t');
         aux += '});';
 
-        utils.log('[SHAKER] - Writting Addon file with the metadata');
+        utils.log('[SHAKER] - Writting addon metadata file');
         mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
         fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
     }
