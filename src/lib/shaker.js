@@ -7,62 +7,6 @@ var path = require('path'),
     async = require('async'),
     mkdirp = require('mkdirp');
 
-function Image(name, file) {
-    this._name = name;
-    this._file = file;
-}
-
-Image.prototype = {
-    push: function(registry, options, callback) {
-        var queue = new Queue('Rollup', {registry: registry});
-
-        queue.task('files', [this._file]);
-
-        options.config.name = this._name;
-        queue.task(options.task, options.config);
-
-        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
-            if (data.task.type === options.task) {
-                callback(null, data.result);
-            }
-        });
-
-        queue.run();
-    }
-};
-
-function Rollup(name, files) {
-    this._name = name;
-    this._files = files;
-}
-
-Rollup.prototype = {
-    push: function(registry, options, callback) {
-        var queue = new Queue('Rollup', {registry: registry});
-
-        queue.task('files', this._files);
-
-        if (options.concat) {
-            queue.task('concat');
-        }
-
-        if (options.minify) {
-            queue.task(path.extname(this._name) === '.js' ? 'jsminify' : 'cssminify');
-        }
-
-        options.config.name = this._name;
-        queue.task(options.task, options.config);
-
-        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
-            if (data.task.type === options.task) {
-                callback(null, data.result);
-            }
-        });
-
-        queue.run();
-    }
-};
-
 function Shaker(store) {
     this._store = store;
     this._prefix = '/static';
@@ -134,6 +78,32 @@ Shaker.prototype = {
         return metadata;
     },
 
+    _compileRollups: function(metadata, compressed) {
+        utils.log('[SHAKER] - Compiling rollups...');
+
+        var registry = new Registry();
+        registry.load(Shaker.TASKS_DIR);
+
+        var self = this;
+        var queue = async.queue(function(item, callback) {
+            setTimeout(function() {
+                var options = {task: self._task, concat: self._concat, minify: self._minify, config: self._config};
+                item.object.push(registry, options, function(err, url) {
+                    utils.log('[SHAKER] - Pushed file ' + url);
+                    item.files.push(url);
+                    callback();
+                });
+            }, self._delay);
+        }, this._parallel);
+
+        queue.drain = function() {
+            self._writeMeta(metadata);
+            compressed(metadata);
+        };
+
+        this._queueRollups(queue, metadata);
+    },
+
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
@@ -201,32 +171,6 @@ Shaker.prototype = {
         return {'js': js, 'css': css};
     },
 
-    _compileRollups: function(metadata, compressed) {
-        utils.log('[SHAKER] - Compiling rollups...');
-
-        var registry = new Registry();
-        registry.load(Shaker.TASKS_DIR);
-
-        var self = this;
-        var queue = async.queue(function(item, callback) {
-            setTimeout(function() {
-                var options = {task: self._task, concat: self._concat, minify: self._minify, config: self._config};
-                item.object.push(registry, options, function(err, url) {
-                    utils.log('[SHAKER] - Pushed file ' + url);
-                    item.files.push(url);
-                    callback();
-                });
-            }, self._delay);
-        }, this._parallel);
-
-        queue.drain = function() {
-            self._writeMeta(metadata);
-            compressed(metadata);
-        };
-
-        this._queueRollups(queue, metadata);
-    },
-
     _writeMeta:function(metadata){
         var self = this, aux = "";
         aux += 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
@@ -238,6 +182,62 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Writting addon metadata file');
         mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
         fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
+    }
+};
+
+function Image(name, file) {
+    this._name = name;
+    this._file = file;
+}
+
+Image.prototype = {
+    push: function(registry, options, callback) {
+        var queue = new Queue('Rollup', {registry: registry});
+
+        queue.task('files', [this._file]);
+
+        options.config.name = this._name;
+        queue.task(options.task, options.config);
+
+        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
+            if (data.task.type === options.task) {
+                callback(null, data.result);
+            }
+        });
+
+        queue.run();
+    }
+};
+
+function Rollup(name, files) {
+    this._name = name;
+    this._files = files;
+}
+
+Rollup.prototype = {
+    push: function(registry, options, callback) {
+        var queue = new Queue('Rollup', {registry: registry});
+
+        queue.task('files', this._files);
+
+        if (options.concat) {
+            queue.task('concat');
+        }
+
+        if (options.minify) {
+            queue.task(path.extname(this._name) === '.js' ? 'jsminify' : 'cssminify');
+        }
+
+        options.config.name = this._name;
+        queue.task(options.task, options.config);
+
+        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
+            if (data.task.type === options.task) {
+                callback(null, data.result);
+            }
+        });
+
+        queue.run();
     }
 };
 
