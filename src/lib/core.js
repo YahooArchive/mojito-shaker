@@ -11,7 +11,7 @@ var libpath = require('path'),
     util = require('./utils.js');
 
 /*GLOBAL CONFIGS*/
-var SHAKER_CONFIG_NAME = 'shaker.json',
+var SHAKER_CONFIG_NAME = 'ShakerCore.json',
     //DEFAULT TEMPLATE SHAKER CONFIG
     SHAKER_DEFAULT_DIM_CONFIG = {
         common: {},
@@ -28,7 +28,7 @@ var SHAKER_CONFIG_NAME = 'shaker.json',
 
 /* SHAKER OBJECT DEFINITION */
 
-var Shaker = function (config){
+var ShakerCore = function (config){
     config = config || {};
     this._store = config.store;
     this._debugging = false;
@@ -40,10 +40,10 @@ var Shaker = function (config){
     }
 };
 
-Shaker.prototype.constructor = Shaker;
+ShakerCore.prototype.constructor = ShakerCore;
 
 /* LOGGING FUNCTION */
-Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': ' + err);} };
+ShakerCore.prototype._log = function(f,err){if(this._debugging){console.log(f + ': ' + err);} };
 
 /**
 *
@@ -57,7 +57,7 @@ Shaker.prototype._log = function(f,err){if(this._debugging){console.log(f + ': '
 *
 **/
 
-Shaker.prototype._getMojits = function(app_config){
+ShakerCore.prototype._getMojits = function(app_config){
     var mojitFolders = (app_config && app_config[0].mojitDirs) || ['mojits'],
         mojits = {},
         filter_function = function(i){
@@ -91,7 +91,7 @@ Shaker.prototype._getMojits = function(app_config){
 *
 **/
 
-Shaker.prototype._getMojitShakerConfig = function(name,path){
+ShakerCore.prototype._getMojitShakerConfig = function(name,path){
    try{
         return util.readConfigFile(path +'/'+SHAKER_CONFIG_NAME);
         
@@ -113,7 +113,7 @@ Shaker.prototype._getMojitShakerConfig = function(name,path){
 * @return {Object} The source object will the matched dimensions files concatenated.
 **/
 
-Shaker.prototype.mergeConcatDimensions = function(source,giver){
+ShakerCore.prototype.mergeConcatDimensions = function(source,giver){
     if(giver.files){//is child
         source.files = source.files ? source.files.concat(giver.files) : giver.files;
     }else{
@@ -125,7 +125,7 @@ Shaker.prototype.mergeConcatDimensions = function(source,giver){
     return source;
 };
 
-Shaker.prototype.includeResources = function(includes,resources,absolutePath){
+ShakerCore.prototype.includeResources = function(includes,resources,absolutePath){
 var folders = includes.filter(function(i){return libpath.extname(i) === "";}),
         files = includes.filter(function(i){return libpath.extname(i) !== "";}),
         //take all resources that are contained in the given folders
@@ -147,7 +147,7 @@ var folders = includes.filter(function(i){return libpath.extname(i) === "";}),
         return filtered;
 };
 
-Shaker.prototype.excludeResources = function(excludes,resources, absPath){
+ShakerCore.prototype.excludeResources = function(excludes,resources, absPath){
     var filtered = resources.filter(function(item){
         for(var i=0; i<excludes.length; i++){
             var fullItem = absPath + excludes[i];
@@ -161,7 +161,7 @@ Shaker.prototype.excludeResources = function(excludes,resources, absPath){
     return filtered;
 };
 
-Shaker.prototype.replaceResources = function(replaces, resources){
+ShakerCore.prototype.replaceResources = function(replaces, resources){
 
 };
 
@@ -176,7 +176,7 @@ Shaker.prototype.replaceResources = function(replaces, resources){
 *
 **/
 
-Shaker.prototype._matchDefaultDimensions = function(assetspath){
+ShakerCore.prototype._matchDefaultDimensions = function(assetspath){
     var dimensions = util.simpleClone(SHAKER_DEFAULT_DIM_CONFIG), //get the default dimensions
         filter_function = function(i){
             return i.charAt(0) !== '.' && libpath.extname(i) === '';
@@ -206,7 +206,7 @@ Shaker.prototype._matchDefaultDimensions = function(assetspath){
 };
 
 /*
-* Merge the default configuration (defined on the top) with the shaker.json file if founded.
+* Merge the default configuration (defined on the top) with the ShakerCore.json file if founded.
 * @method _mergeShakerConfig
 * @param {string} the name of the mojit
 * @param {string} the path of the mojit (relative to the app level)
@@ -214,8 +214,8 @@ Shaker.prototype._matchDefaultDimensions = function(assetspath){
 * @private
 */
 
-Shaker.prototype._mergeShakerConfig = function(name,path,binders){
-    var shaker_config = this._getMojitShakerConfig(name,path) || {},//get shaker.json
+ShakerCore.prototype._mergeShakerConfig = function(name,path,binders){
+    var shaker_config = this._getMojitShakerConfig(name,path) || {},//get ShakerCore.json
     default_dim = this._matchDefaultDimensions(path + '/assets'),
         default_config,
     default_actions = util.simpleClone(SHAKER_DEFAULT_ACTION_CONFIG);//default '*' action
@@ -234,7 +234,7 @@ Shaker.prototype._mergeShakerConfig = function(name,path,binders){
 * @private
 */
 
-Shaker.prototype.preCalcModule = function(filePath) {
+ShakerCore.prototype.preCalcModule = function(filePath) {
         var file = libfs.readFileSync(filePath, 'utf8'),
             ctx = {
                 console: {log: function() {}},
@@ -270,7 +270,7 @@ Shaker.prototype.preCalcModule = function(filePath) {
 * @params {array[strings]} list of autoload files
 * @protected
 */
-Shaker.prototype.precalculateAutoloads = function(autoloads){
+ShakerCore.prototype.precalculateAutoloads = function(autoloads){
     autoloads = autoloads || {};
     var modules = {};
     for(var i in autoloads){
@@ -290,7 +290,7 @@ Shaker.prototype.precalculateAutoloads = function(autoloads){
 * @protected
 */
 
-Shaker.prototype.filterResources = function(patterns,resources,mojitPath){
+ShakerCore.prototype.filterResources = function(patterns,resources,mojitPath){
     var filenames = [];
     for (var i in resources) {
         filenames.push(resources[i]);
@@ -303,7 +303,7 @@ Shaker.prototype.filterResources = function(patterns,resources,mojitPath){
    return afterExclude;
 };
 
-Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,resources,mojitPath,prefix){
+ShakerCore.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,resources,mojitPath,prefix){
     prefix = prefix || 'assets';
     var dim,res = {},children = 0;
     for(var i in (dim = shaker_dimensions)){
@@ -324,7 +324,7 @@ Shaker.prototype.generateRecursiveShakerDimensions = function(shaker_dimensions,
     return res;
 };
 
-Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources,mojitPath){
+ShakerCore.prototype.generateShakerDimensions = function(path,shaker_cfg,resources,mojitPath){
     var dimensions = shaker_cfg.dimensions;
     dimensions.action = dimensions.action || {};
 
@@ -334,7 +334,7 @@ Shaker.prototype.generateShakerDimensions = function(path,shaker_cfg,resources,m
     return this.generateRecursiveShakerDimensions(dimensions,resources,mojitPath);
 };
 
-Shaker.prototype.recursiveModuleCalculation = function(item,modules){
+ShakerCore.prototype.recursiveModuleCalculation = function(item,modules){
     var dependencies = [];
     if(modules[item]){
         var req = modules[item].meta.requires;
@@ -348,7 +348,7 @@ Shaker.prototype.recursiveModuleCalculation = function(item,modules){
     return dependencies;
 };
 
-Shaker.prototype.calculateBinderDependencies = function(action,filePath,modules){
+ShakerCore.prototype.calculateBinderDependencies = function(action,filePath,modules){
     var dependencies = [],pathDeps = [],
         temp = this.preCalcModule(filePath),
         req = temp.meta.requires;
@@ -363,7 +363,7 @@ Shaker.prototype.calculateBinderDependencies = function(action,filePath,modules)
 };
 
 
-Shaker.prototype.augmentDimensionRecursive = function(left,right,origin,dimensions,nested){
+ShakerCore.prototype.augmentDimensionRecursive = function(left,right,origin,dimensions,nested){
     var cfg = {},head;
     if(dimensions.files){
         cfg.files = origin.files.concat(dimensions.files);
@@ -377,7 +377,7 @@ Shaker.prototype.augmentDimensionRecursive = function(left,right,origin,dimensio
     return cfg;
 };
 
-Shaker.prototype.mergeDimensionsRecursive = function(nameLeft,nameRight,origin,dest){
+ShakerCore.prototype.mergeDimensionsRecursive = function(nameLeft,nameRight,origin,dest){
     var cfg = {};
     if(origin.files){
        return this.augmentDimensionRecursive(nameLeft,nameRight,origin,dest);
@@ -389,7 +389,7 @@ Shaker.prototype.mergeDimensionsRecursive = function(nameLeft,nameRight,origin,d
     return cfg;
 };
 
-Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
+ShakerCore.prototype.dispatchOrder = function(action,selector,dimensions,options){
     options = options || {};
     var parts = selector.split('-'),
         computed = 0,
@@ -452,7 +452,7 @@ Shaker.prototype.dispatchOrder = function(action,selector,dimensions,options){
     }
 };
 
-Shaker.prototype.shakeAction = function (name,meta,cache){
+ShakerCore.prototype.shakeAction = function (name,meta,cache){
     var dim = meta.dimensions;
     cache = cache || {};
     for(var item in dim){
@@ -466,7 +466,7 @@ Shaker.prototype.shakeAction = function (name,meta,cache){
     return cache;
 };
 
-Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selector,mojitPath){
+ShakerCore.prototype._augmentRules = function(shaker_cfg,shaken,selector,mojitPath){
     if(!shaker_cfg.augments) return;
 
     var rules = shaker_cfg.augments,
@@ -512,7 +512,7 @@ Shaker.prototype._augmentRules = function(shaker_cfg,shaken,selector,mojitPath){
     }//rule
 };
 
-Shaker.prototype.shakeMojit = function(name,path,options){
+ShakerCore.prototype.shakeMojit = function(name,path,options){
     var self = this;
     //options default
     options = options || {};
@@ -542,13 +542,13 @@ Shaker.prototype.shakeMojit = function(name,path,options){
      return shaked;
 };
 
-Shaker.prototype.shakeApp = function(name,path,options){
+ShakerCore.prototype.shakeApp = function(name,path,options){
     options = options || {};
     options.app = true;
     return this.shakeMojit('app',path.slice(0,-1),options);
 };
 
-Shaker.prototype.shakeAllMojits = function(mojits,options){
+ShakerCore.prototype.shakeAllMojits = function(mojits,options){
     var self = this,
         shaken = {};
     for(var mojit in mojits){
@@ -557,7 +557,7 @@ Shaker.prototype.shakeAllMojits = function(mojits,options){
     return shaken;
 };
 
-Shaker.prototype._cleanUp = function(shaken){
+ShakerCore.prototype._cleanUp = function(shaken){
     var mojit, mojits,action,actions;
     for(mojit in (mojits = shaken.mojits)){
         for(action in (actions = mojits[mojit])){
@@ -569,7 +569,7 @@ Shaker.prototype._cleanUp = function(shaken){
     }
 
 };
-Shaker.prototype.bundleMojits = function(shaken,options){
+ShakerCore.prototype.bundleMojits = function(shaken,options){
     options = options || {};
     var app = this._getMojitShakerConfig('app',this._store._root),
     dimensions = {};
@@ -612,7 +612,7 @@ Shaker.prototype.bundleMojits = function(shaken,options){
 
 // Look through Mojito store static files for mojit assets to roll up
 // Files are mapped by URL -> filename
-Shaker.prototype._mojitResources = function() {
+ShakerCore.prototype._mojitResources = function() {
     var resources = {
         'mojits': {},
         'app': {assets: {}, binders: {}, autoload: {}},
@@ -651,7 +651,7 @@ Shaker.prototype._mojitResources = function() {
     return resources;
 };
 
-Shaker.prototype.shakeImages = function() {
+ShakerCore.prototype.shakeImages = function() {
     var images = [];
     for (var image in this._resources.images) {
         images.push(this._resources.images[image]);
@@ -659,7 +659,7 @@ Shaker.prototype.shakeImages = function() {
     return images;
 };
 
-Shaker.prototype.shakeCore = function(){
+ShakerCore.prototype.shakeCore = function(){
     var files = this._store.getRollupsApp('client', {}).srcs;
 
     // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
@@ -668,7 +668,7 @@ Shaker.prototype.shakeCore = function(){
     }, this);
 };
 
-Shaker.prototype.shakeAll = function(options){
+ShakerCore.prototype.shakeAll = function(options){
     options = options || {};
     var mojits = this._getMojits(),
         shaken = {};
@@ -683,4 +683,4 @@ Shaker.prototype.shakeAll = function(options){
     return shaken;
 };
 
-module.exports.ShakerCore = Shaker;
+module.exports.ShakerCore = ShakerCore;
