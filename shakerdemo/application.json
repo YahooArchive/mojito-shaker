@@ -18,14 +18,14 @@
     "settings": ["environment:test"],
 
     "shaker": {
-        "type": "local"
+        "task": "local"
     }
 },
 {
     "settings": ["environment:prod"],
 
     "shaker": {
-        "type": "mobstor",
+        "task": "mobstor",
         "images": true,
         "parallel": 1,
         "delay": 180,
@@ -44,7 +44,7 @@
     "settings": ["environment:stage"],
 
     "shaker": {
-        "type": "s3",
+        "task": "s3",
         "images": true,
         "parallel": 8,
         "delay": 0,

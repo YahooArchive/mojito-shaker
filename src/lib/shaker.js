@@ -19,10 +19,10 @@ Image.prototype = {
         queue.task('files', [this._file]);
 
         options.config.name = this._name;
-        queue.task(options.type, options.config);
+        queue.task(options.task, options.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
-            if (data.task.type === options.type) {
+            if (data.task.type === options.task) {
                 callback(null, data.result);
             }
         });
@@ -51,10 +51,10 @@ Rollup.prototype = {
         }
 
         options.config.name = this._name;
-        queue.task(options.type, options.config);
+        queue.task(options.task, options.config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
-            if (data.task.type === options.type) {
+            if (data.task.type === options.task) {
                 callback(null, data.result);
             }
         });
@@ -77,7 +77,7 @@ function Shaker(store) {
 
     var shaker = config.shaker !== undefined ? config.shaker : {};
     this._compile = config.shaker !== undefined;
-    this._type = shaker.type !== undefined ? shaker.type : 'local';
+    this._task = shaker.task !== undefined ? shaker.task : 'local';
     this._images = shaker.images !== undefined ? shaker.images : false;
     this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;
     this._delay = shaker.delay !== undefined ? shaker.delay : 0;
@@ -210,7 +210,7 @@ Shaker.prototype = {
         var self = this;
         var queue = async.queue(function(item, callback) {
             setTimeout(function() {
-                var options = {type: self._type, concat: self._concat, minify: self._minify, config: self._config};
+                var options = {task: self._task, concat: self._concat, minify: self._minify, config: self._config};
                 item.object.push(registry, options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
