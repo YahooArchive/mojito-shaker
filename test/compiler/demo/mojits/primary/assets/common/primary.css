@@ -5,7 +5,7 @@
 }
 
 #leadstory .hd {
-    background: url(/static/shakerdemo/assets/images/main_title_bg_2.png);
+    background: url(/static/demo/assets/images/main_title_bg_2.png);
     height: 54px;
     margin: 5px 0 0 5px;
     width: 410px;
@@ -19,7 +19,7 @@
 }
 
 #leadstory .hd h1 {
-    background: url(/static/shakerdemo/assets/images/headline1.png) no-repeat;
+    background: url(/static/demo/assets/images/headline1.png) no-repeat;
     height: 35px;
     margin: 16px 0 0 10px;
     position: absolute;
