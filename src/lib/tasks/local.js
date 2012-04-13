@@ -61,9 +61,9 @@ function localTask(options, status, logger) {
             filename = filename.replace('{checksum}', md5sum.digest('hex'));
         }
 
-        url = root + filename;
-
         path.exists(filename, function(exists) {
+            url = root + filename;
+
             if (exists) {
                 status.emit('complete', 'local', url);
             }
