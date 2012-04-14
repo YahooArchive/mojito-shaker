@@ -56,7 +56,6 @@ function Shaker(store) {
     this._images = shaker.images !== undefined ? shaker.images : false;
     this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;
     this._delay = shaker.delay !== undefined ? shaker.delay : 0;
-    this._concat = shaker.concat !== undefined ? shaker.concat : true;
     this._minify = shaker.minify !== undefined ? shaker.minify : true;
     this._config = shaker.config !== undefined ? shaker.config : {};
     this._config.root = this._prefix + '/' + this._store._shortRoot + '/';
@@ -118,7 +117,7 @@ Shaker.prototype = {
         var self = this;
         var queue = async.queue(function(item, callback) {
             setTimeout(function() {
-                var options = {task: self._task, concat: self._concat, minify: self._minify, config: self._config};
+                var options = {task: self._task, minify: self._minify, config: self._config};
                 item.object.push(registry, options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
@@ -250,10 +249,7 @@ Rollup.prototype = {
         var queue = new Queue('Rollup', {registry: registry});
 
         queue.task('files', this._files);
-
-        if (options.concat) {
-            queue.task('concat');
-        }
+        queue.task('concat');
 
         if (options.minify) {
             queue.task(mime.lookup(this._name) === 'application/javascript' ? 'jsminify' : 'cssminify');
