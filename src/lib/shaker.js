@@ -69,6 +69,8 @@ Shaker.IMAGES_DIR = Shaker.ASSETS_DIR + 'images/';
 Shaker.prototype = {
     /*
      * Start compiling assets.
+     *
+     * @param callback {function} Callback when compiling is complete.
      */
     run: function(callback) {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
@@ -77,7 +79,7 @@ Shaker.prototype = {
         if (this._compile) {
             this._compileRollups(metadata, callback);
         } else {
-            metadata = this._rename(metadata);
+            this._rename(metadata);
             this._writeMeta(metadata);
             callback(metadata);
         }
@@ -87,8 +89,10 @@ Shaker.prototype = {
      * Rename assets from local filename to URL.
      *
      * TODO: should be unnecessary if core keeps mapping of urls -> files
+     *
+     * @param metadata {Object} Core metadata to augment.
      */
-    _rename: function(metadata, callback){
+    _rename: function(metadata){
         utils.log('[SHAKER] - Processing assets for development env.');
         var mojit, action, dim, item, list;
 
@@ -112,46 +116,51 @@ Shaker.prototype = {
                 }
             }
         }
-
-        return metadata;
     },
 
     /*
      * The workhorse of compiler. Loads the queue and processes the results. We modify the original metadata
      * object for simplicity.
+     *
+     * @param metadata {Object} Core metadata to augment.
+     * @param callback {function} Callback when rollups are compiled.
      */
-    _compileRollups: function(metadata, compressed) {
+    _compileRollups: function(metadata, callback) {
         utils.log('[SHAKER] - Compiling rollups...');
 
         var registry = new Registry();
         registry.load(Shaker.TASKS_DIR);
 
         var self = this;
-        var queue = async.queue(function(item, callback) {
+        var queue = async.queue(function(item, taskCallback) {
             setTimeout(function() {
                 var options = {task: self._task, minify: self._minify, config: self._config};
                 item.object.push(registry, options, function(err, url) {
                     utils.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
-                    callback();
+                    taskCallback();
                 });
             }, self._delay);
         }, this._parallel);
 
         queue.drain = function() {
             self._writeMeta(metadata);
-            compressed(metadata);
+            callback(metadata);
         };
 
         this._queueRollups(queue, metadata);
     },
 
     /*
-     * Add rollup assets to async queue.
+     * Add all assets referenced by metadata to an async queue.
+     *
+     * @param queue {Object} Queue to append tasks to.
+     * @param metadata {Object} Core metadata to look through.
      */
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
+        // We need to add images so they can be referenced by relative URLs in the deployed CSS.
         if (this._images) {
             metadata.images.forEach(function(image) {
                 queue.push({object: new Image(Shaker.IMAGES_DIR + path.basename(image), image), files: metadata.images});
@@ -159,9 +168,11 @@ Shaker.prototype = {
             metadata.images.length = 0;
         }
 
+        // Mojito core assets
         queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core_{checksum}.js', metadata.core.slice() /* Clone array */), files: metadata.core});
         metadata.core.length = 0;
 
+        // Mojit assets
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in (files = metadata.mojits[mojit][action].shaken)) {
@@ -181,6 +192,7 @@ Shaker.prototype = {
             }
         }
 
+        // App level assets
         for (action in metadata.app) {
             for (dim in (files = metadata.app[action].shaken)) {
                 if (files[dim].length) {
@@ -201,6 +213,8 @@ Shaker.prototype = {
 
     /*
      * Separate JS and CSS files into separate arrays.
+     *
+     * @param files {array} List of JS/CSS filenames.
      */
     _filterFiles: function(files) {
         var js = [], css = [];
@@ -221,8 +235,10 @@ Shaker.prototype = {
 
     /*
      * Write the modified metadata.
+     *
+     * @param metadata {Object} Core metadata to write to file.
      */
-    _writeMeta:function(metadata){
+    _writeMeta: function(metadata){
         var self = this, aux = "";
         aux += 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
         aux += 'YUI.namespace("_mojito._cache.shaker");\n';
@@ -238,6 +254,9 @@ Shaker.prototype = {
 
 /*
  * Simple buildy wrapper for images.
+ *
+ * @param name {string} Name of image to build
+ * @param file {string} Filename of image
  */
 function Image(name, file) {
     this._name = name;
@@ -265,6 +284,9 @@ Image.prototype = {
 
 /*
  * Simple buildy wrapper for Javascript/CSS.
+ *
+ * @param name {string} Name of rollup to build
+ * @param files {array} Filenames to rollup
  */
 function Rollup(name, files) {
     this._name = name;
@@ -285,7 +307,7 @@ Rollup.prototype = {
         options.config.name = this._name;
         queue.task(options.task, options.config);
 
-        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
+        queue.on('taskComplete', function(data) {
             if (data.task.type === options.task) {
                 callback(null, data.result);
             }
