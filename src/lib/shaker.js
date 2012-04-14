@@ -271,7 +271,7 @@ Image.prototype = {
         var queue = new Queue('Rollup', {registry: registry});
 
         queue.task('files', [this._file]);
-        queue.task('read');
+        queue.task('read'); // Read the files into strings for writing
 
         var config = utils.simpleClone(options.config);
         config.name = this._name;
