@@ -51,14 +51,14 @@ function Shaker(store) {
     }
 
     var shaker = config.shaker !== undefined ? config.shaker : {};
-    this._compile = config.shaker !== undefined;
-    this._task = shaker.task !== undefined ? shaker.task : 'local';
-    this._images = shaker.images !== undefined ? shaker.images : false;
-    this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;
-    this._delay = shaker.delay !== undefined ? shaker.delay : 0;
-    this._minify = shaker.minify !== undefined ? shaker.minify : true;
-    this._config = shaker.config !== undefined ? shaker.config : {};
-    this._config.root = this._prefix + '/' + this._store._shortRoot + '/';
+    this._compile = config.shaker !== undefined; // Shaker config settings are defined in the top level of app config.
+    this._task = shaker.task !== undefined ? shaker.task : 'local'; // Task to run when compiling assets
+    this._images = shaker.images !== undefined ? shaker.images : false; // Deploy images
+    this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;  // How many tasks the async queue runs
+    this._delay = shaker.delay !== undefined ? shaker.delay : 0;    // Add some network delay for slow connections
+    this._minify = shaker.minify !== undefined ? shaker.minify : true; // Uglify or not
+    this._config = shaker.config !== undefined ? shaker.config : {};    // Config object passed through to task
+    this._config.root = this._prefix + '/' + this._store._shortRoot + '/';  // Static prefix for assets generated
 }
 
 Shaker.TASKS_DIR = __dirname + '/tasks/';   // Tasks in this directory can be directly referenced in application.json
@@ -96,6 +96,7 @@ Shaker.prototype = {
         utils.log('[SHAKER] - Processing assets for development env.');
         var mojit, action, dim, item, list;
 
+        // Mojit assets
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
                 for (dim in metadata.mojits[mojit][action].shaken) {
@@ -107,6 +108,7 @@ Shaker.prototype = {
             }
         }
 
+        // App level assets
         for (action in metadata.app) {
             for (dim in metadata.app[action].shaken) {
                 for (item in (list = metadata.app[action].shaken[dim])) {
