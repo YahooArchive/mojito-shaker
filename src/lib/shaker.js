@@ -4,14 +4,15 @@
  * See the accompanying LICENSE file for terms.
  */
 var path = require('path'),
-    utils = require('mojito/lib/management/utils'),
+    mojito = require('mojito/lib/management/utils'),
     fs = require('fs'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
     ShakerCore = require('./core').ShakerCore,
     async = require('async'),
     mkdirp = require('mkdirp'),
-    mime = require('mime');
+    mime = require('mime'),
+    utils = require('./utils');
 
 /**
  * Shaker compiler.
@@ -73,7 +74,7 @@ Shaker.prototype = {
      * @param callback {function} Callback when compiling is complete.
      */
     run: function(callback) {
-        utils.log('[SHAKER] - Analizying application assets to Shake... ');
+        mojito.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
         if (this._compile) {
@@ -93,7 +94,7 @@ Shaker.prototype = {
      * @param metadata {Object} Core metadata to augment.
      */
     _rename: function(metadata){
-        utils.log('[SHAKER] - Processing assets for development env.');
+        mojito.log('[SHAKER] - Processing assets for development env.');
         var mojit, action, dim, item, list;
 
         // Mojit assets
@@ -128,7 +129,7 @@ Shaker.prototype = {
      * @param callback {function} Callback when rollups are compiled.
      */
     _compileRollups: function(metadata, callback) {
-        utils.log('[SHAKER] - Compiling rollups...');
+        mojito.log('[SHAKER] - Compiling rollups...');
 
         var registry = new Registry();
         registry.load(Shaker.TASKS_DIR);
@@ -138,7 +139,7 @@ Shaker.prototype = {
             setTimeout(function() {
                 var options = {task: self._task, minify: self._minify, config: self._config};
                 item.object.push(registry, options, function(err, url) {
-                    utils.log('[SHAKER] - Pushed file ' + url);
+                    mojito.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
                     taskCallback();
                 });
@@ -248,7 +249,7 @@ Shaker.prototype = {
         aux += JSON.stringify(metadata,null,'\t');
         aux += '});';
 
-        utils.log('[SHAKER] - Writting addon metadata file');
+        mojito.log('[SHAKER] - Writting addon metadata file');
         mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
         fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
     }
@@ -270,9 +271,11 @@ Image.prototype = {
         var queue = new Queue('Rollup', {registry: registry});
 
         queue.task('files', [this._file]);
+        queue.task('read');
 
-        options.config.name = this._name;
-        queue.task(options.task, options.config);
+        var config = utils.simpleClone(options.config);
+        config.name = this._name;
+        queue.task(options.task, config);
 
         queue.on('taskComplete', function(data) { // queueFailed, queueComplete
             if (data.task.type === options.task) {
@@ -306,8 +309,9 @@ Rollup.prototype = {
             queue.task(mime.lookup(this._name) === 'application/javascript' ? 'jsminify' : 'cssminify');
         }
 
-        options.config.name = this._name;
-        queue.task(options.task, options.config);
+        var config = utils.simpleClone(options.config);
+        config.name = this._name;
+        queue.task(options.task, config);
 
         queue.on('taskComplete', function(data) {
             if (data.task.type === options.task) {
