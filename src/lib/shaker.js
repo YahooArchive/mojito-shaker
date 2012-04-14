@@ -61,12 +61,15 @@ function Shaker(store) {
     this._config.root = this._prefix + '/' + this._store._shortRoot + '/';
 }
 
-Shaker.TASKS_DIR = __dirname + '/tasks/';
+Shaker.TASKS_DIR = __dirname + '/tasks/';   // Tasks in this directory can be directly referenced in application.json
 Shaker.ASSETS_DIR = 'assets/';
-Shaker.COMPILED_DIR = Shaker.ASSETS_DIR + 'compiled/';
+Shaker.COMPILED_DIR = Shaker.ASSETS_DIR + 'compiled/';  // Where we write the rollups
 Shaker.IMAGES_DIR = Shaker.ASSETS_DIR + 'images/';
 
 Shaker.prototype = {
+    /*
+     * Start compiling assets.
+     */
     run: function(callback) {
         utils.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
@@ -74,12 +77,17 @@ Shaker.prototype = {
         if (this._compile) {
             this._compileRollups(metadata, callback);
         } else {
-            metadata = this._rename(metadata); // TODO: rename should be unnecessary if core keeps mapping of urls -> files
+            metadata = this._rename(metadata);
             this._writeMeta(metadata);
             callback(metadata);
         }
     },
 
+    /*
+     * Rename assets from local filename to URL.
+     *
+     * TODO: should be unnecessary if core keeps mapping of urls -> files
+     */
     _rename: function(metadata, callback){
         utils.log('[SHAKER] - Processing assets for development env.');
         var mojit, action, dim, item, list;
@@ -108,6 +116,10 @@ Shaker.prototype = {
         return metadata;
     },
 
+    /*
+     * The workhorse of compiler. Loads the queue and processes the results. We modify the original metadata
+     * object for simplicity.
+     */
     _compileRollups: function(metadata, compressed) {
         utils.log('[SHAKER] - Compiling rollups...');
 
@@ -134,6 +146,9 @@ Shaker.prototype = {
         this._queueRollups(queue, metadata);
     },
 
+    /*
+     * Add rollup assets to async queue.
+     */
     _queueRollups: function(queue, metadata) {
         var mojit, action, dim, files, name, filtered;
 
@@ -184,6 +199,9 @@ Shaker.prototype = {
         }
     },
 
+    /*
+     * Separate JS and CSS files into separate arrays.
+     */
     _filterFiles: function(files) {
         var js = [], css = [];
 
@@ -201,6 +219,9 @@ Shaker.prototype = {
         return {'js': js, 'css': css};
     },
 
+    /*
+     * Write the modified metadata.
+     */
     _writeMeta:function(metadata){
         var self = this, aux = "";
         aux += 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
@@ -215,6 +236,9 @@ Shaker.prototype = {
     }
 };
 
+/*
+ * Simple buildy wrapper for images.
+ */
 function Image(name, file) {
     this._name = name;
     this._file = file;
@@ -239,6 +263,9 @@ Image.prototype = {
     }
 };
 
+/*
+ * Simple buildy wrapper for Javascript/CSS.
+ */
 function Rollup(name, files) {
     this._name = name;
     this._files = files;
