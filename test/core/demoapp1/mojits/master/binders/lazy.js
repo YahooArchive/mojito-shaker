@@ -2,7 +2,7 @@
  * Copyright (c) 2012 Yahoo! Inc. All rights reserved.
  */
 /*jslint anon:true, sloppy:true, nomen:true*/
-YUI.add('masterBinderIndex', function(Y, NAME) {
+YUI.add('masterBinderLazy', function(Y, NAME) {
 
 /**
  * The masterBinderIndex module.
@@ -34,19 +34,9 @@ YUI.add('masterBinderIndex', function(Y, NAME) {
          * @param node {Node} The DOM node to which this mojit is attached.
          */
         bind: function(node) {
-            var me = this;
-            this.node = node;
-            Y.one('a').on('click',this.execute,this);
+           Y.log('LAZY BINDER!!');
 
-        },
-        execute:function(){
-            this.count++;
-            this.mojitProxy.invoke('lazy',{c: this.count},Y.bind(this.cb,this));
-        },
-        cb:function(err,data,meta){
-            Y.log(arguments);
         }
-
     };
 
-}, '0.0.1', {requires: ['event-mouseenter', 'mojito-client','shaker-runtime']});
+}, '0.0.1', {requires: ['event-mouseenter', 'mojito-client']});

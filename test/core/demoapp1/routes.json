@@ -1,4 +1,9 @@
 [{
-    "settings": [ "master" ]
-
+    "settings": ["master"],
+    
+    "/": {
+        "verb": ["get"],
+        "path": "/",
+        "call": "htmlframe.index"
+    }
 }]
