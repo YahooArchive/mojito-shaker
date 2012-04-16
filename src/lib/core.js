@@ -364,7 +364,6 @@ ShakerCore.prototype.calculateBinderDependencies = function(action,filePath,modu
         for(var i in dependencies){
             pathDeps.push(modules[dependencies[i]].path);
         }
-        pathDeps.push(temp.path);
         return pathDeps;
 };
 
@@ -518,6 +517,58 @@ ShakerCore.prototype._augmentRules = function(shaker_cfg,shaken,selector,mojitPa
     }//rule
 };
 
+ShakerCore.prototype.generateBlobView = function(mojit,action,viewfile){
+    var moduleName = 'views/'+mojit+'/'+action,
+        content = JSON.stringify(libfs.readFileSync(viewfile, 'utf8')),
+        aux = '';
+
+    aux += 'YUI.add("'+moduleName+'", function(Y, NAME) {\n';
+    aux += '\tYUI.namespace("_mojito._cache.compiled.'+ mojit +'.views");\n';
+    aux += '\tYUI._mojito._cache.compiled.master.views.'+ action + ' = ' + content + ';\n';
+    aux += '});';
+    return aux;
+
+
+};
+
+ShakerCore.prototype.generateClientSideResources = function(mojit,action,resources,modules){
+    var models = resources.models,
+        views = resources.views,
+        binders = resources.binders,
+        controllerFile = resources.controller,
+        controller_affinity = libpath.basename(controllerFile).split('.',2)[1],
+        clientDependencies = {models:[],controllers:[],binders:[],view:'',dependencies:[]},i,fileparts;
+
+    if(controller_affinity !== 'server'){
+        clientDependencies.controllers.push(controllerFile);
+    }
+    //TODO: Find a way to check which modules are included in the controller (static analysis of the code maybe?)
+    for(i in models){
+        fileparts = libpath.basename(models[i],'.js').split('.');
+        if (fileparts[1] !== 'server'){
+            clientDependencies.models.push(models[i]);
+        }
+    }
+
+    for(i in views){
+        fileparts = libpath.basename(views[i]).split('.',3);
+        if(action === fileparts[0]){
+            clientDependencies.view = this.generateBlobView(mojit,action,views[i]);
+        }
+    }
+    for(i in binders){
+        fileparts = fileparts = libpath.basename(binders[i]).split('.');
+        if(action === fileparts[0]){
+            clientDependencies.binders.push(binders[i]);
+        }
+    }
+
+    if(clientDependencies.binder) {
+        clientDependencies.dependencies = this.calculateBinderDependencies(action,clientDependencies.binder,modules);
+    }
+    return clientDependencies;
+};
+
 ShakerCore.prototype.shakeMojit = function(name,path,options){
     var self = this;
     //options default
@@ -525,23 +576,23 @@ ShakerCore.prototype.shakeMojit = function(name,path,options){
     options.order = options.order || SHAKER_DEFAULT_ORDER;
     resources = options.app ? self._resources.app : self._resources.mojits[name];
 
-    var shaker_config = self._mergeShakerConfig(name,path,resources.binders),//we get the final merged shaker config
+    var shaker_config = self._mergeShakerConfig(name, path, resources.binders),//we get the final merged shaker config
         modules = self.precalculateAutoloads(resources.autoload),
-        dimensions = self.generateShakerDimensions(path,shaker_config,resources.assets,path),//files per dimension filtering
+        dimensions = self.generateShakerDimensions(path, shaker_config, resources.assets, path),//files per dimension filtering
         order = options.order,
         actions,shaked = {};
     for(var action in (actions = shaker_config.actions)){
-            binder_dependencies = ((action == '*') || options.app) ? []: self.calculateBinderDependencies(action,path+'/binders/'+ action + '.js',modules),
-            dispatched = self.dispatchOrder(action,order,dimensions),
-            meta = {binder: binder_dependencies,dimensions: dispatched},
-            listFiles = self.shakeAction(action,meta),
-            self._augmentRules(shaker_config,listFiles,order,path);
+        var clientSideDependencies = options.app ? {}: self.generateClientSideResources(name, action, resources, modules),
+            dispatched = self.dispatchOrder(action,order, dimensions),
+            meta = {binder: [],dimensions: dispatched},
+            listFiles = self.shakeAction(action, meta);
+            self._augmentRules(shaker_config, listFiles, order, path);
+
             shaked[action] = {
                 shaken: listFiles,
                 meta:{
-                    //selectors : selectors,
                     dimensions: dimensions,
-                    dependencies: binder_dependencies
+                    client: clientSideDependencies
                 }
             };
      }
@@ -575,6 +626,7 @@ ShakerCore.prototype._cleanUp = function(shaken){
     }
 
 };
+
 ShakerCore.prototype.bundleMojits = function(shaken,options){
     options = options || {};
     var app = this._getMojitShakerConfig('app',this._store._root),
@@ -589,7 +641,7 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
             appShake = shaken.app[action].shaken,
             appDim = shaken.app[action].meta.dimensions,
             originalAppShake = util.simpleClone(appShake),
-            appDeps = shaken.app[action].meta.dependencies;
+            clientDependencies = {models:[],controllers:[],binders:[],dependencies:[],view:''};
             shaken.app[action].mojits = [];
 
         for(var i in loadedMojits){
@@ -598,19 +650,25 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
                 mojitAction = parts.length > 1 ? parts[1] : '*',
                 mojitName = parts[0];
                 mojitShaken = shaken.mojits[mojitName][mojitAction],
+                mojitClient = mojitShaken.meta.client,
                 mojitDim = mojitShaken.meta.dimensions;
                 mojitDim.action[action] = mojitDim.action[mojitAction] || {files:[]};
                 shaken.app[action].mojits.push(parts[0]);
 
+            clientDependencies.models = clientDependencies.models.concat(mojitClient.models);
+            clientDependencies.controllers = clientDependencies.controllers.concat(mojitClient.controllers);
+            clientDependencies.binders = clientDependencies.binders.concat(mojitClient.binders);
+            clientDependencies.dependencies = clientDependencies.dependencies.concat(mojitClient.dependencies);
+            clientDependencies.view = clientDependencies.view + mojitClient.view;
+
             appDim = this.mergeConcatDimensions(appDim,mojitDim);
-            appDeps = appDeps.concat(mojitShaken.meta.dependencies);
         }
 
         var dispatched = this.dispatchOrder(action,options.order,appDim),
-            meta = {binder: appDeps,dimensions: dispatched},
+            meta = {binder: [],dimensions: dispatched},
             listFiles = this.shakeAction(action,meta);
         shaken.app[action].shaken = listFiles;
-        shaken.app[action].meta.dependencies = appDeps;
+        shaken.app[action].meta.client = clientDependencies;
     }
     this._cleanUp(shaken);
     return shaken;
@@ -637,14 +695,16 @@ ShakerCore.prototype._mojitResources = function() {
         if (content_type in {'application/javascript': 1, 'text/css': 1,'text/html':1}) {
             var base = url.substring(this._urlPrefix.length + 1);
             var split = base.split('/', 2); // [mojit_name, subdir]
-
             if (split[0] === this._store._shortRoot) {
                 if (split[1] in resources.app){
                     resources.app[split[1]][url] = filename;
                 }
             }
             else if (split[0] in resources.mojits) { // mojit
-                if (split[1] in resources.mojits[split[0]]) {  // asset type
+                if(split[1].indexOf('controller.') === 0){
+                    resources.mojits[split[0]].controller = filename;
+                }
+                else if (split[1] in resources.mojits[split[0]]) {  // asset type
                     resources.mojits[split[0]][split[1]][url] = filename;
                 }
             }
@@ -680,6 +740,7 @@ ShakerCore.prototype.shakeAll = function(options){
         shaken = {};
 
     this._resources = this._mojitResources();
+    
     shaken.mojits = this.shakeAllMojits(mojits);
     shaken.app = this.shakeApp('app', this._store._root + '/');
     shaken.core = this.shakeCore();

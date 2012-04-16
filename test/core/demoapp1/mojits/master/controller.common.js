@@ -47,4 +47,4 @@ YUI.add('master', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito', 'masterModelFoo']});
+}, '0.0.1', {requires: ['mojito']});

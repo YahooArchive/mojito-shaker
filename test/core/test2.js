@@ -19,15 +19,13 @@ suite.add( new YUITest.TestCase({
                 console.log(JSON.stringify(obj,null,'\t'));
             };
 
-            var root = libpath.join(process.cwd(), 'app2'),
+            var root = libpath.join(process.cwd(), 'demoapp1'),
                 store = new ResourceStore(root),
                 context = {};
                 store.preload(context);
 
             this.shaker = new Shaker({store:store});
 
-            this.defaultAction = '*';
-            this.defaultOrder = 'common-index-device-skin-region-lang';
             
         },
         tearDown : function () {

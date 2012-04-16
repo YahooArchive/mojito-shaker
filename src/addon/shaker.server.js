@@ -196,7 +196,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             assets.bottom.js = this._shakerDeploy ? rolledJS : assets.bottom.js;
 
             //TODO: Add only if client side deployed!
-            assets.bottom.js.push('/static/shakerdemo/autoload/compiled/shaker-meta.common.js');
+            assets.bottom.js.push('/static/demo/autoload/compiled/shaker-meta.common.js');
 
             assets.top.css = (assets.top.css && assets.top.css.concat(rolledCSS)) || rolledCSS;
         }

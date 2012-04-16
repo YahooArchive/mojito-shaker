@@ -96,16 +96,13 @@ suite.add( new YUITest.TestCase({
                 mojitPath  = this._mojits[3].path,
                 b1 = 'index',b2 = 'other',
                 data = this.shaker.shakeMojit(mojitName,mojitPath);
-
            Assert.isNotUndefined(data[b1]);
-           Assert.isNotUndefined(data[b1].meta.dependencies);
-           Assert.isTrue(data[b1].meta.dependencies.length == 1);
-           Assert.isTrue(libpath.basename(data[b1].meta.dependencies[0]) == 'index.js');
+           Assert.isNotUndefined(data[b1].meta.client);
+           Assert.isTrue(libpath.basename(data[b1].meta.client.binder) == 'index.js');
 
            Assert.isNotUndefined(data[b2]);
-           Assert.isNotUndefined(data[b2].meta.dependencies);
-           Assert.isTrue(data[b2].meta.dependencies.length == 1);
-           Assert.isTrue(libpath.basename(data[b2].meta.dependencies[0]) == 'other.js');
+           Assert.isNotUndefined(data[b2].meta.client);
+           Assert.isTrue(libpath.basename(data[b2].meta.client.binder) == 'other.js');
         },
         test_all_dimensions : function(){
             var mojitName  = this._mojits[4].name,
@@ -119,9 +116,8 @@ suite.add( new YUITest.TestCase({
             Assert.isTrue(data[action].meta.dimensions.device.smartphone.files.length === 1);
             Assert.isTrue(data[action].meta.dimensions.region.CA.files.length === 1);
             Assert.isTrue(data[action].meta.dimensions.lang.en.files.length === 1);
-
             Assert.isNotUndefined(data[action].shaken[this.defaultOrder]);
-            Assert.isTrue(data[action].shaken[this.defaultOrder].length == 3);
+            Assert.isTrue(data[action].shaken[this.defaultOrder].length == 2);
         },
         test_app_shaker: function(){
             var data = this.shaker.shakeApp('app', './app1/');
