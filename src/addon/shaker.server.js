@@ -30,6 +30,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         this._adapter = adapter;// where the functions done and error live before attach them to the ac.
         this._command = command;//all the configuration for the mojit
         this._init(ac,adapter);
+        Y.log(adapter.req.app.store._staticURLs);
     }
 
     ShakerAddon.prototype = {
@@ -187,10 +188,16 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             rolledCSS = allRollups.filter(function(i){return libpath.extname(i) === '.css';});
             rolledJS = allRollups.filter(function(i){return libpath.extname(i) === '.js';});
             //if deploy to true add the mojitoCore
-            rolledJS = this._deployClient ? mojitoCore.concat(rolledJS) : rolledJS;
+            if(this._deployClient){
+                rolledJs = mojitoCore.concat(rolledJS);
+            }
 
             // Override. ToDo: We will need to check the dependencies at some point
             assets.bottom.js = this._shakerDeploy ? rolledJS : assets.bottom.js;
+
+            //TODO: Add only if client side deployed!
+            assets.bottom.js.push('/static/shakerdemo/autoload/compiled/shaker-meta.common.js');
+
             assets.top.css = (assets.top.css && assets.top.css.concat(rolledCSS)) || rolledCSS;
         }
     };

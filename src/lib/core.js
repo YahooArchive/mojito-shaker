@@ -17,7 +17,7 @@ var libpath = require('path'),
     util = require('./utils.js');
 
 /*GLOBAL CONFIGS*/
-var SHAKER_CONFIG_NAME = 'ShakerCore.json',
+var SHAKER_CONFIG_NAME = 'shaker.json',
     //DEFAULT TEMPLATE SHAKER CONFIG
     SHAKER_DEFAULT_DIM_CONFIG = {
         common: {},
@@ -626,7 +626,7 @@ ShakerCore.prototype._mojitResources = function() {
     };
     var mojits = this._store.listAllMojits('server').slice(3); // FIXME: Ignore 'DaliProxy','HTMLFrameMojit', 'LazyLoad'
     mojits.forEach(function(mojit) {
-        resources.mojits[mojit] = {assets: {}, binders: {}, autoload: {}};
+        resources.mojits[mojit] = {assets: {}, binders: {}, autoload: {},models:{},views:{}};
     });
 
     for (var url in this._store._staticURLs) {
@@ -634,7 +634,7 @@ ShakerCore.prototype._mojitResources = function() {
         var content_type = mime.lookup(filename);
         var type = content_type.split('/')[0];
 
-        if (content_type in {'application/javascript': 1, 'text/css': 1}) {
+        if (content_type in {'application/javascript': 1, 'text/css': 1,'text/html':1}) {
             var base = url.substring(this._urlPrefix.length + 1);
             var split = base.split('/', 2); // [mojit_name, subdir]
 

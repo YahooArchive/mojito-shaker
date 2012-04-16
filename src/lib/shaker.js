@@ -251,7 +251,7 @@ Shaker.prototype = {
 
         mojito.log('[SHAKER] - Writting addon metadata file');
         mkdirp.sync(self._store._root + '/autoload/compiled', 0777 & (~process.umask()));
-        fs.writeFileSync(self._store._root + '/autoload/compiled/shaker.server.js', aux);
+        fs.writeFileSync(self._store._root + '/autoload/compiled/shaker-meta.common.js', aux);
     }
 };
 
