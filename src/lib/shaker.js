@@ -207,9 +207,8 @@ Shaker.prototype = {
             // App client assets
             client = metadata.app[action].client;
             if (client.length) {
-                // Core has a bug with undefined filenames in array
-                //queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_app_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
-                //client.length = 0;
+                queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_app_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
+                client.length = 0;
             }
 
             for (dim in (files = metadata.app[action].shaken)) {
