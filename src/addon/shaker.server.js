@@ -120,9 +120,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         _getAppRollup: function(selector,action){
             var app = this._meta.app,
-                shakedAction = app[action] || app['*'];
+                shakedAction = app[action] || app['*'],
+                rollup = shakedAction.shaken[selector].slice();
+            if(this._deployClient){
+                rollup = rollup.concat(shakedAction.client);
+            }
 
-            return shakedAction.shaken[selector].slice();
+            return rollup;
         },
         _shakeApp: function(appDeps){
             var action = this._ac.action,
@@ -180,6 +184,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
             //we just need to rollup the low-coverage Mojits
             noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
+            //rollup non-Bundled Mojits
             rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
             
             rollupsApp = this._shakeApp(groupsJS.app);
@@ -189,9 +194,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             rolledJS = allRollups.filter(function(i){return libpath.extname(i) === '.js';});
             //if deploy to true add the mojitoCore
             if(this._deployClient){
-                rolledJs = mojitoCore.concat(rolledJS);
+                rolledJS = mojitoCore.concat(rolledJS);
             }
-
             // Override. ToDo: We will need to check the dependencies at some point
             assets.bottom.js = this._shakerDeploy ? rolledJS : assets.bottom.js;
 

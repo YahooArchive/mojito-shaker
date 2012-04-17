@@ -364,7 +364,7 @@ ClientRollup.prototype = {
 
                 content = 'YUI.add("' + moduleName + '", function(Y, NAME) {\n';
                 content += '\tYUI.namespace("_mojito._cache.compiled.'+ self._mojit +'.views");\n';
-                content += '\tYUI._mojito._cache.compiled.master.views.'+ self._action + ' = ' +  json + ';\n';
+                content += '\tYUI._mojito._cache.compiled.'+ self._mojit +'.views.'+ self._action + ' = ' +  json + ';\n';
                 content += '});';
             }
 

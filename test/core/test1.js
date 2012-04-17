@@ -98,11 +98,11 @@ suite.add( new YUITest.TestCase({
                 data = this.shaker.shakeMojit(mojitName,mojitPath);
            Assert.isNotUndefined(data[b1]);
            Assert.isNotUndefined(data[b1].meta.client);
-           Assert.isTrue(libpath.basename(data[b1].meta.client.binder) == 'index.js');
+           Assert.isTrue(libpath.basename(data[b1].meta.client.binders[0]) == 'index.js');
 
            Assert.isNotUndefined(data[b2]);
            Assert.isNotUndefined(data[b2].meta.client);
-           Assert.isTrue(libpath.basename(data[b2].meta.client.binder) == 'other.js');
+           Assert.isTrue(libpath.basename(data[b2].meta.client.binders[0]) == 'other.js');
         },
         test_all_dimensions : function(){
             var mojitName  = this._mojits[4].name,
