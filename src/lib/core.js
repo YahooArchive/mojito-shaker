@@ -461,7 +461,8 @@ ShakerCore.prototype.shakeAction = function (name,meta,cache){
     var dim = meta.dimensions;
     cache = cache || {};
     for(var item in dim){
-        var elm = dim[item];meta.dimensions = elm;
+        var elm = dim[item];
+        meta.dimensions = elm;
         if(elm.files){
             cache[item] = meta.binder.concat(elm.files);
         }else{
@@ -527,8 +528,17 @@ ShakerCore.prototype.generateBlobView = function(mojit,action,viewfile){
     aux += '\tYUI._mojito._cache.compiled.master.views.'+ action + ' = ' + content + ';\n';
     aux += '});';
     return aux;
+};
 
-
+ShakerCore.prototype.bundleClientSide = function(clientDependencies,type){
+    //TODO: Create the client regarding some type
+    var rollup = [];
+            rollup = rollup.concat(clientDependencies.models);
+            rollup = rollup.concat(clientDependencies.controllers);
+            rollup = rollup.concat(clientDependencies.binders);
+            rollup = rollup.concat(clientDependencies.dependencies);
+            rollup = rollup.concat(clientDependencies.views);
+        return rollup;
 };
 
 ShakerCore.prototype.generateClientSideResources = function(mojit,action,resources,modules){
@@ -537,7 +547,7 @@ ShakerCore.prototype.generateClientSideResources = function(mojit,action,resourc
         binders = resources.binders,
         controllerFile = resources.controller,
         controller_affinity = libpath.basename(controllerFile).split('.',2)[1],
-        clientDependencies = {models:[],controllers:[],binders:[],view:'',dependencies:[]},i,fileparts;
+        clientDependencies = {models:[],controllers:[],binders:[],views:[],dependencies:[]},i,fileparts;
 
     if(controller_affinity !== 'server'){
         clientDependencies.controllers.push(controllerFile);
@@ -553,7 +563,7 @@ ShakerCore.prototype.generateClientSideResources = function(mojit,action,resourc
     for(i in views){
         fileparts = libpath.basename(views[i]).split('.',3);
         if(action === fileparts[0]){
-            clientDependencies.view = this.generateBlobView(mojit,action,views[i]);
+            clientDependencies.views.push(views[i]);
         }
     }
     for(i in binders){
@@ -590,6 +600,7 @@ ShakerCore.prototype.shakeMojit = function(name,path,options){
 
             shaked[action] = {
                 shaken: listFiles,
+                client: self.bundleClientSide(clientSideDependencies),
                 meta:{
                     dimensions: dimensions,
                     client: clientSideDependencies
@@ -641,7 +652,7 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
             appShake = shaken.app[action].shaken,
             appDim = shaken.app[action].meta.dimensions,
             originalAppShake = util.simpleClone(appShake),
-            clientDependencies = {models:[],controllers:[],binders:[],dependencies:[],view:''};
+            clientDependencies = {models:[],controllers:[],binders:[],dependencies:[],views:[]};
             shaken.app[action].mojits = [];
 
         for(var i in loadedMojits){
@@ -659,7 +670,7 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
             clientDependencies.controllers = clientDependencies.controllers.concat(mojitClient.controllers);
             clientDependencies.binders = clientDependencies.binders.concat(mojitClient.binders);
             clientDependencies.dependencies = clientDependencies.dependencies.concat(mojitClient.dependencies);
-            clientDependencies.view = clientDependencies.view + mojitClient.view;
+            clientDependencies.views = clientDependencies.views.concat(mojitClient.views);
 
             appDim = this.mergeConcatDimensions(appDim,mojitDim);
         }
@@ -668,6 +679,7 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
             meta = {binder: [],dimensions: dispatched},
             listFiles = this.shakeAction(action,meta);
         shaken.app[action].shaken = listFiles;
+        shaken.app[action].client = this.bundleClientSide(clientDependencies);
         shaken.app[action].meta.client = clientDependencies;
     }
     this._cleanUp(shaken);
