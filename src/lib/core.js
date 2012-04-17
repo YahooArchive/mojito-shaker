@@ -660,6 +660,7 @@ ShakerCore.prototype._augmentRules = function (shaker_cfg, shaken, selector, moj
 
     }//rule
 };
+
 /*
 * Takes an Object with arrays and concatenates all of them in a single one
 * TODO: Bundle Client side regarding the type
@@ -668,6 +669,7 @@ ShakerCore.prototype._augmentRules = function (shaker_cfg, shaken, selector, moj
 * @params {string} Type of the rollup
 *
 */
+
 ShakerCore.prototype.bundleClientSide = function (clientDependencies, type) {
     //TODO: Create the client regarding some type
     var rollup = [];
@@ -679,7 +681,18 @@ ShakerCore.prototype.bundleClientSide = function (clientDependencies, type) {
     return rollup;
 };
 
-ShakerCore.prototype.generateClientSideResources = function(mojit,action,resources,modules){
+/*
+* Takes the resources for a given mojit, and calculates the client part,
+* Which is model, controller, view, binders, and it's dependencies (with common or client affinity of course)
+* @method generateClientSideResources
+* @params {string} Mojit name
+* @params {Object} Action name
+* @params {string} List of resources for that mojit
+* @params {Object} Calculated modules dependencies (mapped name of the autoload with the url of the file).
+*
+*/
+
+ShakerCore.prototype.generateClientSideResources = function (mojit, action, resources, modules) {
     var models = resources.models,
         views = resources.views,
         binders = resources.binders,
@@ -687,7 +700,7 @@ ShakerCore.prototype.generateClientSideResources = function(mojit,action,resourc
         controller_affinity = libpath.basename(controllerFile).split('.',2)[1],
         clientDependencies = {models:[],controllers:[],binders:[],views:[],dependencies:[]},i,fileparts;
 
-    if(controller_affinity !== 'server'){
+    if (controller_affinity !== 'server'){
         clientDependencies.controllers.push(controllerFile);
     }
     //TODO: Find a way to check which modules are included in the controller (static analysis of the code maybe?)
@@ -717,7 +730,17 @@ ShakerCore.prototype.generateClientSideResources = function(mojit,action,resourc
     return clientDependencies;
 };
 
-ShakerCore.prototype.shakeMojit = function(name,path,options){
+/*
+* Main function of core, Basically it's a "facade" function which calls all the other function to get the mojit "Shaken"
+* Which is model, controller, view, binders, and it's dependencies (with common or client affinity of course)
+* @method shakeMojit
+* @params {string} Mojit name
+* @params {Object} Mojit path
+* @params {Object} The valid keys are: app (indicates that is app level)
+*
+*/
+
+ShakerCore.prototype.shakeMojit = function (name, path, options) {
     var self = this;
     //options default
     options = options || {};
@@ -748,11 +771,29 @@ ShakerCore.prototype.shakeMojit = function(name,path,options){
      return shaked;
 };
 
+/*
+* This function is a wrapper for shakeMojit
+* We just set the options params to app, and call shakeMojit
+* @method shakeApp
+* @params {string} App name
+* @params {Object} App path
+* @params {Object} The valid keys are: app (indicates that is app level)
+*
+*/
+
 ShakerCore.prototype.shakeApp = function(name,path,options){
     options = options || {};
     options.app = true;
     return this.shakeMojit('app',path.slice(0,-1),options);
 };
+
+/*
+* Generates all the meta-data for all mojits
+* @method shakeAllMojits
+* @params {Object} List of mojits to load. Key are names and values are the absolute paths for the mojits
+* @params {Object} Options to pass within the function.
+*
+*/
 
 ShakerCore.prototype.shakeAllMojits = function(mojits,options){
     var self = this,
@@ -762,6 +803,13 @@ ShakerCore.prototype.shakeAllMojits = function(mojits,options){
     }
     return shaken;
 };
+
+/*
+* Removes all unnecessary meta-data
+* @method cleanup
+* @params {Object} Shaken meta-data
+* @private
+*/
 
 ShakerCore.prototype._cleanUp = function(shaken){
     var mojit, mojits,action,actions;
@@ -775,6 +823,15 @@ ShakerCore.prototype._cleanUp = function(shaken){
     }
 
 };
+
+/*
+* Bundle together mojits specified in the shaker.json at app level
+* @method bundleMojits
+* @params {Object} Shaker metadata
+* @params {Object} Options to pass within the function.
+*
+*/
+
 
 ShakerCore.prototype.bundleMojits = function(shaken,options){
     options = options || {};
@@ -804,6 +861,7 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
                 mojitDim.action[action] = mojitDim.action[mojitAction] || {files:[]};
                 shaken.app[action].mojits.push(parts[0]);
 
+            //ToDO: Refactor this
             clientDependencies.models = clientDependencies.models.concat(mojitClient.models);
             clientDependencies.controllers = clientDependencies.controllers.concat(mojitClient.controllers);
             clientDependencies.binders = clientDependencies.binders.concat(mojitClient.binders);
@@ -824,8 +882,10 @@ ShakerCore.prototype.bundleMojits = function(shaken,options){
     return shaken;
 };
 
-// Look through Mojito store static files for mojit assets to roll up
-// Files are mapped by URL -> filename
+/*
+* Look through Mojito store static files for mojit assets to roll up
+* Files are mapped by URL -> filename
+*/
 ShakerCore.prototype._mojitResources = function() {
     var resources = {
         'mojits': {},
@@ -867,7 +927,7 @@ ShakerCore.prototype._mojitResources = function() {
     return resources;
 };
 
-ShakerCore.prototype.shakeImages = function() {
+ShakerCore.prototype.shakeImages = function () {
     var images = [];
     for (var image in this._resources.images) {
         images.push(this._resources.images[image]);
@@ -875,29 +935,31 @@ ShakerCore.prototype.shakeImages = function() {
     return images;
 };
 
-ShakerCore.prototype.shakeCore = function(){
-    var files = this._store.getRollupsApp('client', {}).srcs;
 
+ShakerCore.prototype.shakeCore = function () {
+    var files = this._store.getRollupsApp('client', {}).srcs;
     // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
     return files.filter(function(file) {
         return this._store._root !== file.substr(0, this._store._root.length);
     }, this);
 };
 
-ShakerCore.prototype.shakeAll = function(options){
+
+ShakerCore.prototype.shakeAll = function (options) {
     options = options || {};
     var mojits = this._getMojits(),
         shaken = {};
 
     this._resources = this._mojitResources();
-    
     shaken.mojits = this.shakeAllMojits(mojits);
     shaken.app = this.shakeApp('app', this._store._root + '/');
     shaken.core = this.shakeCore();
     shaken.images = this.shakeImages();
     shaken = this.bundleMojits(shaken);
     shaken.config = {order: SHAKER_DEFAULT_ORDER};
+
     return shaken;
 };
+
 
 module.exports.ShakerCore = ShakerCore;
