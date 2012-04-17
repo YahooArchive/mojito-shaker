@@ -449,6 +449,16 @@ ShakerCore.prototype.calculateBinderDependencies = function(action,filePath,modu
         return pathDeps;
 };
 
+/*
+* Given a left dimension, augment it with all the right dimensions recursively
+* @method augmentDimensionRecursive
+* @params {string} Name of the left dimension, can be simple(Ej: common), or complex (common-US)
+* @params {string} Name of the right dimension
+* @params {Object} The dimension to be augmented, the object has this format: {files:[]}
+* @params {Object} An object containing the child specific right dimensions: {US:{files:[]},CA:{files:[]}}
+* @params {Object} Private argument for the recursive iteration.
+* @private
+*/
 
 ShakerCore.prototype.augmentDimensionRecursive = function(left,right,origin,dimensions,nested){
     var cfg = {},head;
@@ -463,6 +473,16 @@ ShakerCore.prototype.augmentDimensionRecursive = function(left,right,origin,dime
     }
     return cfg;
 };
+
+/*
+* Given a left dimension, augment it with all the right dimensions recursively
+* @method mergeDimensionsRecursive
+* @params {string} Name of the left dimension to calculate (Ex: common-US-en)
+* @params {string} Name of the right dimension to calculate (Ex: common-US-en)
+* @params {Object}
+* @params {Object}
+* @private
+*/
 
 ShakerCore.prototype.mergeDimensionsRecursive = function(nameLeft,nameRight,origin,dest){
     var cfg = {};
