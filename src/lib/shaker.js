@@ -161,7 +161,7 @@ Shaker.prototype = {
      * @param metadata {Object} Core metadata to look through.
      */
     _queueRollups: function(queue, metadata) {
-        var mojit, action, dim, files, name, filtered;
+        var mojit, action, dim, files, name, client, filtered;
 
         // We need to add images so they can be referenced by relative URLs in the deployed CSS.
         if (this._images) {
@@ -172,12 +172,19 @@ Shaker.prototype = {
         }
 
         // Mojito core assets
-        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core_{checksum}.js', metadata.core.slice() /* Clone array */), files: metadata.core});
+        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core_{checksum}.js', metadata.core.slice() /* Clone */), files: metadata.core});
         metadata.core.length = 0;
 
         // Mojit assets
         for (mojit in metadata.mojits) {
             for (action in metadata.mojits[mojit]) {
+                // Mojit client assets
+                client = metadata.mojits[mojit][action].client;
+                if (client.length) {
+                    queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
+                    client.length = 0;
+                }
+
                 for (dim in (files = metadata.mojits[mojit][action].shaken)) {
                     if (files[dim].length) {
                         name = mojit + '_' + action.replace('*', 'default') + '_{checksum}';
@@ -197,6 +204,14 @@ Shaker.prototype = {
 
         // App level assets
         for (action in metadata.app) {
+            // App client assets
+            client = metadata.app[action].client;
+            if (client.length) {
+                // Core has a bug with undefined filenames in array
+                //queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_app_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
+                //client.length = 0;
+            }
+
             for (dim in (files = metadata.app[action].shaken)) {
                 if (files[dim].length) {
                     name = 'app_' + action.replace('*', 'default') + '_{checksum}';
@@ -256,7 +271,7 @@ Shaker.prototype = {
 };
 
 /*
- * Simple buildy wrapper for images.
+ * Buildy wrapper for images.
  *
  * @param name {string} Name of image to build
  * @param file {string} Filename of image
@@ -268,7 +283,7 @@ function Image(name, file) {
 
 Image.prototype = {
     push: function(registry, options, callback) {
-        var queue = new Queue('Rollup', {registry: registry});
+        var queue = new Queue('Image', {registry: registry});
 
         queue.task('files', [this._file]);
         queue.task('read'); // Read the files into strings for writing
@@ -288,7 +303,7 @@ Image.prototype = {
 };
 
 /*
- * Simple buildy wrapper for Javascript/CSS.
+ * Buildy wrapper for Javascript/CSS.
  *
  * @param name {string} Name of rollup to build
  * @param files {array} Filenames to rollup
@@ -307,6 +322,58 @@ Rollup.prototype = {
 
         if (options.minify) {
             queue.task(mime.lookup(this._name) === 'application/javascript' ? 'jsminify' : 'cssminify');
+        }
+
+        var config = utils.simpleClone(options.config);
+        config.name = this._name;
+        queue.task(options.task, config);
+
+        queue.on('taskComplete', function(data) {
+            if (data.task.type === options.task) {
+                callback(null, data.result);
+            }
+        });
+
+        queue.run();
+    }
+};
+
+/*
+ * Buildy wrapper for templates.
+ *
+ * @param name {string} Name of template to build
+ * @param files {array} Filenames to rollup
+ */
+function ClientRollup(name, mojit, action, files) {
+    this._name = name;
+    this._mojit = mojit;
+    this._action = action;
+    this._files = files;
+}
+
+ClientRollup.prototype = {
+    push: function(registry, options, callback) {
+        var queue = new Queue('ClientRollup', {registry: registry}),
+            self = this;
+
+        queue.task('files', this._files);
+
+        queue.task('concatcb', {callback: function(filename, content) {
+            if (mime.lookup(filename) == 'text/html') {
+                var moduleName = 'views/' + self._mojit + '/' + self._action,
+                    json = JSON.stringify(content);
+
+                content = 'YUI.add("' + moduleName + '", function(Y, NAME) {\n';
+                content += '\tYUI.namespace("_mojito._cache.compiled.'+ self._mojit +'.views");\n';
+                content += '\tYUI._mojito._cache.compiled.master.views.'+ self._action + ' = ' +  json + ';\n';
+                content += '});';
+            }
+
+            return content;
+        }});
+
+        if (options.minify) {
+            queue.task('jsminify');
         }
 
         var config = utils.simpleClone(options.config);
