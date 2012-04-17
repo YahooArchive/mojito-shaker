@@ -282,7 +282,7 @@ function Image(name, file) {
 
 Image.prototype = {
     push: function(registry, options, callback) {
-        var queue = new Queue('Image', {registry: registry});
+        var queue = new Queue(this._name, {registry: registry});
 
         queue.task('files', [this._file]);
         queue.task('read'); // Read the files into strings for writing
@@ -314,7 +314,7 @@ function Rollup(name, files) {
 
 Rollup.prototype = {
     push: function(registry, options, callback) {
-        var queue = new Queue('Rollup', {registry: registry});
+        var queue = new Queue(this._name, {registry: registry});
 
         queue.task('files', this._files);
         queue.task('concat');
@@ -352,7 +352,7 @@ function ClientRollup(name, mojit, action, files) {
 
 ClientRollup.prototype = {
     push: function(registry, options, callback) {
-        var queue = new Queue('ClientRollup', {registry: registry}),
+        var queue = new Queue(this._name, {registry: registry}),
             self = this;
 
         queue.task('files', this._files);

@@ -62,10 +62,8 @@ function localTask(options, status, logger) {
         }
 
         path.exists(filename, function(exists) {
-            url = root + filename;
-
             if (exists) {
-                status.emit('complete', 'local', url);
+                status.emit('complete', 'local', root + filename);
             }
             else {
                 fs.writeFile(filename, data, encoding, function(err) {
@@ -73,7 +71,7 @@ function localTask(options, status, logger) {
                         status.emit('failed', 'local', 'error writing destination file: ' + err);
                     } else {
                         self._state.set(State.TYPES.FILES, [filename]);
-                        status.emit('complete', 'local', url);
+                        status.emit('complete', 'local', root + filename);
                     }
                 });
             }
