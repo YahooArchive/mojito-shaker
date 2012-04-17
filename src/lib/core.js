@@ -652,12 +652,12 @@ ShakerCore.prototype.generateBlobView = function(mojit,action,viewfile){
 ShakerCore.prototype.bundleClientSide = function(clientDependencies,type){
     //TODO: Create the client regarding some type
     var rollup = [];
-            rollup = rollup.concat(clientDependencies.models || []);
-            rollup = rollup.concat(clientDependencies.controllers || []);
-            rollup = rollup.concat(clientDependencies.binders || []);
-            rollup = rollup.concat(clientDependencies.dependencies || []);
-            rollup = rollup.concat(clientDependencies.views || []);
-        return rollup;
+    for(var item in clientDependencies){
+        var list = clientDependencies[item];
+            rollup = rollup.concat(list);
+    }
+
+    return rollup;
 };
 
 ShakerCore.prototype.generateClientSideResources = function(mojit,action,resources,modules){
