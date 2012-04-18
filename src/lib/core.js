@@ -39,11 +39,7 @@ var ShakerCore = function (config) {
     this._store = config.store;
     this._debugging = false;
     this._app = this._store.getAppConfig(null, 'definition');
-
-    this._urlPrefix = '/static';
-    if (typeof this._app.prefix !== 'undefined'){
-        this._urlPrefix = this._app.prefix ? '/' + this._app.prefix : '';
-    }
+    this._urlPrefix = '/' + (this._app.staticHandling && this._app.staticHandling.prefix) || 'static';
 };
 
 ShakerCore.prototype.constructor = ShakerCore;
@@ -248,6 +244,9 @@ ShakerCore.prototype._matchDefaultDimensions = function(assetspath){
 */
 
 ShakerCore.prototype._mergeShakerConfig = function (name,path,binders) {
+    /*console.log(name);
+    console.log(binders);
+    console.log('-----');*/
     var shaker_config = this._getMojitShakerConfig(name, path) || {},//get ShakerCore.json
         default_dim = this._matchDefaultDimensions(path + '/assets'),
         default_config,
@@ -746,12 +745,14 @@ ShakerCore.prototype.shakeMojit = function (name, path, options) {
     options = options || {};
     options.order = options.order || SHAKER_DEFAULT_ORDER;
     resources = options.app ? self._resources.app : self._resources.mojits[name];
-
     var shaker_config = self._mergeShakerConfig(name, path, resources.binders),//we get the final merged shaker config
         modules = self.precalculateAutoloads(resources.autoload),
         dimensions = self.generateShakerDimensions(path, shaker_config, resources.assets, path),//files per dimension filtering
         order = options.order,
         actions,shaked = {};
+       /* console.log(name);
+        console.log(shaker_config);
+        console.log('--');*/
     for (var action in (actions = shaker_config.actions)){
         var clientSideDependencies = options.app ? {}: self.generateClientSideResources(name, action, resources, modules),
             dispatched = self.dispatchOrder(action,order, dimensions),
