@@ -5,25 +5,21 @@ var YUITest = require('yuitest').YUITest,
     Registry = require('buildy').Registry;
 
 var Assert = YUITest.Assert;
-var suite = new YUITest.TestSuite("mobstor test");
+var suite = new YUITest.TestSuite("local test");
 
 suite.add(new YUITest.TestCase({
-    name: "mobstor test",
+    name: "local test",
             
     setUp : function () {
     },
 
     tearDown : function () {
+        delete this.rollup;
     },
 
     test_process: function(){
         var registry = new Registry();
-        registry.load(__dirname + '/../../src/lib/tasks/checksumwrite.js', __dirname + '/../../src/lib/tasks/mobstor.js');
-
-        var config = {
-            host: 'playground.yahoofs.com',
-            proxy: {host: "yca-proxy.corp.yahoo.com", port: 3128}
-        };
+        registry.load(__dirname + '/../../src/lib/tasks/local.js');
 
         var files = ['../../docs/_build/html/_static/jquery.js', '../../docs/_build/html/_static/default.css', '../../docs/_build/html/_static/basic.css'],
             css_files = files.filter(function(f) {return Path.extname(f) == ".css";}),
@@ -32,10 +28,7 @@ suite.add(new YUITest.TestCase({
         var queue = new Queue('Test', {registry: registry});
 
         queue.on('taskComplete', function(data) {
-            if (data.task.type === 'checksumwrite') {
-                console.log(data.result);
-            }
-            if (data.task.type === 'mobstor') {
+            if (data.task.type === 'local') {
                 console.log(data.result);
             }
         });
@@ -43,8 +36,7 @@ suite.add(new YUITest.TestCase({
         queue.task('files', js_files)
             .task('concat')
             .task('jsminify')
-            .task('mobstor', {name: 'js_rollup_{checksum}.js', config: config})
-            .task('checksumwrite', {name: 'js_rollup_{checksum}.js'})
+            .task('local', {name: 'js_rollup_{checksum}.js'})
             .run();
 
         Assert.isTrue(true);
