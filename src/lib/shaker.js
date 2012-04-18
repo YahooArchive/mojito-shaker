@@ -172,7 +172,7 @@ Shaker.prototype = {
         }
 
         // Mojito core assets
-        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'mojito_core_{checksum}.js', metadata.core.slice() /* Clone */), files: metadata.core});
+        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'core_{checksum}.common.js', metadata.core.slice() /* Clone */), files: metadata.core});
         metadata.core.length = 0;
 
         // Mojit assets
@@ -181,7 +181,7 @@ Shaker.prototype = {
                 // Mojit client assets
                 client = metadata.mojits[mojit][action].client;
                 if (client.length) {
-                    queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
+                    queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + mojit + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */), files: client});
                     client.length = 0;
                 }
 
@@ -191,7 +191,7 @@ Shaker.prototype = {
                         filtered = this._filterFiles(files[dim]);
 
                         if (filtered.js.length) {
-                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.js', filtered.js), files: files[dim]});
+                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js), files: files[dim]});
                         }
                         if (filtered.css.length) {
                             queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
@@ -207,7 +207,7 @@ Shaker.prototype = {
             // App client assets
             client = metadata.app[action].client;
             if (client.length) {
-                queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'client_app_' + mojit + '_{checksum}.js', mojit, action, client.slice() /* Clone */), files: client});
+                queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'app_' + action + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */), files: client});
                 client.length = 0;
             }
 
@@ -217,7 +217,7 @@ Shaker.prototype = {
                     filtered = this._filterFiles(files[dim]);
 
                     if (filtered.js.length) {
-                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.js', filtered.js), files: files[dim]});
+                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js), files: files[dim]});
                     }
                     if (filtered.css.length) {
                         queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
@@ -343,10 +343,9 @@ Rollup.prototype = {
  * @param name {string} Name of template to build
  * @param files {array} Filenames to rollup
  */
-function ClientRollup(name, mojit, action, files) {
+function ClientRollup(name, base, files) {
     this._name = name;
-    this._mojit = mojit;
-    this._action = action;
+    this._base = base;
     this._files = files;
 }
 
@@ -354,17 +353,18 @@ ClientRollup.prototype = {
     push: function(registry, options, callback) {
         var queue = new Queue(this._name, {registry: registry}),
             self = this;
-
         queue.task('files', this._files);
 
         queue.task('concatcb', {callback: function(filename, content) {
             if (mime.lookup(filename) == 'text/html') {
-                var moduleName = 'views/' + self._mojit + '/' + self._action,
+                var parts = filename.substring(self._base.length + 1).split('/');
+                    mojit = parts[1],
+                    action = parts[3].substring(0, parts[3].indexOf('.'));
                     json = JSON.stringify(content);
 
-                content = 'YUI.add("' + moduleName + '", function(Y, NAME) {\n';
-                content += '\tYUI.namespace("_mojito._cache.compiled.'+ self._mojit +'.views");\n';
-                content += '\tYUI._mojito._cache.compiled.'+ self._mojit +'.views.'+ self._action + ' = ' +  json + ';\n';
+                content = 'YUI.add("views/' + mojit + '/' + action + '", function(Y, NAME) {\n';
+                content += '\tYUI.namespace("_mojito._cache.compiled.'+ mojit +'.views");\n';
+                content += '\tYUI._mojito._cache.compiled.'+ mojit +'.views.'+ action + ' = ' +  json + ';\n';
                 content += '});';
             }
 
