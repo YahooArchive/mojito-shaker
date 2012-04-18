@@ -220,25 +220,28 @@ any additional settings the task depends on.
 	    }
 	}]
 
-To build a particular environment run the shaker command like so: ``mojito shake --context "environment:<env>``
+To build a particular environment run the shaker command like so: ``mojito shake --context "environment:<env>"``
 
-As we saw in the Components section, we have different deployment tasks. Next we will see how to use each with some examples.
+As we saw in the Components section, we have different deployment tasks. Next we will see how to use each based on the example application.json above.
 
 Deploying raw (no rollups, developer mode) 
 ------------------------------------------
+``mojito shake --run``
 
-Deploying localy (rollups, developer mode) 
+Deploying locally (rollups, developer mode) 
 ------------------------------------------
+``mojito shake --context "environment:test" --run``
 
 Deploying to Mobstor (Yahoo's! CDN) 
 ------------------------------------------
+``mojito shake --context "environment:prod" --run``
 
 Deploying to  S3 (Amazon CDN) 
 ------------------------------------------
+``mojito shake --context "environment:stage" --run``
 
 Deploying elsewhere
 ------------------------------------------
-
 All tasks are actually Buildy (https://github.com/mosen/buildy) tasks. It's easy to write your own. There are many examples in the Buildy source. Simply write your custom task, drop it in the
 tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
 
