@@ -170,10 +170,11 @@ Bundling a mojit means that the assets of this mojits will be included within th
 Environment Configuration
 #########################
 
-Shaker allows you to rollups your assets in many different ways, regarding the  deploying environment context.
-In order to do that you wil have to include some configuration in the *application.json*
+Shaker allows you to rollups your assets and deploy them in a variety of ways based on the environment context.
+All that is necessary is to provide a *shaker* config per environment in your *application.json* specifying what task to run and
+any additional settings the task depends on.
 
-**Example:** An example of application.json configuration for several environments:
+**Example:** Sample application.json configuration using several environments:
 
 ::
 
@@ -185,19 +186,15 @@ In order to do that you wil have to include some configuration in the *applicati
 	    "settings": ["environment:test"],
 
 	    "shaker": {
-	        "type": "local",
-	        "config": {
-	            "root": "assets/compiled"
-	        }
+	        "task": "local"
 	    }
 	},
 	{
 	    "settings": ["environment:prod"],
 
 	    "shaker": {
-	        "type": "mobstor",
+	        "task": "mobstor",
 	        "config": {
-	            "root": "assets/compiled",
 	            "client": {
 	                "host": "playground.yahoofs.com",
 	                "proxy": {
@@ -212,18 +209,16 @@ In order to do that you wil have to include some configuration in the *applicati
 	    "settings": ["environment:stage"],
 
 	    "shaker": {
-	        "type": "s3",
+	        "task": "s3",
 	        "config": {
-	            "root": "rootFolder",
 	            "client": {
-	                "key": "YOUROWNKEY",
-	                "secret": "yoursecret",
-	                "bucket": "your bucket"
+	                "key": "<key>",
+	                "secret": "<secret>",
+	                "bucket": "<bucket>"
 	            }
 	        }
 	    }
-	}
-	]
+	}]
 
 In order to run one of another you will have to run Shaker passing the context you want. Example: `` mojito shake --context "environment:prod``
 
@@ -238,7 +233,7 @@ Deploying localy (rollups, developer mode)
 Deploying to Mobstor (Yahoo's! CDN) 
 ------------------------------------------
 
-Deploying to  S2 (Amazon CDN) 
+Deploying to  S3 (Amazon CDN) 
 ------------------------------------------
 
 
