@@ -44,7 +44,7 @@ function Shaker(store) {
 
     var config = this._store.getAppConfig(null, 'definition') || {},
         appConfig = config.staticHandling || {};
-    this._prefix = '/' + (appConfig && appConfig.prefix) || 'static';
+    this._prefix= '/' + (typeof config.staticHandling !=='undefined' ? config.staticHandling.prefix : 'static');
 
     var shaker = config.shaker !== undefined ? config.shaker : {};
     this._compile = config.shaker !== undefined; // Shaker config settings are defined in the top level of app config.

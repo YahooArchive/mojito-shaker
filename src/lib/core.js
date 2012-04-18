@@ -39,7 +39,8 @@ var ShakerCore = function (config) {
     this._store = config.store;
     this._debugging = false;
     this._app = this._store.getAppConfig(null, 'definition');
-    this._urlPrefix = '/' + (this._app.staticHandling && this._app.staticHandling.prefix) || 'static';
+    this._urlPrefix = '/' + (typeof this._app.staticHandling !=='undefined' ? this._app.staticHandling.prefix : 'static');
+    console.log(this._urlPrefix);
 };
 
 ShakerCore.prototype.constructor = ShakerCore;
@@ -946,6 +947,11 @@ ShakerCore.prototype.shakeCore = function () {
     return core;
 };
 
+ShakerCore.prototype._getAppConfig = function () {
+    var cfg = this._app || {};
+    cfg.order = SHAKER_DEFAULT_ORDER;
+    return cfg;
+};
 
 ShakerCore.prototype.shakeAll = function (options) {
     options = options || {};
@@ -958,8 +964,7 @@ ShakerCore.prototype.shakeAll = function (options) {
     shaken.core = this.shakeCore();
     shaken.images = this.shakeImages();
     shaken = this.bundleMojits(shaken);
-    shaken.config = {order: SHAKER_DEFAULT_ORDER};
-
+    shaken.config = this._getAppConfig();
     return shaken;
 };
 
