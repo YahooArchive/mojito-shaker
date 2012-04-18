@@ -14,7 +14,7 @@ Shaker allows you to create rollups regarding different combination of dimension
 Why Shaker?
 ###########
 
-In short, Mojito's current asset management is flawed. Its current rollup abilities are an all-or-nothing affair, lacking the flexibility to allow for a middle ground, or for surgical customization of rollup contents.
+In short, Mojito's current asset management is basic. Its current rollup abilities are an all-or-nothing affair, lacking the flexibility to allow for a middle ground, or for surgical customization of rollup contents.
 Shaker improves Mojito's rollup abilities in many ways.
 
 **Example:** How you add dynamically in **Mojito** your assets, regargding some dimensions (in this case device):

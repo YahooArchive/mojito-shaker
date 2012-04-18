@@ -89,10 +89,14 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         _getMojitRollup: function(mojitName,binder,sel){
             try{
-                var mojit = this._meta.mojits[mojitName],
+                var rollup, mojit = this._meta.mojits[mojitName],
                     mojitInAction = mojit[binder] || mojit['*'];
 
-                return mojitInAction.shaken[sel];
+                rollup = mojitInAction.shaken[sel];
+                if(this._deployClient){
+                    rollup = rollup.concat(mojitInAction.client);
+                }
+                return rollup;
             }catch(e){
                 console.log('ERR founding dimension for:' + mojitName);
                 return [];
@@ -197,10 +201,12 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 rolledJS = mojitoCore.concat(rolledJS);
             }
             // Override. ToDo: We will need to check the dependencies at some point
-            assets.bottom.js = this._shakerDeploy ? rolledJS : assets.bottom.js;
+            if(this._shakerDeploy){
+                assets.bottom.js = rolledJS;
+                assets.bottom.js.push(this._appConfig.prefix +'/'+this._appConfig.appName+'/autoload/compiled/shaker-meta.common.js');
+            }
 
             //TODO: Add only if client side deployed!
-            assets.bottom.js.push('/static/demo/autoload/compiled/shaker-meta.common.js');
 
             assets.top.css = (assets.top.css && assets.top.css.concat(rolledCSS)) || rolledCSS;
         }

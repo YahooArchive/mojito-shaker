@@ -27,6 +27,9 @@ YUI.add('primary', function(Y, NAME) {
          */
         index: function(ac) {
             ac.done({"title":"primary"});
+        },
+        dynamic: function(ac){
+            ac.done('Dynamic done!');
         }
     };
 

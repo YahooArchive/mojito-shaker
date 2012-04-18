@@ -37,6 +37,13 @@ YUI.add('primaryBinderIndex', function(Y, NAME) {
          */
         bind: function(node) {
             this.node = node;
+            Y.one('#call').on('click',this._executeInvoke,this);
+        },
+        _executeInvoke:function(evt){
+            this.mojitProxy.invoke('dynamic',Y.bind(this.resultInvoke,this));
+        },
+        resultInvoke:function(){
+            Y.log(arguments);
         }
 
     };

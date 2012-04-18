@@ -39,8 +39,7 @@ var ShakerCore = function (config) {
     this._store = config.store;
     this._debugging = false;
     this._app = this._store.getAppConfig(null, 'definition');
-    this._urlPrefix = '/' + (typeof this._app.staticHandling !=='undefined' ? this._app.staticHandling.prefix : 'static');
-    console.log(this._urlPrefix);
+    this._urlPrefix = '/' + ((typeof this._app.staticHandling !=='undefined' && this._app.staticHandling.prefix) || 'static');
 };
 
 ShakerCore.prototype.constructor = ShakerCore;
