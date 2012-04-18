@@ -2,9 +2,10 @@ YUI.add("shaker-runtime", function(Y, NAME) {
 	var originalLoad = Y.mojito.Loader.prototype.load;
 
 	Y.mojito.Loader.prototype.load = function(list,cb){
-		console.log(list);
-		console.log('Hooked Loader! :)');
-
+		for(var module in list){
+			var item = list[module];
+		}
+		
 		originalLoad.apply(this,arguments);
 	};
 

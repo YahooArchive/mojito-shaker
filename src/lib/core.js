@@ -713,9 +713,9 @@ ShakerCore.prototype.generateClientSideResources = function (mojit, action, reso
 
     for (i in views){
         fileparts = libpath.basename(views[i]).split('.',3);
-        if(action === fileparts[0]){
+        //if(action === fileparts[0]){//
             clientDependencies.views.push(views[i]);
-        }
+        //}
     }
     for (i in binders){
         fileparts = fileparts = libpath.basename(binders[i]).split('.');
@@ -935,13 +935,14 @@ ShakerCore.prototype.shakeImages = function () {
     return images;
 };
 
-
 ShakerCore.prototype.shakeCore = function () {
-    var files = this._store.getRollupsApp('client', {}).srcs;
+    var files = this._store.getRollupsApp('client', {}).srcs,
+        core;
     // Skip the app level files (Note: to override path: substr(this._root.length + 1);)
-    return files.filter(function(file) {
-        return this._store._root !== file.substr(0, this._store._root.length);
+    core = files.filter(function(file) {
+        return (this._store._root !== file.substr(0, this._store._root.length)) || libpath.basename(file) == 'shaker-runtime.client.js';
     }, this);
+    return core;
 };
 
 
