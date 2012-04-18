@@ -170,7 +170,7 @@ Bundling a mojit means that the assets of this mojits will be included within th
 Environment Configuration
 #########################
 
-Shaker allows you to rollups your assets and deploy them in a variety of ways based on the environment context.
+Shaker allows you to rollup your assets and deploy them in a variety of ways based on the environment context.
 All that is necessary is to provide a shaker config per environment in your *application.json*. A shaker config specifies what task to run and
 any additional settings the task depends on.
 
@@ -196,10 +196,10 @@ any additional settings the task depends on.
 	        "task": "mobstor",
 	        "config": {
 	            "client": {
-	                "host": "playground.yahoofs.com",
+	                "host": "<host>",
 	                "proxy": {
-	                    "host": "yca-proxy.corp.yahoo.com",
-	                    "port": 3128
+	                    "host": "<proxyhost>",
+	                    "port": <port>
 	                }
 	            }
 	        }
@@ -220,7 +220,7 @@ any additional settings the task depends on.
 	    }
 	}]
 
-To build a particular environment run the shaker command like so: ``mojito shake --context "environment:prod``
+To build a particular environment run the shaker command like so: ``mojito shake --context "environment:<env>``
 
 As we saw in the Components section, we have different deployment tasks. Next we will see how to use each with some examples.
 
@@ -239,7 +239,7 @@ Deploying to  S3 (Amazon CDN)
 Deploying elsewhere
 ------------------------------------------
 
-All tasks are Buildy tasks. It's easy to write your own. There are many examples in the Buildy source. Simply write your custom task, drop it in the
+All tasks are actually Buildy (https://github.com/mosen/buildy) tasks. It's easy to write your own. There are many examples in the Buildy source. Simply write your custom task, drop it in the
 tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
 
 Advanced Configuration
