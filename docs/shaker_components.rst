@@ -17,17 +17,17 @@ Shaker Compiler
 .. image:: images/shaker_compiler.png
    :scale: 80%
 
-The Shaker compiler is the build time component of Shaker. It employs Shaker Core to generate the metadata, and uses it to create the rollups for the application.
+The Shaker compiler is the build time component of Shaker. It employs Shaker Core to generate the metadata and uses it to create the rollups for the application.
 
-Shaker compiler can be configured per enviroment(staging, test, production) throught application.json and also you can decide what actions to apply to the rollups (minify,csslint...). Moreover you can set what we call "deployment tasks" which allow developpers to deploy the assets to different places:
+Shaker compiler can be configured per environment (staging, test, production) through application.json and you can also decide what actions to apply to the rollups (minify, js/csslint, etc). Moreover you can set what we call "deployment tasks" which allow developers to deploy rollups to different places:
 
 - ``raw`` - Deploy the assets without doing rollups. This mode will pick the files directly from local (handy for development).
 
-- ``local`` - Deploy the assets in rollups and save the files in local.
+- ``local`` - Compile rollups and output files locally.
 
-- ``mobstor`` - Deploy the assets in rollups and upload them to Mobstor (Yahoo! CDN).
+- ``mobstor`` - Compile rollups and upload them to Mobstor (Yahoo! CDN).
 
-- ``S3`` - Deploy the assets as rollups and upload them to Amazon S3 CDN.
+- ``s3`` - Compile rollups and upload them to Amazon S3 CDN.
 
 
 Shaker Addon and ShakerHTMLFrame

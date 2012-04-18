@@ -171,10 +171,10 @@ Environment Configuration
 #########################
 
 Shaker allows you to rollups your assets and deploy them in a variety of ways based on the environment context.
-All that is necessary is to provide a *shaker* config per environment in your *application.json* specifying what task to run and
+All that is necessary is to provide a shaker config per environment in your *application.json*. A shaker config specifies what task to run and
 any additional settings the task depends on.
 
-**Example:** Sample application.json configuration using several environments:
+**Example:** Sample application.json shaker setup using several environments:
 
 ::
 
@@ -220,9 +220,9 @@ any additional settings the task depends on.
 	    }
 	}]
 
-In order to run one of another you will have to run Shaker passing the context you want. Example: `` mojito shake --context "environment:prod``
+To build a particular environment run the shaker command like so: ``mojito shake --context "environment:prod``
 
-As we saw in the Components section, we have different deployment tasks. Next we will see their API's and some examples.
+As we saw in the Components section, we have different deployment tasks. Next we will see how to use each with some examples.
 
 Deploying raw (no rollups, developer mode) 
 ------------------------------------------
@@ -236,6 +236,11 @@ Deploying to Mobstor (Yahoo's! CDN)
 Deploying to  S3 (Amazon CDN) 
 ------------------------------------------
 
+Deploying elsewhere
+------------------------------------------
+
+All tasks are Buildy tasks. It's easy to write your own. There are many examples in the Buildy source. Simply write your custom task, drop it in the
+tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
 
 Advanced Configuration
 #########################
