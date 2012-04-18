@@ -43,9 +43,7 @@ function Shaker(store) {
     this._store = store;
 
     var config = this._store.getAppConfig(null, 'definition') || {},
-        specs = config.specs || {},
         appConfig = config.staticHandling || {};
-
     this._prefix = '/' + (appConfig && appConfig.prefix) || 'static';
 
     var shaker = config.shaker !== undefined ? config.shaker : {};
