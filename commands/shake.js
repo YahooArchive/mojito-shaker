@@ -9,7 +9,7 @@ var utils = require('mojito/lib/management/utils'),
     Shaker = null;
 
 try {
-    Shaker = require('./lib/shaker').Shaker;
+    Shaker = require('shaker').Shaker;
 }
 catch (exception) {
     utils.error('Please install the shaker package from the npm registry.');
