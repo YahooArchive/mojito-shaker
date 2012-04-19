@@ -86,17 +86,17 @@ The following table illustrates the contents of rollups for FooMojit for various
 
 
 
-+-----------------+-------------------------+
-| Region Value    | Data Type               |
-+=================+=========================+
-| ``none``        | - common/foo-common.css |               
-+-----------------+-------------------------+
-| ``US``          | - common/foo-common.css |
-|                 | - region/US/foo-US.css  |               
-+-----------------+-------------------------+
-| ``CA``          | - common/foo-common.css | 
-|                 | - region/CA/foo-CA.css  | 
-+-----------------+-------------------------+
++-----------------+------------------------------+
+| Region Value    | Data Type                    |
++=================+================+++++=========+
+| ``none``        | - common/foo-common.css      |               
++-----------------+------------------------------+
+| ``US``          | - common/foo-common.css      |
+|                 | - region/US/foo-US.css       |               
++-----------------+------------------------------+
+| ``CA``          | - common/foo-common.css      | 
+|                 | - region/CA/foo-CA.css       | 
++-----------------+------------------------------+
 
 In the above example, the dimensions region and en map directly to a conforming assets directory structure.
 
@@ -259,6 +259,6 @@ If the default directory-based rollup behavior is not desirable, or, if the asse
 
 Augmenting Dimensions
 ---------------------
-
+TODO!
 
 
