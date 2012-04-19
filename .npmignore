@@ -1,0 +1,7 @@
+.svn/
+.hg/
+.git/
+CVS/
+*~
+*.bak
+.DS_Store
