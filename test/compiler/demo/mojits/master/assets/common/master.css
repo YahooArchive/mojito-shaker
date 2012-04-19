@@ -1,0 +1,92 @@
+html { background: #eee; }
+
+body {
+    color: #fff;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+h1 {
+    font-size: 280%;
+    float: left;
+    margin: 0;
+}
+
+h1 a,
+h1 a:visited { color: #444; }
+h1 a:hover { text-decoration: none; }
+
+a,
+a:visited {
+    color: #EFBC21;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul.inline {
+    margin: 0;
+}
+
+ul.inline,
+ul.inline li {
+    display: inline;
+    float: none !important;
+    list-style: none;
+}
+
+li.P {
+    border-left: 1px #888 solid;
+    margin-left: 5px;
+    padding-left: 6px;
+}
+
+#doc {
+    margin: 0 auto;
+    padding: 30px 0;
+    width: 660px;
+}
+
+#head {
+    margin-bottom: 2em;
+}
+
+#main {
+    background: #000;
+    clear: both;
+    box-shadow: 0 0 7px #000;
+    margin-top: 30px;
+}
+
+#nav {
+    color: #555;
+    float: right;
+    font-size: 108%;
+    line-height: 45px;
+}
+
+#nav a {
+    background: #ddd;
+    border: 1px solid #999;
+    border-radius: 4px;
+    color: #444;
+    box-shadow: inset 1px 1px 1px #fff;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    width: 6em;
+}
+#nav a:hover {
+    background: #999;
+    color: #000;
+    text-decoration: none;
+}
+
+#nav .active {
+    background: #666;
+    border-color: #555;
+    color: #fff;
+}

@@ -1,0 +1,9 @@
+#features {
+    float: left;
+    width: 230px;
+}
+
+.feature .photo {
+    float: left;
+    border-width: 0 1px 0 0;
+}
