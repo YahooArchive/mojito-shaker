@@ -1,0 +1,69 @@
+#leadstory {
+    float: left;
+    height: 359px;
+    width: 415px;
+}
+
+#leadstory .hd {
+    background: url(/static/demo/assets/images/main_title_bg_2.png);
+    height: 54px;
+    margin: 5px 0 0 5px;
+    width: 410px;
+    position: absolute;
+    z-index: 2;
+}
+
+#leadstory .hdbg {
+    height: 58px;
+    width: 410px;
+}
+
+#leadstory .hd h1 {
+    background: url(/static/demo/assets/images/headline1.png) no-repeat;
+    height: 35px;
+    margin: 16px 0 0 10px;
+    position: absolute;
+    text-indent: -9999px;
+    width: 396px;
+}
+
+#leadstory .bd {
+    height: 350px;
+    padding: 5px 0 0 5px;
+    position: absolute;
+    width: 410px;
+}
+
+#leadstory .bd .text {
+    bottom: 2px;
+    font-size: 92%;
+    position: absolute;
+    width: 410px;
+    z-index: 2;
+}
+
+#leadstory .credit {
+    color: #fff;
+    float: right;
+    margin-bottom: 2px;
+    padding: 3px 10px;
+    text-align: right;
+}
+
+#leadstory .bd .story {
+    clear: both;
+    line-height: 1.55em;
+    padding: 5px 8px 4px;
+    width: 394px;
+}
+
+#leadstory .bd .story p { display: inline; }
+
+#leadstory .bd .secondary {
+    border-top: 1px dotted #aaa;
+    clear: both;
+    font-size: 12px;
+    padding: 4px 4px 0 4px;
+    margin: 0 0 0 4px;
+    width: 394px;
+}

@@ -1,0 +1,18 @@
+[{
+    "settings": ["master"],
+    "staticHandling":{
+        "useRollups":false
+    },
+    "specs": {
+        "htmlframe": {
+            "type": "HTMLFrameMojit",
+            "config": {
+                "deploy": true,
+                "title": "POC",
+                "child": {
+                    "type": "master"
+                }
+            }
+        }
+    }
+}]

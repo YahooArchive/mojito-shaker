@@ -1,0 +1,17 @@
+{
+  "name": "shaker",
+  "description": "Compile rollups for Mojito",
+  "keywords": [
+    "mojito"
+  ],
+  "version": "0.0.1",
+  "dependencies": {
+    "mime": "1.2.x",
+    "buildy": "0.0.x",
+    "async": "0.1.x",
+    "mkdirp": "0.3.x"
+  },
+  "scripts": {
+    "install": "./build.sh"
+  }
+}

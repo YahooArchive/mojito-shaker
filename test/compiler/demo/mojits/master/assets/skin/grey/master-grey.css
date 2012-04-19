@@ -1,0 +1,10 @@
+a,
+a:visited { color: #005790; }
+
+#doc { width: 662px; }
+
+#main {
+    color: #000;
+    background: #eee;
+    border-radius: 4px;
+}
