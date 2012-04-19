@@ -1,17 +1,28 @@
 {
   "name": "shaker",
-  "description": "Compile rollups for Mojito",
-  "keywords": [
-    "mojito"
+  "version": "0.0.2",
+  "description": "Compiles and deploys assets for Mojito applications.",
+  "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
+  "contributors": [
+      "Diego Ferreiro <diegof@yahoo-inc.com>",
+      "Stephen Murphy <murphys@yahoo-inc.com>"
   ],
-  "version": "0.0.1",
   "dependencies": {
     "mime": "1.2.x",
     "buildy": "0.0.x",
     "async": "0.1.x",
     "mkdirp": "0.3.x"
   },
-  "scripts": {
-    "install": "./build.sh"
+  "keywords": [
+    "mojito",
+    "rollups",
+    "compile"
+  ],
+  "main": "lib/index",
+  "yahoo": {
+      "bugzilla": {
+          "product": "Search",
+          "component": "Shaker"
+      }
   }
 }
