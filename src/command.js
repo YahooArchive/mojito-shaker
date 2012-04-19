@@ -12,7 +12,7 @@ try {
     Shaker = require('./lib/shaker').Shaker;
 }
 catch (exception) {
-    utils.error('Please install the Shaker package');
+    utils.error('Please install the shaker package from the npm registry.');
 }
 
 /**
