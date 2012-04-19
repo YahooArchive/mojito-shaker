@@ -1,7 +1,7 @@
 {
   "name": "shaker",
   "version": "0.0.2",
-  "description": "Compiles and deploys assets for Mojito applications.",
+  "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
   "contributors": [
       "Diego Ferreiro <diegof@yahoo-inc.com>",
@@ -15,8 +15,7 @@
   },
   "keywords": [
     "mojito",
-    "rollups",
-    "compile"
+    "rollups"
   ],
   "main": "index",
   "yahoo": {
