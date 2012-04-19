@@ -1,6 +1,8 @@
 [{
     "settings": ["master"],
     
+    "mojitsDirs": ["mojits", "node_modules/shaker/mojits"],
+
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
