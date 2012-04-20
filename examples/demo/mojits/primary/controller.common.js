@@ -29,6 +29,7 @@ YUI.add('primary', function(Y, NAME) {
             ac.done({"title":"primary"});
         },
         dynamic: function(ac){
+            //ac.done('AJAX!');
             ac.done({title:'Dynamic done!'});
         }
     };
