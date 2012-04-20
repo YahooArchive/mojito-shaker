@@ -256,10 +256,30 @@ If the default directory-based rollup behavior is not desirable, or, if the asse
 - ``exclude`` - Exclude one or more paths or files. (Useful for application-level configuration.) 
 - ``replace`` - Replace one or more paths or files with new paths or files. (Useful for application-level configuration.) 
 
+**Example advanced configuration:**
+:: 
+	{
+		"dimensions": {
+			"common":{
+				"include":["mycommon/"],
+				"exclude":["common/common1.css"]
+			},
+			"device":{
+			}
+		},
+		"actions":{
+			"index":{
+			}
+
+		}
+	}
+
 
 Augmenting Dimensions
 ---------------------
-**shaker.json example for Augmenting:**
+Shaker allows you perform surgical manipulation of the rollups using augmentation. So basically this configuration features allows you to include/exclude files for a particular dimension which matches some criteria. For example, we want to override a special CSS only when we are in "region:CA and in lang:en". The sintax follows the next example
+
+**shaker.json example for dimensions augmentation:**
 ::
 	{
 	"augments":[
