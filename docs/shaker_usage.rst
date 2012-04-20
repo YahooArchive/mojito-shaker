@@ -259,6 +259,21 @@ If the default directory-based rollup behavior is not desirable, or, if the asse
 
 Augmenting Dimensions
 ---------------------
-TODO!
+**shaker.json example for Augmenting:**
+::
+	{
+	"augments":[
+		{
+			"on": {
+				"region": "US",
+				"lang": "en",
+				"skin": "blue",
+				"device": "smartphone",
+				"action": "index"
+			},
+			"include":["toInclude/otherToInclude.css"],
+			"exclude": ["lang/"]
+		}
+	]}
 
 
