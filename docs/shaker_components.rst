@@ -58,7 +58,7 @@ Runtime:
 ---------
 	#. Mojito server will automatically pick the generated metadata file.
 	#. When a request arrives, mojito computes everything normally until it reaches the ShakerHTMLFrame. Then the runtime addon gets executed.
-	#. The ShakerAddon checks the current context and the executed Mojits, and picks from the metadata the most adecuated rollup to include into the page, overriding the necesary default mojito assets.
+	#. The ShakerAddon checks the current context and the executed Mojits, and picks from the metadata the most adecuated rollup to include into the page, overriding the necessary default mojito assets.
 	#. If the client side gets deployed, Shaker also deploys itself to the client to serve future mojit calls.
 
 
