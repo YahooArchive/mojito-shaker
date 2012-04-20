@@ -43,4 +43,22 @@ If you have your own HTMLFrame you just have to include the addon dependency and
 
 
 All the pieces together
-##########
+#######################
+This is how all the components get orchestrated together: 
+
+Build time:
+------------
+	#. Shaker command gets executed invoking ShakerCompiler.
+	#. Shaker compiler gets the application configuration and calls ShakerCore .
+	#. ShakerCore will analyze all the application resources, and will return a metadata object with all the information about how to do the rollups.
+	#. ShakerCompiler takes the previous generated metadata, and generate the minified precomputed rollups, and output them as files or to CDN.
+	#. ShakerCompiler output a new metadata file which will be picked up on runtime for picking the correct rollup regarding the context.
+
+Runtime:
+---------
+	#. Mojito server will automatically pick the generated metadata file.
+	#. When a request arrives, mojito computes everything normally until it reaches the ShakerHTMLFrame. Then the runtime addon gets executed.
+	#. The ShakerAddon checks the current context and the executed Mojits, and picks from the metadata the most adecuated rollup to include into the page, overriding the necesary default mojito assets.
+	#. If the client side gets deployed, Shaker also deploys itself to the client to serve future mojit calls.
+
+
