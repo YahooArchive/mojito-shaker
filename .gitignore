@@ -1,0 +1,19 @@
+
+# /
+/node_modules
+
+# /open_shaker/trunk/
+/open_shaker/trunk/node_modules
+
+# /open_shaker/trunk/docs/
+/open_shaker/trunk/docs/.build
+
+# /open_shaker/trunk/examples/demo/
+/open_shaker/trunk/examples/demo/node_modules
+/open_shaker/trunk/examples/demo/autoload
+
+# /open_shaker/trunk/examples/demo/assets/
+/open_shaker/trunk/examples/demo/assets/compiled
+
+# /open_shaker/trunk/lib/tasks/
+/open_shaker/trunk/lib/tasks/mobstor.js
