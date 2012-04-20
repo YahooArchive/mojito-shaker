@@ -203,7 +203,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             // Override. ToDo: We will need to check the dependencies at some point
             if(this._shakerDeploy && this._deployClient){
                 assets.bottom.js = rolledJS;
-                assets.bottom.js.push(this._appConfig.prefix +'/'+this._appConfig.appName+'/autoload/compiled/shaker-meta.common.js');
             }
             //TODO: Add only if client side deployed!
 

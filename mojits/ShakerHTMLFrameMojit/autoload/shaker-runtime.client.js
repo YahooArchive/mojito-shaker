@@ -7,25 +7,36 @@ YUI.add("shaker-runtime", function(Y, NAME) {
 
 	function ShakerRuntime() {
 		this._originalLoad = Y.mojito.Loader.prototype.load;
+		this._originalMojitProxy = Y.mojito.MojitProxy.prototype.invoke;
 		this.init();
 	}
 	ShakerRuntime.prototype = {
 		init:function(){
 			this._hookLoader();
+			this._hookInvoke();
 
 		},
-		_hookLoader:function(){
+		_hookLoader:function() {
 			var self = this;
 			Y.mojito.Loader.prototype.load = function(){
+				Y.log('Loader Hooked!');
 				self._onLoaderCall.apply(self,arguments);
 				self._originalLoad.apply(this,arguments);
 			};
 		},
-		_onLoaderCall:function(list){
-
+		_hookInvoke:function(){
+			var self = this;
+			Y.mojito.MojitProxy.prototype.invoke = function(){
+				Y.log('Invoke Hooked!');
+				self._onInvokeCall.apply(self,[this].concat(arguments));
+				self._originalMojitProxy.apply(this,arguments);
+			};
 		},
-		onInvokeCall:function(){
-
+		_onLoaderCall:function(list) {
+			//Y.log(list);
+		},
+		_onInvokeCall:function(mojitProxy,args) {
+			//console.log(arguments);
 		}
 	};
 
