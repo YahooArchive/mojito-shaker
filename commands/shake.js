@@ -3,13 +3,15 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
-var utils = require('mojito/lib/management/utils'),
+var path = require('path'),
+    utils = require('mojito/lib/management/utils'),
     start = require('mojito/lib/management/commands/start'),
     ResourceStore = require('mojito/lib/store.server'),
     Shaker = null;
 
 try {
-    Shaker = require('shaker').Shaker;
+    var shaker_path = path.join(process.cwd(),'node_modules','shaker');
+    Shaker = require(shaker_path).Shaker;
 }
 catch (exception) {
     utils.error('Please install the shaker package from the npm registry.');
