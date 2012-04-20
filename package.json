@@ -17,7 +17,7 @@
     "mojito",
     "rollups"
   ],
-  "main": "index",
+  "main": "./lib/shaker",
   "yahoo": {
       "bugzilla": {
           "product": "Search",
