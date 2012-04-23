@@ -3,7 +3,7 @@
 Shaker App Example
 ===================
 
-In order to understand better how Shaker works, we are going to create simple application from scratch, 
+In order to understand better how Shaker works, we are going to create simple application from scratch,
 which will cover the basic features and some advanced configuration as well.
 
 Application overview
@@ -19,56 +19,56 @@ Our application will have three main Mojits:
 - ``primary`` - Will contain the left part of our application.
 - ``secondary`` - Will be the the right part of our application.
 
-Each mojit will be sensible to a specific set of dimensions: 
+Each mojit will be sensitive to a specific set of dimensions:
 
 - ``device``: default, smartphone
 - ``region``:  default, CA
 - ``skin``: default, gray, blue
 
-This means that for example, if we are in a mobile device, for some mojits, 
-we will want to load some different CSS or just add some style on top of our default baseplate. 
-Also we wanna do the same with skins, regions and with all the possible combinations. 
+This means that, for example, if we are on a mobile device, we will want to load some different CSS or just add some styles on top of our default baseplate for some mojits. Also we want to do the same with skins, regions and with all the possible combinations of those dimensions.
 
 
 Application structure
 #####################
 
-In this section we will analyze with detail every little piece of our application.
+In this section we will analyze in detail every piece of our application.
 
 master mojit
 ------------
 
-This mojit will be the placeholder for the other two mojits. Let's take a look to the controller and the view:
+This mojit will be the placeholder for the other two mojits. Let's take a look at the controller and the view:
 
-**controller.common.js:** 
+**controller.common.js:**
 ::
 
     index: function(ac) {
+
         var config = {
-                children: {
-                    primary: {
-                        type: 'primary',
-                        action: 'index'
-                    },
-                    secondary: {
-                        type: 'secondary',
-                        action: 'index'
-                    }
+            children: {
+                primary: {
+                    type: 'primary',
+                    action: 'index'
+                },
+                secondary: {
+                    type: 'secondary',
+                    action: 'index'
                 }
-            };
+            }
+        };
+
         ac.composite.execute(config, function (data, meta) {
             ac.done(data, meta);
         });
     },
+
     dynamic:{
-      ac.done('AJAX entry point!');
+        ac.done('AJAX entry point!');
     }
 
-As you can see, we are not including manually any CSS and we don't have any logic at all in our controller. Shaker will take care of this on runtime regarding the current context.
-Note as well that we have another controller action which will be used by the binder (explained on the next paragraph).
+As you can see, we are not manually including any CSS and we don't have any logic at all in our controller. Shaker takes care of this at runtime based on the current context. Note that we have another controller action which will be used by the binder (explained in the next paragraph).
 
 
-**index.mu.html:** 
+**index.mu.html:**
 
 .. code-block:: html
 
@@ -100,16 +100,16 @@ Also ``master`` will be sensible to some dimensions (skin:grey, device:smartphon
            /blue/
               blue.css
 
-Note that there is a special dimension called ``common`` which basically acts as a css-base, and shares all his css among all other dimensions (we will see at the end how everything looks like). Basically the ``master-smartphone.css`` or ``master-grey.css`` will have some style override to change the baseplate style.
+Note that there is a special dimension called ``common`` which acts as a base and shares all its css among all other dimensions (we will see at the end how everything looks like). Basically the ``master-smartphone.css`` or ``master-grey.css`` will have some style override to change the baseplate style.
 
 
 primary mojit
 ---------------
 
-This mojit will be the left part of our application (you can see it in the picture). We are not going to show neither controller or view, since they don't contains anything really special more than the HTML template and some dummy data to populate it. 
+This mojit will be the left part of our application (you can see it in the picture). We are not going to show neither controller or view, since they don't contains anything really special more than the HTML template and some dummy data to populate it.
 What it is important to shaker is which assets our Mojit contains. In this case the mojit is sensible to region and skin:
 
-**Assets structure** 
+**Assets structure**
 
 .. code-block:: text
   :emphasize-lines: 4,7,10,12
@@ -131,7 +131,7 @@ Note here that the names of the files doesn't matter. Only the folder structure 
 
 This mojit will contain a binder which will be deployed to the client to further communication using a different entry point.
 
-**Binder: index.js** 
+**Binder: index.js**
 ::
 
   bind: function (node) {
@@ -179,7 +179,7 @@ The names of the files doesn't matter. Only the folder structure is important.
 HTMLFrame mojit
 ---------------
 
-Mojito uses an "HTMLFrame" to create the skeleton of the HTML and to embedded 
+Mojito uses an "HTMLFrame" to create the skeleton of the HTML and to embedded
 all your executed mojits ( See `Using HTML Frame Mojit <http://developer.yahoo.com/cocktails/mojito/docs/code_exs/htmlframe_view.html>`_)
 Shaker will need to be executed within this HTMLFrame, so basically we create a copy of the original HTMLFrame and add the little pieces we need:
 
@@ -211,8 +211,7 @@ Shaker will need to be executed within this HTMLFrame, so basically we create a 
     'mojito-shaker-addon'
   ]});
 
-Basically we need shaker to be executed after analyze all the dependencies 
-if the application is deployed to the client, and before the assets get passed to be included in the markup.
+We need shaker to execute after analyzing all the dependencies if the application is deployed to the client, and before the assets get passed to the markup.
 
 Application configuration
 -------------------------
@@ -288,7 +287,7 @@ Let's assume that we run ``mojito shake --context "environment:test" --run`` whi
 This is what's Shaker is going to do step by step:
 
   1. It will analyze all your application files, looking for Mojits and within mojits all autoloads, assets, binders, views...
-  2. It will compute all the dependencies for binders, all the dimensions for assets and generate metadata information, 
+  2. It will compute all the dependencies for binders, all the dimensions for assets and generate metadata information,
   3. It will take the previous metadata, concatenate, minify, and write the rollups either to local or to the cdn.
   4. It will write the metadata file as a compiled autoload, which will contain all the generated rollup paths. This file will be picked automatically on runtime.
 
@@ -301,7 +300,7 @@ Everything spin around this metadata file. Let's see how this file looks like fo
 
   YUI.add("shaker/metaMojits", function(Y, NAME) {
   YUI.namespace("_mojito._cache.shaker");
-  YUI._mojito._cache.shaker.meta = 
+  YUI._mojito._cache.shaker.meta =
   {
     "mojits": {
       "master": {
@@ -359,11 +358,9 @@ Everything spin around this metadata file. Let's see how this file looks like fo
     }
   }});
 
-As you can see for each mojit and for each possible combination, Shaker generated a rollup. 
-Shaker will sign the rollup with MD5 to avoid committing the same file twice.
-Moreover shaker will generate the mojito core rollup for you and also all the client side rollup (if your app is set to deploy:true).
+As you can see for each mojit and for each possible combination, Shaker generated a rollup. Shaker signs the rollup with MD5 to avoid committing the same file twice. Moreover, Shaker generates the Mojito core rollup for you and also all the client side rollup (if your app is set to deploy:true).
 
-If you re in development environment, maybe you want to know what exactly is getting pushed in every rollup. To do that, just run shaker in developer mode: ``mojit shake``
+During development, you may want to know what exactly gets included in every rollup. To do that, just run shaker in dev mode: ``mojit shake``
 
 **Developer context shaker-meta.common.js**
 
@@ -371,7 +368,7 @@ If you re in development environment, maybe you want to know what exactly is get
 
     YUI.add("shaker/metaMojits", function(Y, NAME) {
     YUI.namespace("_mojito._cache.shaker");
-    YUI._mojito._cache.shaker.meta = 
+    YUI._mojito._cache.shaker.meta =
     {
         "mojits": {
             "master": {
@@ -420,7 +417,7 @@ If you re in development environment, maybe you want to know what exactly is get
                             "/static/primary/assets/skin/grey/primary-grey.css",
                             "/static/primary/assets/region/CA/primary-CA.css"
                         ],
-                        
+
                         "common-index-device-skin-CA-lang": [
                             "/static/primary/assets/common/primary.css",
                             "/static/primary/assets/region/CA/primary-CA.css"
@@ -483,24 +480,15 @@ If you re in development environment, maybe you want to know what exactly is get
         }
     }});
 
-You can see which files will be picked for each dimension combination, and also which files will be picked for client side.
+You can see which files will be picked up for each dimension combination, and also which files will be picked up on the client side.
 
-.. note:: By default, every mojit will require two requests, one for the CSS rollup, and other for all the JS. You could improve the number or request bundling some mojits together, It's that we call "High coverage mojits". In order to do that you will have to create a ``shaker.json`` configuration file at the application level. For more information read the Advanced Configuration.
+.. note:: By default, every mojit will require two requests, one for the CSS rollup, and another for all the JS. You could improve the number of requests by bundling mojits together. It's what we call "High coverage mojits". In order to do that, you will have to create a ``shaker.json`` configuration file at the application level. For more information, read the Advanced Configuration.
 
 
 Runtime
 ----------
-On runtime, when a request came, the normal work-flow will happen in mojito until the execution reach the ShakerHTMLFrame. THen our Shaker addon gets executed,
-and basically is going to look at the context, see which are matched dimensions, and serve the right rollup to the client.
-So if the context in a request is set to ``region:CA`` and ``device:smartphone`` Shaker will pick the rollup for those dimensions and attach it to the page.
+At runtime, the normal workflow happens in mojito until the execution reach the ShakerHTMLFrame. THen our Shaker addon gets executed, looks at the context, determines which dimensions match the request, and serves the most appropriate rollup to the client. So if the context of a request is set to ``region:CA`` and ``device:smartphone``, Shaker will pick the rollup for those dimensions and attach it to the page.
 
-.. note:: To create your custom dimensions (not built in mojit) you will have to set the value on that dimensions on runtime. So in this example, skin is picked from the url and passed to the context so shaker can now which value to pick up.
+.. note:: To create a custom dimension (not supported by Mojito by default), you will have to set the value of that dimension at runtime. In this example, ``skin`` is picked from the url and passed to the context so Shaker can know which value to set it to.
 
-
-Shaker will allows you to bundle also css rollup at application level. In this examples we have some boiler plate css which belongs to the application level, and get shared among all mojits.
-
-Summary
--------------
-Within this section we cover some basic and advanced features of Shaker, but still can do match more!
-We encourage you to read all documentation, and checkout the demo and play with it in order to fully understand Shaker and it's components.
-
+Shaker allows you to bundle css rollup at the application level. In this example, we have some boiler plate css which belongs to the application level, and gets shared among all mojits.
