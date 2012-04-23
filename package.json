@@ -5,7 +5,9 @@
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
   "contributors": [
       "Diego Ferreiro <diegof@yahoo-inc.com>",
-      "Stephen Murphy <murphys@yahoo-inc.com>"
+      "Stephen Murphy <murphys@yahoo-inc.com>",
+      "Brett Stimmerman <bstimmer@yahoo-inc.com>",
+      "Julien Lecomte <jlecomte@yahoo-inc.com>"
   ],
   "dependencies": {
     "mime": "1.2.x",
