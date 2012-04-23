@@ -9,7 +9,7 @@ What is Shaker?
 
 Shaker is a static asset rollup manager for Mojito applications.
 A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof.
-Shaker allows you to create rollups regarding different combination of dimensions, for example you may wanna serve different assets when people are connected from different devices, different countries, etc.
+Shaker allows you to create rollups regarding different combination of dimensions, for example you may want serve different assets when people are connected from different devices, different countries, etc.
 
 Why Shaker?
 ###########
@@ -17,7 +17,7 @@ Why Shaker?
 In short, Mojito's current asset management is basic. Its current rollup abilities are an all-or-nothing affair, lacking the flexibility to allow for a middle ground, or for surgical customization of rollup contents.
 Shaker improves Mojito's rollup abilities in many ways.
 
-**Example:** How you add dynamically in **Mojito** your assets, regargding some dimensions (in this case device):
+**Example:** How you add your assets in Mojito dynamically, regarding some dimensions (in this case device):
 
 ::
 
@@ -38,7 +38,7 @@ Shaker improves Mojito's rollup abilities in many ways.
 
 
 So if you extrapolate to other dimensions, you will have to create all this logic by yourself.
-With Shaker, we do all of this automatically for you. You just put your asset in the right folder (or throw configuration), and Shaker will take care of adding it need it.
+With Shaker, we do all of this automatically for you. You just put your assets in the right folder (or throw configuration), and Shaker will take care of adding it  if needed.
 
 Features
 ########
