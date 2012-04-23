@@ -22,7 +22,7 @@ Installation Steps
 
 #. Go to your app directory
 	
-	``$ cd myApp
+	``$ cd myApp``
 
 #. Get Shaker from the npm registry and install it under your Mojito application so that it can be run from the command line.
 
