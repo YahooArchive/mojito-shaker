@@ -106,8 +106,7 @@ Note that there is a special dimension called ``common`` which acts as a base an
 primary mojit
 ---------------
 
-This mojit will be the left part of our application (you can see it in the picture). We are not going to show neither controller or view, since they don't contains anything really special more than the HTML template and some dummy data to populate it.
-What it is important to shaker is which assets our Mojit contains. In this case the mojit is sensible to region and skin:
+This mojit will be the left part of our application (you can see it in the picture above). We are not going to show neither controller or view since they don't contain anything really special more than the HTML template and some dummy data to populate it. What is important to shaker is which assets our Mojit contains. In this case, the mojit is sensitive to ``region`` and ``skin``:
 
 **Assets structure**
 
@@ -127,7 +126,7 @@ What it is important to shaker is which assets our Mojit contains. In this case 
            /blue/
               blue.css
 
-Note here that the names of the files doesn't matter. Only the folder structure is important.
+Note: the name of the files doesn't matter. Only the folder structure is important.
 
 This mojit will contain a binder which will be deployed to the client to further communication using a different entry point.
 
@@ -135,16 +134,18 @@ This mojit will contain a binder which will be deployed to the client to further
 ::
 
   bind: function (node) {
-            Y.one('#call').on('click', this._executeInvoke, this);
-        },
-        _executeInvoke:function (evt) {
-            this.mojitProxy.invoke('dynamic', Y.bind(this.resultInvoke, this));
-        },
-        resultInvoke:function () {
-            //Note that no request have been made at this point.
-        }
+      Y.one('#call').on('click', this._executeInvoke, this);
+  },
 
-We are including this binder so you can see that how Shaker is doing the rollups with all the client side dependencies (if deploy is set to true).
+  _executeInvoke:function (evt) {
+      this.mojitProxy.invoke('dynamic', Y.bind(this.resultInvoke, this));
+  },
+
+  resultInvoke:function () {
+      // Note that no request have been made at this point.
+  }
+
+We are including this binder so you can see how Shaker is doing the rollups with all the client side dependencies (if ``deploy`` is set to ``true``)
 
 secondary mojit
 ----------------
@@ -170,18 +171,12 @@ This mojit will be the right part of our application. Again we will focus on the
            /blue/
               some-blue.css
 
-The names of the files doesn't matter. Only the folder structure is important.
-
-
-.. note:: Remember that here we are using the folder structure convention for the assets. Shaker also allows you to configure your assets anywhere,
- but then you will need to create a ``shaker.json`` file specifying you own convention (See the appropriate section). It's important to emphasize that in the future, Shaker will probably support another ways to setup your assets.
+Note: the name of the files doesn't matter. Only the folder structure is important.
 
 HTMLFrame mojit
 ---------------
 
-Mojito uses an "HTMLFrame" to create the skeleton of the HTML and to embedded
-all your executed mojits ( See `Using HTML Frame Mojit <http://developer.yahoo.com/cocktails/mojito/docs/code_exs/htmlframe_view.html>`_)
-Shaker will need to be executed within this HTMLFrame, so basically we create a copy of the original HTMLFrame and add the little pieces we need:
+Mojito uses an "HTMLFrame" to create the skeleton of the HTML document and to embed all your executed mojits ( See `Using HTML Frame Mojit <http://developer.yahoo.com/cocktails/mojito/docs/code_exs/htmlframe_view.html>`_) Shaker will need to be executed within this HTMLFrame, so basically we create a copy of the original HTMLFrame and add the little pieces we need:
 
 **ShakerHTMLFrame controller.server.js**
 
