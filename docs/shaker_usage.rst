@@ -202,17 +202,17 @@ The following table illustrates the contents of rollups for FooMojit for various
 
 
 
-+-----------------+-------------------------+
-| Region Value    | Data Type               |
-+=================+=========================+
-| ``none``        | - common/foo-common.css |               
-+-----------------+-------------------------+
-| ``US``          | - common/foo-common.css |
-|                 | - region/US/foo-US.css  |               
-+-----------------+-------------------------+
-| ``CA``          | - common/foo-common.css | 
-|                 | - region/CA/foo-CA.css  | 
-+-----------------+-------------------------+
++-----------------+------------------------------+
+| Region Value    | Data Type                    |
++=================+================+++++=========+
+| ``none``        | - common/foo-common.css      |               
++-----------------+------------------------------+
+| ``US``          | - common/foo-common.css      |
+|                 | - region/US/foo-US.css       |               
++-----------------+------------------------------+
+| ``CA``          | - common/foo-common.css      | 
+|                 | - region/CA/foo-CA.css       | 
++-----------------+------------------------------+
 
 In the above example, the dimensions region and en map directly to a conforming assets directory structure.
 
@@ -469,6 +469,7 @@ If the default directory-based rollup behavior is not desirable, or, if the asse
 Augmenting Dimensions
 ---------------------
 <<<<<<< HEAD
+<<<<<<< HEAD
 Shaker allows you to perform surgical manipulation of the rollups using augmentation. This configuration feature allows you to include/exclude files for a particular dimension which matches some criteria. For example, we want to override a special CSS file only when we are in "region:CA and in lang:en". The syntax follows the example below.
 
 **shaker.json example for dimensions augmentation:**
@@ -490,5 +491,8 @@ Shaker allows you to perform surgical manipulation of the rollups using augmenta
 =======
 
 >>>>>>> Restructured shaker in preparation for open sourcing
+=======
+TODO!
+>>>>>>> all example docs done
 
 
