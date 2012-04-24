@@ -1,7 +1,5 @@
 {
   "name": "shaker",
-<<<<<<< HEAD
-<<<<<<< HEAD
   "version": "0.0.2",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
@@ -11,59 +9,21 @@
       "Brett Stimmerman <brettstimmerman@gmail.com>",
       "Julien Lecomte <jlecomte@yahoo-inc.com>"
   ],
-=======
-  "description": "Compile rollups for Mojito",
-  "keywords": [
-    "mojito"
-  ],
-  "version": "0.0.1",
->>>>>>> Restructured shaker in preparation for open sourcing
-=======
-  "version": "0.0.2",
-  "description": "Compiles and deploys asset rollups for Mojito applications.",
-  "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
-  "contributors": [
-      "Diego Ferreiro <diegof@yahoo-inc.com>",
-      "Stephen Murphy <murphys@yahoo-inc.com>"
-  ],
->>>>>>> Removed src dir
   "dependencies": {
     "mime": "1.2.x",
     "buildy": "0.0.x",
     "async": "0.1.x",
     "mkdirp": "0.3.x"
   },
-<<<<<<< HEAD
-<<<<<<< HEAD
   "keywords": [
     "mojito",
     "rollups"
   ],
   "main": "./lib/shaker",
-=======
-  "keywords": [
-    "mojito",
-    "rollups"
-  ],
-<<<<<<< HEAD
-  "main": "lib/index",
->>>>>>> Removed src dir
-=======
-  "main": "index",
->>>>>>> More file updates for packaging
   "yahoo": {
       "bugzilla": {
           "product": "Search",
           "component": "Shaker"
       }
-<<<<<<< HEAD
   }
 }
-=======
-  "scripts": {
-    "install": "./build.sh"
-=======
->>>>>>> Removed src dir
-  }
-}
->>>>>>> Restructured shaker in preparation for open sourcing

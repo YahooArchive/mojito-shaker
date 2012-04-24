@@ -6,7 +6,6 @@ Getting started
 Prerequisites
 ###############
 
-<<<<<<< HEAD
 Mojito npm package v0.3.2 or higher.
 
 Installation Steps
@@ -43,16 +42,3 @@ Running Shaker
 #. Go to http://localhost:8666/ to see your application.
 
 For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
-=======
-ToDo!
-
-Installation steps
-##########
-
-ToDo!
-
-Running Shaker
-##########
-
-ToDo!
->>>>>>> Restructured shaker in preparation for open sourcing
