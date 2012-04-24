@@ -8,6 +8,58 @@ Shaker allows you to create rollups regarding different combination of dimension
 
 For more information please see the docs.
 
-## Dependencies
+## Installation
+
+### via GitHub
+
+	$ cd myMojitoApp
+    $ git clone git://github.com/yahoo/shaker.git
+    $ npm install 
+
+### via npm
+	$ cd myMojitoApp
+    $ npm install shaker
+
+## Quick Start
+
+Within a Mojito application root folder:
+
+Edit application.json to configure the mojitDirs and the HTMLFrame so that it looks like:
+
+    [
+        {
+            "settings": [ "master" ],
+            "mojitsDirs": ["mojits","node_modules/shaker/mojits"]
+            "specs": {
+                "htmlframe": {
+                    "type": "ShakerHTMLFrame"
+                }
+            }
+        }
+    ]
+
+Execute Shaker and Start the server:
+
+    $ mojito shake [--context "environment:{value}"] [--run]
+    $ mojito start [--context "environment:{value}"]
+
+Go to URL:
+
+    http://localhost:8666/
+
+## Documentation
+
+http://developer.yahoo.com/cocktails/shaker
+
+
+## Licensing and Contributions
+
+Shaker is licensed under a [BSD license](https://github.com/yahoo/shaker/blob/master/LICENSE.txt).
+
+To contribute to the Mojito project, please review the [Mojito Contributor
+License Agreement](http://developer.yahoo.com/cocktails/shaker/cla/).
+
+
+## Dependencies (Third-party libraries)
 
 [mime](https://github.com/bentomas/node-mime), [buildy](https://github.com/mosen/buildy), [async](https://github.com/caolan/async), [mkdirp](https://github.com/substack/node-mkdirp), and optionally [knox](https://github.com/LearnBoost/knox) to use the S3 task.

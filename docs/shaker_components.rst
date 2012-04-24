@@ -46,16 +46,16 @@ This is how all the components work together:
 Build time:
 ------------
     #. The shaker command gets executed, invoking the Shaker compiler.
-    #. The Shaker compiler gets the application configuration and calls Shaker core .
+    #. ShakerCompiler gets the application configuration and calls ShakerCore.
     #. Shaker core analyzes all the application resources, and returns a metadata object with all the information necessary to create the rollups.
-    #. The Shaker compiler takes the previously generated metadata, generates the minified precomputed rollups, and outputs them as files or uploads them to CDN.
-    #. The Shaker compiler outputs a new metadata file which will be picked up at runtime and used to determine the correct rollup based on the current context.
+    #. ShakerCompiler takes the previously generated metadata, generates the minified precomputed rollups, and outputs them as files or to CDN.
+    #. ShakerCompiler outputs a new metadata file which will be picked up at runtime for picking the correct rollup per context.
 
 Runtime:
 ---------
     #. The Mojito server automatically picks the generated metadata file.
     #. When a request arrives, Mojito computes everything normally until it reaches the ShakerHTMLFrame. Then the Shaker runtime addon gets executed.
-    #. The Shaker addon checks the current context and the executed mojits, and picks from the metadata file the most appropriate rollup to include into the page, overriding the necessary default Mojito assets.
+    #. The ShakerAddon checks the current context and the executed Mojits, and picks from the metadata the proper rollup to include into the page, overriding the necessary default mojito assets.
     #. If the client side gets deployed, Shaker also deploys itself to the client to serve future mojit calls.
 
 

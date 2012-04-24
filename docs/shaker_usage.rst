@@ -18,7 +18,7 @@ Context dimensions are the basic building blocks of Shaker rollups. Shaker suppo
 - ``region`` - Region-specific resources.
 - ``lang`` - Language-specific resources.
 
-The default dimensions are listed here in ascending priority order. This means that a dimension that appears later in the list is capable of augmenting previous dimensions. In order to create new dimensions, you will have to define your own ``dimensions.json`` file, and at runtime set those dimensions to some value since they are not built into Mojito. See the section about Advanced Configuration.
+The default dimensions are listed here in ascending priority order. This means that a dimension that appears later in the list is capable of augmenting previous dimensions. In order to create new dimensions, you will have to define your own ``dimensions.json`` file, and at runtime set those dimensions to some value since they are not built into Mojito. See the section about `Advanced Configuration <shaker_usage.html#id3>`_ 
 
 Convention: Assets Directory Structure.
 ##########
@@ -191,7 +191,7 @@ All that is necessary is to provide a shaker config per environment in your ``ap
         }
     }]
 
-To build a particular environment run the shaker command like so: ``mojito shake --context "environment:<env>"``
+To build a particular environment, run the shaker command like so: ``mojito shake --context "environment:<env>"``
 
 As we saw in the Components section, we have different deployment tasks. Next we will see how to use each based on the example application.json above.
 
@@ -220,7 +220,7 @@ Advanced Configuration
 
 Include/Exclude/Replace
 -----------------------
-If the default directory-based rollup behavior is not desirable, or, if the assets directory is non-conforming, it's still possible to configure rollups using the include, exclude and replace settings.
+If the default directory-based rollup behavior is not desirable, or if the assets directory is non-conforming, it's still possible to configure rollups using the include, exclude and replace settings.
 
 - ``include`` - Include one or more paths or files. (Useful for mojit- and application-level configuration.)
 - ``exclude`` - Exclude one or more paths or files. (Useful for application-level configuration.)
