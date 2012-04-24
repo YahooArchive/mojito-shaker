@@ -46,8 +46,12 @@
     "rollups",
     "compile"
   ],
+<<<<<<< HEAD
   "main": "lib/index",
 >>>>>>> Removed src dir
+=======
+  "main": "index",
+>>>>>>> More file updates for packaging
   "yahoo": {
       "bugzilla": {
           "product": "Search",
