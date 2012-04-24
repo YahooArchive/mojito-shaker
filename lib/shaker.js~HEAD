@@ -8,10 +8,10 @@ var path = require('path'),
     fs = require('fs'),
     Queue = require('buildy').Queue,
     Registry = require('buildy').Registry,
-    ShakerCore = require('./core').ShakerCore,
     async = require('async'),
     mkdirp = require('mkdirp'),
     mime = require('mime'),
+    ShakerCore = require('./core').ShakerCore,
     utils = require('./utils');
 
 /**
@@ -33,7 +33,7 @@ var path = require('path'),
  *
  * Example:
  * var store = new ResourceStore('./');
- * new Shaker(store).run(function(metadata) {
+ * new Shaker(store).run(function (metadata) {
  *    console.log(metadata);
  * )});
  *
@@ -43,27 +43,27 @@ function Shaker(store) {
     this._store = store;
 
     var config = this._store.getAppConfig(null, 'definition') || {},
-        appConfig = config.staticHandling || {};
+        appConfig = config.staticHandling || {},
+        shaker = config.shaker !== undefined ? config.shaker : {};
 
     this._prefix = '/static';
     if (typeof appConfig.prefix !== 'undefined') {
         this._prefix = appConfig.prefix ? '/' + appConfig.prefix : '';
     }
 
-    var shaker = config.shaker !== undefined ? config.shaker : {};
     this._compile = config.shaker !== undefined; // Shaker config settings are defined in the top level of app config.
     this._task = shaker.task !== undefined ? shaker.task : 'local'; // Task to run when compiling assets
     this._images = shaker.images !== undefined ? shaker.images : false; // Deploy images
-    this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20;  // How many tasks the async queue runs
-    this._delay = shaker.delay !== undefined ? shaker.delay : 0;    // Add some network delay for slow connections
+    this._parallel = shaker.parallel !== undefined ? shaker.parallel : 20; // How many tasks the async queue runs
+    this._delay = shaker.delay !== undefined ? shaker.delay : 0; // Add some network delay for slow connections
     this._minify = shaker.minify !== undefined ? shaker.minify : true; // Uglify or not
-    this._config = shaker.config !== undefined ? shaker.config : {};    // Config object passed through to task
-    this._config.root = this._prefix + '/' + this._store._shortRoot + '/';  // Static prefix for assets generated
+    this._config = shaker.config !== undefined ? shaker.config : {}; // Config object passed through to task
+    this._config.root = this._prefix + '/' + this._store._shortRoot + '/'; // Static prefix for assets generated
 }
 
-Shaker.TASKS_DIR = __dirname + '/tasks/';   // Tasks in this directory can be directly referenced in application.json
+Shaker.TASKS_DIR = __dirname + '/tasks/'; // Tasks in this directory can be directly referenced in application.json
 Shaker.ASSETS_DIR = 'assets/';
-Shaker.COMPILED_DIR = Shaker.ASSETS_DIR + 'compiled/';  // Where we write the rollups
+Shaker.COMPILED_DIR = Shaker.ASSETS_DIR + 'compiled/'; // Where we write the rollups
 Shaker.IMAGES_DIR = Shaker.ASSETS_DIR + 'images/';
 
 Shaker.prototype = {
@@ -72,7 +72,7 @@ Shaker.prototype = {
      *
      * @param callback {function} Callback when compiling is complete.
      */
-    run: function(callback) {
+    run: function (callback) {
         mojito.log('[SHAKER] - Analizying application assets to Shake... ');
         var metadata = new ShakerCore({store: this._store}).shakeAll();
 
@@ -92,7 +92,7 @@ Shaker.prototype = {
      *
      * @param metadata {Object} Core metadata to augment.
      */
-    _rename: function(metadata){
+    _rename: function (metadata) {
         mojito.log('[SHAKER] - Processing assets for development env.');
         var mojit, action, dim, item, list;
 
@@ -122,22 +122,28 @@ Shaker.prototype = {
 
     /*
      * The workhorse of compiler. Loads the queue and processes the results. We modify the original metadata
-     * object for simplicity.
+     * lists for simplicity.
      *
      * @param metadata {Object} Core metadata to augment.
      * @param callback {function} Callback when rollups are compiled.
      */
-    _compileRollups: function(metadata, callback) {
+    _compileRollups: function (metadata, callback) {
         mojito.log('[SHAKER] - Compiling rollups...');
 
-        var registry = new Registry();
+        var registry = new Registry(),
+            queue,
+            self = this;
+
         registry.load(Shaker.TASKS_DIR);
 
-        var self = this;
-        var queue = async.queue(function(item, taskCallback) {
-            setTimeout(function() {
-                var options = {task: self._task, minify: self._minify, config: self._config};
-                item.object.push(registry, options, function(err, url) {
+        queue = async.queue(function (item, taskCallback) {
+            setTimeout(function () {
+                var options = {
+                    task: self._task,
+                    minify: self._minify,
+                    config: self._config
+                };
+                item.object.push(registry, options, function (err, url) {
                     mojito.log('[SHAKER] - Pushed file ' + url);
                     item.files.push(url);
                     taskCallback();
@@ -145,7 +151,7 @@ Shaker.prototype = {
             }, self._delay);
         }, this._parallel);
 
-        queue.drain = function() {
+        queue.drain = function () {
             self._writeMeta(metadata);
             callback(metadata);
         };
@@ -159,19 +165,25 @@ Shaker.prototype = {
      * @param queue {Object} Queue to append tasks to.
      * @param metadata {Object} Core metadata to look through.
      */
-    _queueRollups: function(queue, metadata) {
+    _queueRollups: function (queue, metadata) {
         var mojit, action, dim, files, name, client, filtered;
 
         // We need to add images so they can be referenced by relative URLs in the deployed CSS.
         if (this._images) {
-            metadata.images.forEach(function(image) {
-                queue.push({object: new Image(Shaker.IMAGES_DIR + path.basename(image), image), files: metadata.images});
+            metadata.images.forEach(function (image) {
+                queue.push({
+                    object: new Image(Shaker.IMAGES_DIR + path.basename(image), image),
+                    files: metadata.images
+                });
             });
             metadata.images.length = 0;
         }
 
         // Mojito core assets
-        queue.push({object: new Rollup(Shaker.COMPILED_DIR + 'core_{checksum}.common.js', metadata.core.slice() /* Clone */), files: metadata.core});
+        queue.push({
+            object: new Rollup(Shaker.COMPILED_DIR + 'core_{checksum}.common.js', metadata.core.slice() /* Clone */),
+            files: metadata.core
+        });
         metadata.core.length = 0;
 
         // Mojit assets
@@ -180,7 +192,10 @@ Shaker.prototype = {
                 // Mojit client assets
                 client = metadata.mojits[mojit][action].client;
                 if (client.length) {
-                    queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + mojit + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */), files: client});
+                    queue.push({
+                        object: new ClientRollup(Shaker.COMPILED_DIR + mojit + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */),
+                        files: client
+                    });
                     client.length = 0;
                 }
 
@@ -190,10 +205,16 @@ Shaker.prototype = {
                         filtered = this._filterFiles(files[dim]);
 
                         if (filtered.js.length) {
-                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js), files: files[dim]});
+                            queue.push({
+                                object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js),
+                                files: files[dim]
+                            });
                         }
                         if (filtered.css.length) {
-                            queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
+                            queue.push({
+                                object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css),
+                                files: files[dim]
+                            });
                         }
                         files[dim].length = 0;
                     }
@@ -206,7 +227,10 @@ Shaker.prototype = {
             // App client assets
             client = metadata.app[action].client;
             if (client.length) {
-                queue.push({object: new ClientRollup(Shaker.COMPILED_DIR + 'app_' + action + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */), files: client});
+                queue.push({
+                    object: new ClientRollup(Shaker.COMPILED_DIR + 'app_' + action + '_{checksum}.client.js', this._store._root, client.slice() /* Clone */ ),
+                    files: client
+                });
                 client.length = 0;
             }
 
@@ -216,10 +240,16 @@ Shaker.prototype = {
                     filtered = this._filterFiles(files[dim]);
 
                     if (filtered.js.length) {
-                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js), files: files[dim]});
+                        queue.push({
+                            object: new Rollup(Shaker.COMPILED_DIR + name + '.common.js', filtered.js),
+                            files: files[dim]
+                        });
                     }
                     if (filtered.css.length) {
-                        queue.push({object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css), files: files[dim]});
+                        queue.push({
+                            object: new Rollup(Shaker.COMPILED_DIR + name + '.css', filtered.css),
+                            files: files[dim]
+                        });
                     }
                     files[dim].length = 0;
                 }
@@ -232,16 +262,16 @@ Shaker.prototype = {
      *
      * @param files {array} List of JS/CSS filenames.
      */
-    _filterFiles: function(files) {
-        var js = [], css = [];
+    _filterFiles: function (files) {
+        var js = [],
+            css = [];
 
-        files.forEach(function(file) {
+        files.forEach(function (file) {
             var type = mime.lookup(file);
 
             if (type === 'application/javascript') {
                 js.push(file);
-            }
-            else if (type === 'text/css') {
+            } else if (type === 'text/css') {
                 css.push(file);
             }
         });
@@ -254,12 +284,14 @@ Shaker.prototype = {
      *
      * @param metadata {Object} Core metadata to write to file.
      */
-    _writeMeta: function(metadata){
-        var self = this, aux = "";
-        aux += 'YUI.add("shaker/metaMojits", function(Y, NAME) {\n';
+    _writeMeta: function (metadata) {
+        var self = this,
+            aux = "";
+
+        aux += 'YUI.add("shaker/metaMojits", function (Y, NAME) {\n';
         aux += 'YUI.namespace("_mojito._cache.shaker");\n';
         aux += 'YUI._mojito._cache.shaker.meta = \n';
-        aux += JSON.stringify(metadata,null,'\t');
+        aux += JSON.stringify(metadata, null, '\t');
         aux += '});';
 
         mojito.log('[SHAKER] - Writting addon metadata file');
@@ -280,17 +312,17 @@ function Image(name, file) {
 }
 
 Image.prototype = {
-    push: function(registry, options, callback) {
-        var queue = new Queue(this._name, {registry: registry});
+    push: function (registry, options, callback) {
+        var queue = new Queue(this._name, {registry: registry}),
+            config = utils.simpleClone(options.config);
 
         queue.task('files', [this._file]);
         queue.task('read'); // Read the files into strings for writing
 
-        var config = utils.simpleClone(options.config);
         config.name = this._name;
         queue.task(options.task, config);
 
-        queue.on('taskComplete', function(data) { // queueFailed, queueComplete
+        queue.on('taskComplete', function (data) { // queueFailed, queueComplete
             if (data.task.type === options.task) {
                 callback(null, data.result);
             }
@@ -312,8 +344,9 @@ function Rollup(name, files) {
 }
 
 Rollup.prototype = {
-    push: function(registry, options, callback) {
-        var queue = new Queue(this._name, {registry: registry});
+    push: function (registry, options, callback) {
+        var queue = new Queue(this._name, {registry: registry}),
+            config = utils.simpleClone(options.config);
 
         queue.task('files', this._files);
         queue.task('concat');
@@ -322,11 +355,10 @@ Rollup.prototype = {
             queue.task(mime.lookup(this._name) === 'application/javascript' ? 'jsminify' : 'cssminify');
         }
 
-        var config = utils.simpleClone(options.config);
         config.name = this._name;
         queue.task(options.task, config);
 
-        queue.on('taskComplete', function(data) {
+        queue.on('taskComplete', function (data) {
             if (data.task.type === options.task) {
                 callback(null, data.result);
             }
@@ -349,36 +381,38 @@ function ClientRollup(name, base, files) {
 }
 
 ClientRollup.prototype = {
-    push: function(registry, options, callback) {
+    push: function (registry, options, callback) {
         var queue = new Queue(this._name, {registry: registry}),
+            config = utils.simpleClone(options.config),
             self = this;
+
         queue.task('files', this._files);
+        queue.task('concatcb', {
+            callback: function (filename, content) {
+                if (mime.lookup(filename) === 'text/html') {
+                    var parts = filename.substring(self._base.length + 1).split('/'),
+                        mojit = parts[1],
+                        action = parts[3].substring(0, parts[3].indexOf('.')),
+                        json = JSON.stringify(content);
 
-        queue.task('concatcb', {callback: function(filename, content) {
-            if (mime.lookup(filename) == 'text/html') {
-                var parts = filename.substring(self._base.length + 1).split('/');
-                    mojit = parts[1],
-                    action = parts[3].substring(0, parts[3].indexOf('.'));
-                    json = JSON.stringify(content);
+                    content = 'YUI.add("views/' + mojit + '/' + action + '", function (Y, NAME) {\n';
+                    content += '\tYUI.namespace("_mojito._cache.compiled.' + mojit + '.views");\n';
+                    content += '\tYUI._mojito._cache.compiled.' + mojit + '.views.' + action + ' = ' + json + ';\n';
+                    content += '});';
+                }
 
-                content = 'YUI.add("views/' + mojit + '/' + action + '", function(Y, NAME) {\n';
-                content += '\tYUI.namespace("_mojito._cache.compiled.'+ mojit +'.views");\n';
-                content += '\tYUI._mojito._cache.compiled.'+ mojit +'.views.'+ action + ' = ' +  json + ';\n';
-                content += '});';
+                return content;
             }
-
-            return content;
-        }});
+        });
 
         if (options.minify) {
             queue.task('jsminify');
         }
 
-        var config = utils.simpleClone(options.config);
         config.name = this._name;
         queue.task(options.task, config);
 
-        queue.on('taskComplete', function(data) {
+        queue.on('taskComplete', function (data) {
             if (data.task.type === options.task) {
                 callback(null, data.result);
             }
