@@ -1,12 +1,12 @@
 # Shaker
 
-Shaker is a static asset rollup manager for Mojito applications which minimizes the number of client side requests. 
+Shaker is a static asset rollup manager for Mojito applications.
 
-A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof.
+A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof. Rollups are used to reduce the number of HTTP requests, which helps improve the performance of web sites and web applications.
 
 Shaker allows you to create rollups regarding different combination of dimensions, for example you may wanna serve different assets when people are connected from different devices, different countries, etc.
 
-For more information please see the docs.
+For more information, please see the online documentation.
 
 ## Installation
 
@@ -14,9 +14,10 @@ For more information please see the docs.
 
 	$ cd myMojitoApp
     $ git clone git://github.com/yahoo/shaker.git
-    $ npm install 
+    $ npm install
 
 ### via npm
+
 	$ cd myMojitoApp
     $ npm install shaker
 
@@ -51,14 +52,12 @@ Go to URL:
 
 http://developer.yahoo.com/cocktails/shaker
 
-
 ## Licensing and Contributions
 
 Shaker is licensed under a [BSD license](https://github.com/yahoo/shaker/blob/master/LICENSE.txt).
 
 To contribute to the Mojito project, please review the [Mojito Contributor
-License Agreement](http://developer.yahoo.com/cocktails/shaker/cla/).
-
+License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
 
 ## Dependencies (Third-party libraries)
 
