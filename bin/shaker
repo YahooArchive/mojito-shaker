@@ -1,0 +1,112 @@
+#!/usr/bin/env node
+/*
+ * Copyright (c) 2011-2012, Yahoo! Inc.  All rights reserved.
+ * Copyrights licensed under the New BSD License.
+ * See the accompanying LICENSE file for terms.
+ */
+
+/*
+ * IMPORTANT NOTE!
+ *
+ * This binary was made as a copy of management/cli.js with some hacks to get Shaker running.
+ * The purpose of this file, is only be a hook until the mojito team integrates the real shaker command within the mojito npm package.
+ * See: https://github.com/yahoo/mojito/pull/137
+ * You should use the real shaker command after that pull request gets integrated.
+ */
+
+var utils = require('mojito/lib/management/utils');
+
+function makeOptionMap(optionInfo) {
+    var optionMap = {};
+
+    if (optionInfo) {
+        optionInfo.forEach(function(info) {
+            if (info.shortName) {
+                optionMap['-' + info.shortName] = info;
+            }
+            if (info.longName) {
+                optionMap['--' + info.longName] = info;
+            }
+        });
+    }
+
+    return optionMap;
+}
+function parseArgs(args, optionInfo) {
+    var optionMap = makeOptionMap(optionInfo),
+        params = [],
+        options = {},
+        errors = [],
+        option,
+        arg,
+        value;
+
+    while (args.length > 0) {
+        arg = args.shift();
+        if (arg.charAt(0) === '-') {
+            option = optionMap[arg];
+            if (option) {
+                if (option.hasValue) {
+                    if (args.length === 0) {
+                        errors.push('Missing value for option: ' + arg);
+                    } else {
+                        options[option.longName] = args.shift();
+                    }
+                } else {
+                    options[option.longName] = true;
+                }
+            } else {
+                errors.push('Invalid option: ' + arg);
+            }
+        } else {
+            params.push(arg);
+        }
+    }
+
+    return { params: params, options: options, errors: errors };
+}
+
+// ---------- Start of mainline code ----------
+
+function main() {
+    var args = process.argv.slice(2),
+        commandName = 'shake',//HARDCODING SHAKER COMMAND.
+        command,
+        argInfo;
+
+    try {
+        //HARCODING SHAKER COMMAND
+        command = require('../commands/' + commandName);
+    } catch (e) {
+        utils.error('Invalid command: ' + command,
+                    'mojito <command> [<params>] [<options>]');
+        return;
+    }
+
+    if (args.length === 0) {
+        argInfo = { command: 'help', params: [] };
+    } else {
+        argInfo = parseArgs(args, command.options);
+    }
+
+    if (argInfo.errors && argInfo.errors.length > 0) {
+        argInfo.errors.forEach(function(e) {
+            utils.log(e);
+        });
+        utils.error('Invalid command line.', "Try 'mojito help <command>'.");
+        return;
+    }
+    command.run(argInfo.params, argInfo.options, function(err) {
+        if (err) {
+            utils.error(err);
+        } else {
+            utils.success('mojito done.');
+        }
+    });
+}
+
+// Execute the main() function. Note that this occurs as part of the
+// require/import process so simply importing/require()ing the cli.js will cause
+// the main() operation to be invoked.
+main();
+
