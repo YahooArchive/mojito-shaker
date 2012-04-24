@@ -1,6 +1,10 @@
 [{
     "settings": ["master"],
     
+    "mojitsDirs": ["mojits", "node_modules/shaker/mojits"],
+    "staticHandling":{
+        "useRollups":false
+    },
     "specs": {
         "htmlframe": {
             "type": "ShakerHTMLFrameMojit",
