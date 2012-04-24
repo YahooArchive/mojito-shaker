@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2011-2012, Yahoo! Inc.  All rights reserved.
+ * Copyrights licensed under the New BSD License.
+ * See the accompanying LICENSE file for terms.
+ */
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
     var libfs = require('fs'),libpath = require('path');
 
@@ -203,7 +208,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             // Override. ToDo: We will need to check the dependencies at some point
             if(this._shakerDeploy && this._deployClient){
                 assets.bottom.js = rolledJS;
-                assets.bottom.js.push(this._appConfig.prefix +'/'+this._appConfig.appName+'/autoload/compiled/shaker-meta.common.js');
             }
             //TODO: Add only if client side deployed!
 
