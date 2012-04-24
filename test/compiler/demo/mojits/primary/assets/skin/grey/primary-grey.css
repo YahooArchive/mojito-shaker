@@ -1,0 +1,17 @@
+#leadstory .hd {
+    border-radius: 5px;
+}
+
+#leadstory .photo {
+    border: 1px solid #000;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#leadstory .photo img {
+    margin-bottom: -4px;
+}
+
+#leadstory .hd h1 {
+    background: url(/static/demo/assets/images/headline2.png) no-repeat;
+}

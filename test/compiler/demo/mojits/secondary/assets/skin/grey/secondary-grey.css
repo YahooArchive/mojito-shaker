@@ -1,0 +1,17 @@
+#features {
+    height: 360px;
+    padding-top: 3px;
+}
+
+.feature {
+    color: #000;
+    background: #ddd;
+    border: 1px solid #999;
+    border-radius: 5px;
+    margin-top: 2px;
+    overflow: hidden;
+}
+
+.feature .photo {
+    border-color: #999;
+}

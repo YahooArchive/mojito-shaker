@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 ===================
 Shaker App Example
 ===================
@@ -487,3 +488,8 @@ At runtime, the normal workflow happens in mojito until the execution reach the 
 .. note:: To create a custom dimension (not supported by Mojito by default), you will have to set the value of that dimension at runtime. In this example, ``skin`` is picked from the url and passed to the context so Shaker can know which value to set it to.
 
 Shaker allows you to bundle css rollup at the application level. In this example, we have some boiler plate css which belongs to the application level, and gets shared among all mojits.
+=======
+========
+Shaker App Example
+========
+>>>>>>> Restructured shaker in preparation for open sourcing

@@ -1,0 +1,108 @@
+#!/bin/sh
+
+# USE THIS SCRIPT TO START MOJITO IN DEVELOPMENT MODE.
+
+INOTIFYWAIT_BINARY=${WAIT_ON_BINARY:-$(which inotifywait)};
+MOJITO_BINARY=${MOJITO_BINARY:-$(which mojito)};
+OPENSSL_BINARY=${OPENSSL_BINARY:-$(which openssl)};
+WAIT_ON_BINARY=${WAIT_ON_BINARY:-$(which wait_on)};
+FILTER_FILE=${FILTER_FILE:-"./dev.sed"};
+SELLECK_BINARY=${SELLECK_BINARY:-$(which selleck)};
+
+CONTEXT=${CONTEXT:-environment:corp,intention:news};
+
+PID="";
+MONITOR_PID="";
+SELLECK_PID="";
+
+[[ ! -x "${SELLECK_BINARY}" && -x "compilers/selleck/node_modules/selleck/bin/selleck" ]] && SELLECK_BINARY="compilers/selleck/node_modules/selleck/bin/selleck";
+[ -r "${FILTER_FILE}" ] || unset FILTER_FILE;
+
+#FOR MACOSX USERS YOU CAN FIND WAIT_ON INTO MACPORTS.
+function use_wait_on () {
+
+    while ( true ); do
+        echo "restarted at $( date)";
+
+        CHECKSUM=$( find . -type f | sed -f dev.sed | xargs ${OPENSSL_BINARY} sha1 | ${OPENSSL_BINARY} sha1 | cut -f 2 -d '='; );
+
+        "${MOJITO_BINARY}" start --context "${CONTEXT}" &
+        PID=$!;
+
+        ( until ( "${WAIT_ON_BINARY}" -h $( find . -type f -or -type d | sed -f "${FILTER_FILE}"; ); [[ "$( find . -type f | sed -f "${FILTER_FILE}" | xargs ${OPENSSL_BINARY} sha1 | ${OPENSSL_BINARY} sha1 | cut -f 2 -d '='; )" != "${CHECKSUM}" ]] && kill -9 ${PID} >/dev/null 2>&1; ) do true; done; ) &
+        MONITOR_PID=$!;
+
+        wait $PID;
+        kill -9 ${MONITOR_PID} $( ps -o pid,ppid | awk "/ ${MONITOR_PID}$/{print \$1};" | xargs; ) >/dev/null 2>&1;
+    done;
+}
+
+#FOR LINUX USERS
+
+#Download http://github.com/downloads/rvoicilas/inotify-tools/inotify-tools-3.14.tar.gz
+#tar xzvf inotify-tools*.tar.gz; cd inotify-tools-3.14; ./configure --prefix=/usr && gmake && sudo gmake install;
+
+function use_inotifywait () {
+
+    while ( true ); do
+        echo "restarted at $( date; )";
+
+        "${MOJITO_BINARY}" start --context "${CONTEXT}" &
+        PID=$!;
+
+        ( until ( "${INOTIFYWAIT_BINARY}" -q -e attrib -e modify -e close_write -e move -e create -e delete $( find . -type f -or -type d | sed -f "${FILTER_FILE}"; ) | sed -f "${FILTER_FILE}" | read ) do true; done; kill -9 ${PID} >/dev/null 2>&1; ) &
+        MONITOR_PID=$!;
+
+        wait $PID;
+        kill -9 ${MONITOR_PID} $( ps -o pid,ppid | awk "/ ${MONITOR_PID}$/{print \$1};" | xargs; ) >/dev/null 2>&1;
+    done;
+}
+
+function use_openssl () {
+
+    while ( true ); do
+
+        CHECKSUM=$( find . -type f | sed -f dev.sed | xargs ${OPENSSL_BINARY} sha1 | ${OPENSSL_BINARY} sha1 | cut -f 2 -d '='; );
+
+        "${MOJITO_BINARY}" start --context "${CONTEXT}" &
+        PID=$!;
+
+        ( until ( find . \( -type f -or -type d \) -and -mmin 1 | sed -f "${FILTER_FILE}" | read && [[ "$( find . -type f | sed -f "${FILTER_FILE}" | xargs ${OPENSSL_BINARY} sha1 | ${OPENSSL_BINARY} sha1 | cut -f 2 -d '='; )" != "${CHECKSUM}" ]] && kill -9 ${PID} >/dev/null 2>&1; ) do sleep 1; done; ) &
+        MONITOR_PID=$!;
+
+        wait $PID;
+        kill -9 ${MONITOR_PID} $( ps -o pid,ppid | awk "/ ${MONITOR_PID}$/{print \$1};" | xargs; ) >/dev/null 2>&1;
+
+    done;
+}
+
+function destroy () {
+
+    kill -9 ${PID} ${MONITOR_PID} ${SELLECK_PID} $( ps -o pid,ppid | awk "/ $$\$/{print \$1}; / ${PID}$/{print \$1}; / ${MONITOR_PID}$/{print \$1};" | xargs; ) >/dev/null 2>&1;
+
+    unset PID MONITOR_PID;
+
+    touch .;
+
+    kill -9 $$ $( ps -o pid,ppid | awk "/ $$\$/{print \$1};" | xargs; ) >/dev/null 2>&1;
+}
+
+trap "destroy >/dev/null 2>&1;" INT TERM EXIT;
+
+if [ -x "${SELLECK_BINARY}" ]; then
+	"${SELLECK_BINARY}" . -s &
+	SELLECK_PID=$!;
+fi;
+
+if [ -x "${WAIT_ON_BINARY}" ]; then
+    echo "using wait_on...";
+    use_wait_on;
+
+elif [ -x "${INOTIFYWAIT_BINARY}" ]; then
+    echo "using inotifywait...";
+    use_inotifywait;
+
+else
+    echo "using openssl...";
+    use_openssl;
+fi;

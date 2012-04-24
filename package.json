@@ -1,5 +1,6 @@
 {
   "name": "shaker",
+<<<<<<< HEAD
   "version": "0.0.2",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
@@ -9,12 +10,20 @@
       "Brett Stimmerman <brettstimmerman@gmail.com>",
       "Julien Lecomte <jlecomte@yahoo-inc.com>"
   ],
+=======
+  "description": "Compile rollups for Mojito",
+  "keywords": [
+    "mojito"
+  ],
+  "version": "0.0.1",
+>>>>>>> Restructured shaker in preparation for open sourcing
   "dependencies": {
     "mime": "1.2.x",
     "buildy": "0.0.x",
     "async": "0.1.x",
     "mkdirp": "0.3.x"
   },
+<<<<<<< HEAD
   "keywords": [
     "mojito",
     "rollups"
@@ -27,3 +36,9 @@
       }
   }
 }
+=======
+  "scripts": {
+    "install": "./build.sh"
+  }
+}
+>>>>>>> Restructured shaker in preparation for open sourcing
