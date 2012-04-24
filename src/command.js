@@ -3,11 +3,17 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
-
-var Shaker = require('./lib/shaker').Shaker, //ToDo: Fix for NPM Packaging
-    utils = require('mojito/lib/management/utils'),
+var utils = require('mojito/lib/management/utils'),
     start = require('mojito/lib/management/commands/start'),
-    ResourceStore = require('mojito/lib/store.server');
+    ResourceStore = require('mojito/lib/store.server'),
+    Shaker = null;
+
+try {
+    Shaker = require('./lib/shaker').Shaker;
+}
+catch (exception) {
+    utils.error('Please install the Shaker package');
+}
 
 /**
  * Convert a CSV string into a context object.
