@@ -3,8 +3,7 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
- var knox = require('knox'),
-    State = require('buildy').State,
+var State = require('buildy').State,
     Crypto = require('crypto'),
     mime = require('mime');
 
@@ -46,6 +45,15 @@
  * @public
  */
 function s3Task(options, status, logger) {
+    var knox = null;
+    try {
+        knox = require('knox');
+    }
+    catch (exception) {
+        console.log('Failed to find knox module, please install.');
+        throw exception;
+    }
+
     var self = this,
         name = options.name,
         root = options && options.root || '',
