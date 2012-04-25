@@ -19,7 +19,7 @@ try{
     ResourceStore = require('mojito/store.server');
 }
 try {
-    Shaker = require('shaker').Shaker;
+    Shaker = require('mojito-shake').Shaker;
 }
 catch (exception){
     try{
