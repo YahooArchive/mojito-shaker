@@ -1,7 +1,7 @@
 [{
     "settings": ["master"],
     
-    "mojitsDirs": ["mojits", "node_modules/shaker/mojits"],
+    "mojitsDirs": ["mojits", "node_modules/shaker/mojito/mojits"],
     "staticHandling":{
         "useRollups":false
     },
