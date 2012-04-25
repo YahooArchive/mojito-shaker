@@ -12,13 +12,13 @@ For more information, please see the online documentation.
 
 ### via GitHub
 
-	$ cd myMojitoApp
+    $ cd myMojitoApp
     $ git clone git://github.com/yahoo/shaker.git
     $ npm install
 
 ### via npm
 
-	$ cd myMojitoApp
+    $ cd myMojitoApp
     $ npm install shaker
 
 ## Quick Start
@@ -56,7 +56,7 @@ http://developer.yahoo.com/cocktails/shaker
 
 Shaker is licensed under a [BSD license](https://github.com/yahoo/shaker/blob/master/LICENSE.txt).
 
-To contribute to the Mojito project, please review the [Mojito Contributor
+To contribute to the Shaker project, please review the [Mojito Contributor
 License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
 
 ## Dependencies (Third-party libraries)
