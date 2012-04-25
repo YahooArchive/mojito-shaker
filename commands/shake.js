@@ -23,7 +23,7 @@ try {
 }
 catch (exception){
     try{
-         var shaker_path = path.join(process.cwd(),'node_modules','shaker');
+         var shaker_path = path.join(process.cwd(),'node_modules','mojito-shake');
          Shaker = require(shaker_path).Shaker;
 
     }catch(exception){
