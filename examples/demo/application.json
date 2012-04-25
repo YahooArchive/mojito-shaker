@@ -1,7 +1,7 @@
 [{
     "settings": ["master"],
     
-    "mojitsDirs": ["mojits", "node_modules/shaker/mojits"],
+    "mojitsDirs": ["mojits", "node_modules/mojito-shaker/mojits"],
     "staticHandling":{
         "useRollups":false
     },
@@ -54,9 +54,9 @@
         "delay": 0,
         "config": {
             "client": {
-                "key": "AKIAIOPNYHFYPOICGK6Q",
-                "secret": "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",
-                "bucket": "shaker"
+                "key": "<key>",
+                "secret": "<secret>",
+                "bucket": "<bucket>"
             }
         }
     }
