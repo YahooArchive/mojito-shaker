@@ -20,9 +20,9 @@
     "rollups"
   ],
   "main": "./lib/shaker",
-    "bin": {
-        "mojito-shake": "bin/mojito-shake"
-    },
+  "bin": {
+    "mojito-shake": "bin/mojito-shake"
+  },
   "yahoo": {
       "bugzilla": {
           "product": "Search",
