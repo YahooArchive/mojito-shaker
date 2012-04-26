@@ -1,5 +1,5 @@
 {
-  "name": "shaker",
+  "name": "mojito-shaker",
   "version": "0.0.2",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
@@ -19,7 +19,13 @@
     "mojito",
     "rollups"
   ],
-  "main": "./lib/shaker",
+  "main": "lib/shaker",
+  "bin": {
+    "mojito-shake": "bin/mojito-shake"
+  },
+  "scripts": {
+    "start": "bin/mojito-shake"
+  },
   "yahoo": {
       "bugzilla": {
           "product": "Search",

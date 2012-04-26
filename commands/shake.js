@@ -4,20 +4,30 @@
  * See the accompanying LICENSE file for terms.
  */
 var path = require('path'),
-    utils = require('mojito/lib/management/utils'),
-    start = require('mojito/lib/management/commands/start'),
-    ResourceStore = require('mojito/lib/store.server'),
-    Shaker = null;
+    utils,
+    start,
+    ResourceStore,
+    Shaker;
 
+try{
+    utils = require('mojito/lib/management/utils');
+    start = require('mojito/lib/management/commands/start');
+    ResourceStore = require('mojito/lib/store.server');
+}catch (e) {
+    utils = require('mojito/management/utils');
+    start = require('mojito/management/commands/start');
+    ResourceStore = require('mojito/store.server');
+}
 try {
-    Shaker = require('shaker').Shaker;
+    Shaker = require('mojito-shaker').Shaker;
 }
 catch (exception){
     try{
-         var shaker_path = path.join(process.cwd(),'node_modules','shaker');
+         var shaker_path = path.join(process.cwd(),'node_modules','mojito-shaker');
          Shaker = require(shaker_path).Shaker;
 
     }catch(exception){
+        console.log(exception);
         utils.error('Please install the shaker package from the npm registry.');
     }
 }
@@ -50,7 +60,7 @@ function contextCsvToObject(s) {
 /**
  * Standard usage string export.
  */
-exports.usage = '\nmojito shaker\n' +
+exports.usage = '\nmojito shake\n' +
     '\nOptions\n' +
     '\t--context  A comma-separated list of key:value pairs that define the' +
     ' base\n' +

@@ -3,13 +3,16 @@
 Introducing Shaker
 ==================
 
-.. image:: images/shaker.jpg
-	:width: 300px
+.. figure:: images/shaker.jpg
+	:figwidth: 500px
 	:scale: 40%
 	:align: right
+	:alt: Shake it
+
+	`Image Source <http://www.flickr.com/photos/breatheindigital/4623226056/>`_
+	
 
 Shaker is a set of tools for creating and serving static asset rollups for Mojito applications. Shaker is tightly integrated with Mojito and the Cocktails platform.
-
 
 
 

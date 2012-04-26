@@ -40,21 +40,6 @@ YUI.add("shaker-runtime", function(Y, NAME) {
 		}
 	};
 
-	//Hooking loader function to controller where to pick up the resources
-	/*Y.mojito.Loader.prototype.load = function(list,cb){
-		var shaker = YUI._mojito._cache.shaker,
-			shakerMeta = shaker.meta;
-
-		for(var module in list){
-			var item = list[module];
-			if(item.indexOf('http' === 0)){
-				continue;
-			}
-
-		}
-		originalLoad.apply(this,arguments);
-	};*/
-
 	Y.mojito.ShakerRuntime = Y.mojito.ShakerRuntime || new ShakerRuntime();
 
 }, '0.0.1', {requires: []});

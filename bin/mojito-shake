@@ -13,8 +13,12 @@
  * See: https://github.com/yahoo/mojito/pull/137
  * You should use the real shaker command after that pull request gets integrated.
  */
-
-var utils = require('mojito/lib/management/utils');
+ var utils;
+try{
+    utils = require('mojito/lib/management/utils');
+} catch(e) {
+    utils = require('mojito/management/utils');
+}
 
 function makeOptionMap(optionInfo) {
     var optionMap = {};
