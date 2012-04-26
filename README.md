@@ -44,7 +44,7 @@ Edit application.json to configure the mojitDirs and the HTMLFrame so that it lo
             "mojitsDirs": ["mojits","node_modules/shaker/mojits"]
             "specs": {
                 "htmlframe": {
-                    "type": "ShakerHTMLFrame"
+                    "type": "ShakerHTMLFrameMojit"
                 }
             }
         }
