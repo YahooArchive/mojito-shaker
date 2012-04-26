@@ -80,6 +80,9 @@ License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
 
 [buildy](https://github.com/mosen/buildy), [async](https://github.com/caolan/async), [mkdirp](https://github.com/substack/node-mkdirp), [mime](https://github.com/bentomas/node-mime), and optionally [knox](https://github.com/LearnBoost/knox) to use the S3 task.
 
+## Credits
+
 The following image is used in the documentation in accordance with the [Creative Commons 2.0 License](http://creativecommons.org/licenses/by-sa/2.0/):
-[http://www.flickr.com/photos/breatheindigital/4623226056/](http://www.flickr.com/photos/breatheindigital/4623226056/)
+
+    [http://www.flickr.com/photos/breatheindigital/4623226056/](http://www.flickr.com/photos/breatheindigital/4623226056/)
 
