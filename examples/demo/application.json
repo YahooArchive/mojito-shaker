@@ -26,25 +26,6 @@
     }
 },
 {
-    "settings": ["environment:prod"],
-
-    "shaker": {
-        "task": "mobstor",
-        "images": true,
-        "parallel": 1,
-        "delay": 180,
-        "config": {
-            "client": {
-                "host": "playground.yahoofs.com",
-                "proxy": {
-                    "host": "yca-proxy.corp.yahoo.com",
-                    "port": 3128
-                }
-            }
-        }
-    }
-},
-{
     "settings": ["environment:stage"],
 
     "shaker": {
