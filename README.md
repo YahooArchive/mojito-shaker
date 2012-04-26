@@ -63,7 +63,8 @@ Go to URL:
 
 ## Documentation
 
-You can access the documentation here: http://developer.yahoo.com/cocktails/shaker
+You can access the documentation here: 
+http://developer.yahoo.com/cocktails/shaker
 
 If you want to build and contribute to the documentation, you will have to install [Sphinx](http://sphinx.pocoo.org) and under `/docs` run:
 
