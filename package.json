@@ -19,7 +19,7 @@
     "mojito",
     "rollups"
   ],
-  "main": "./lib/shaker",
+  "main": "index",
   "bin": {
     "mojito-shake": "bin/mojito-shake"
   },
