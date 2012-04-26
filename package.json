@@ -23,6 +23,9 @@
   "bin": {
     "mojito-shake": "bin/mojito-shake"
   },
+  "scripts": {
+    "start": "bin/mojito-shake"
+  },
   "yahoo": {
       "bugzilla": {
           "product": "Search",
