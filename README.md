@@ -13,13 +13,13 @@ For more information, please see the online documentation.
 ### via GitHub
 
     $ cd myMojitoApp
-    $ git clone git://github.com/yahoo/shaker.git
+    $ git clone git://github.com/yahoo/mojito-shaker.git
     $ npm install
 
 ### via npm
 
     $ cd myMojitoApp
-    $ npm install shaker
+    $ npm install mojito-shaker
 
 ## Quick Start
 
