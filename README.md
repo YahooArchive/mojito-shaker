@@ -52,8 +52,8 @@ Note: If you installed `mojito-shaker` globally you will have to point to the ab
 
 Execute Shaker and Start the server:
 
-    $ mojito shake [--context "environment:{value}"] [--run]
-    $ mojito start [--context "environment:{value}"]
+    $ mojito-shake [--context "environment:{value}"] [--run]
+    $ mojito-start [--context "environment:{value}"]
 
 Go to URL:
 
