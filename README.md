@@ -10,16 +10,25 @@ For more information, please see the online documentation.
 
 ## Installation
 
-### via GitHub
+Shaker can be installed either locally or globally (using -g option), but we encourage you to install it locally, 
+since the reference to the inner mojits will be relative to the app.
+
+#. Get the mojito-shaker npm package and install it:
 
     $ cd myMojitoApp
-    $ git clone git://github.com/yahoo/mojito-shaker.git
-    $ npm install
+    $ npm install mojito-shaker [-g]
 
-### via npm
+#. If you installed it locally you will have to link it:
 
-    $ cd myMojitoApp
-    $ npm install mojito-shaker
+    $ cd ./node_modules/mojito-shaker/ && sudo npm link 
+
+#. Confirm that Shaker has been installed correctly by running:
+    $ mojito-shake
+
+#. If you got some error, check if you have correctly configured the `Node environment<http://nodejs.org/api/modules.html#modules>`_ 
+you can try to set the right $NODE_PATH to the modules using:
+
+    $ export NODE_PATH=:$NODE_PATH:`npm root -g`
 
 ## Quick Start
 
@@ -38,6 +47,8 @@ Edit application.json to configure the mojitDirs and the HTMLFrame so that it lo
             }
         }
     ]
+
+Note: If you installed mojito-shaker globally you will have to point to the absolute path.
 
 Execute Shaker and Start the server:
 
