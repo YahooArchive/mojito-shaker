@@ -82,7 +82,7 @@ License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
 
 ## Credits
 
-The following image is used in the documentation in accordance with the [Creative Commons 2.0 License](http://creativecommons.org/licenses/by-sa/2.0/):
+The following image is used in accordance with the [Creative Commons 2.0 License](http://creativecommons.org/licenses/by-sa/2.0/):
 
-    [http://www.flickr.com/photos/breatheindigital/4623226056/](http://www.flickr.com/photos/breatheindigital/4623226056/)
+[http://www.flickr.com/photos/breatheindigital/4623226056/](http://www.flickr.com/photos/breatheindigital/4623226056/)
 
