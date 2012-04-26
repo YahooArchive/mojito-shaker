@@ -13,20 +13,20 @@ For more information, please see the online documentation.
 Shaker can be installed either locally or globally (using -g option), but we encourage you to install it locally, 
 since the reference to the inner mojits will be relative to the app.
 
-    1. Get the mojito-shaker npm package and install it:
+1. Get the mojito-shaker npm package and install it:
 
         $ cd myMojitoApp
         $ npm install mojito-shaker [-g]
 
-    2. If you installed it locally you will have to link it:
+2. If you installed it locally you will have to link it:
 
         $ cd ./node_modules/mojito-shaker/ && sudo npm link 
 
-    3. Confirm that Shaker has been installed correctly by running:
+3. Confirm that Shaker has been installed correctly by running:
 
         $ mojito-shake
 
-    4. If you got some error, check if you have correctly configured the [Node environment](http://nodejs.org/api/modules.html#modules). You can try to set the right $NODE_PATH to the modules using:
+4. If you got some error, check if you have correctly configured the [Node environment](http://nodejs.org/api/modules.html#modules). You can try to set the right $NODE_PATH to the modules using:
 
         $ export NODE_PATH=:$NODE_PATH:\`npm root -g\`
 
