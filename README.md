@@ -1,5 +1,7 @@
 # Shaker
 
+![Shake it!](/docs/images/shaker.jpg)
+
 Shaker is a static asset rollup manager for Mojito applications.
 
 A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof. Rollups are used to reduce the number of HTTP requests, which helps improve the performance of web sites and web applications.
