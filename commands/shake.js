@@ -19,11 +19,11 @@ try{
     ResourceStore = require('mojito/store.server');
 }
 try {
-    Shaker = require('mojito-shake').Shaker;
+    Shaker = require('mojito-shaker').Shaker;
 }
 catch (exception){
     try{
-         var shaker_path = path.join(process.cwd(),'node_modules','mojito-shake');
+         var shaker_path = path.join(process.cwd(),'node_modules','mojito-shaker');
          Shaker = require(shaker_path).Shaker;
 
     }catch(exception){
