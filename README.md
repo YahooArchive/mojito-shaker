@@ -61,4 +61,4 @@ License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
 
 ## Dependencies (Third-party libraries)
 
-[mime](https://github.com/bentomas/node-mime), [buildy](https://github.com/mosen/buildy), [async](https://github.com/caolan/async), [mkdirp](https://github.com/substack/node-mkdirp), and optionally [knox](https://github.com/LearnBoost/knox) to use the S3 task.
+[buildy](https://github.com/mosen/buildy), [async](https://github.com/caolan/async), [mkdirp](https://github.com/substack/node-mkdirp), [mime](https://github.com/bentomas/node-mime), and optionally [knox](https://github.com/LearnBoost/knox) to use the S3 task.
