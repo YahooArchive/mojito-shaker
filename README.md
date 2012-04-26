@@ -28,7 +28,7 @@ since the reference to the inner mojits will be relative to the app.
 
 4. If you got some error, check if you have correctly configured the [Node environment](http://nodejs.org/api/modules.html#modules). You can try to set the right $NODE_PATH to the modules using:
 
-        $ export NODE_PATH=:$NODE_PATH:\`npm root -g\`
+        $ export NODE_PATH=:$NODE_PATH:`npm root -g`
 
 ## Quick Start
 
@@ -48,7 +48,7 @@ Edit application.json to configure the mojitDirs and the HTMLFrame so that it lo
         }
     ]
 
-Note: If you installed mojito-shaker globally you will have to point to the absolute path.
+Note: If you installed `mojito-shaker` globally you will have to point to the absolute path instead.
 
 Execute Shaker and Start the server:
 
