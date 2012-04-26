@@ -60,7 +60,7 @@ function contextCsvToObject(s) {
 /**
  * Standard usage string export.
  */
-exports.usage = '\nmojito shaker\n' +
+exports.usage = '\nmojito shake\n' +
     '\nOptions\n' +
     '\t--context  A comma-separated list of key:value pairs that define the' +
     ' base\n' +
