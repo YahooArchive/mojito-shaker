@@ -1,6 +1,6 @@
 # Shaker
 
-![Shake it!](/yshaker/mojito-shaker/blob/master/docs/images/shaker.jpg?raw=true)
+![Shake it!](/yahoo/mojito-shaker/blob/master/docs/images/shaker.jpg?raw=true)
 
 Shaker is a static asset rollup manager for Mojito applications.
 
