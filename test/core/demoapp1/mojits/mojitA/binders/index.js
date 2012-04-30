@@ -47,4 +47,4 @@ YUI.add('mojitABinderIndex', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['event-mouseenter', 'mojito-client','dependencyA']});
+}, '0.0.1', {requires: ['testA','event-mouseenter', 'mojito-client','dependencyA']});
