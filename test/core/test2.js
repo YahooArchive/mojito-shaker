@@ -3,7 +3,7 @@
 */
 
 var YUITest = require('yuitest').YUITest,
-    Shaker = require('../../src/lib/core.js').ShakerCore,
+    Shaker = require('../../lib/core.js').ShakerCore,
     libfs = require('fs');
     libpath = require('path'),
     ResourceStore = require('mojito/lib/store.server');
