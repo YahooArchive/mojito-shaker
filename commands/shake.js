@@ -20,15 +20,16 @@ try{
 }
 try {
     Shaker = require('mojito-shaker').Shaker;
+    ShakerCore = require('mojito-shaker/lib/core').ShakerCore;
 }
 catch (exception){
     try{
-         var shaker_path = path.join(process.cwd(),'node_modules','mojito-shaker');
+         var shaker_path = path.join(process.cwd(), 'node_modules', 'mojito-shaker');
          Shaker = require(shaker_path).Shaker;
 
     }catch(exception){
         console.log(exception);
-        utils.error('Please install the shaker package from the npm registry.');
+        utils.error('Please install the mojito-shaker package from the npm registry.');
     }
 }
 
@@ -100,7 +101,7 @@ exports.run = function(params, options, callback) {
     var store = new ResourceStore(root);
     store.preload(context);
 
-    new Shaker(store).run(function(metadata) {
+    new Shaker(new ShakerCore({store: store})).run(function(metadata) {
         if(options.run){
             delete options.run;
             start.run(params,options,callback);
