@@ -7,3 +7,5 @@ examples/demo/assets/compiled
 autoload/compiled/shaker-meta.common.js
 
 examples/demo/npm-debug.log
+
+.DS_Store
