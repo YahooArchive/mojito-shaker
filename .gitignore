@@ -1,6 +1,7 @@
 node_modules
 docs/.build
 examples/demo/node_modules
+examples/demovm
 examples/demo/autoload
 examples/demo/assets/compiled
 

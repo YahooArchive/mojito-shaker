@@ -20,7 +20,6 @@ try{
 }
 try {
     Shaker = require('mojito-shaker').Shaker;
-    ShakerCore = require('mojito-shaker/lib/core').ShakerCore;
 }
 catch (exception){
     try{
@@ -101,7 +100,7 @@ exports.run = function(params, options, callback) {
     var store = new ResourceStore(root);
     store.preload(context);
 
-    new Shaker(new ShakerCore({store: store})).run(function(metadata) {
+    new Shaker({store:store}).run(function(metadata) {
         if(options.run){
             delete options.run;
             start.run(params,options,callback);
