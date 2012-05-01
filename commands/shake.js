@@ -106,7 +106,7 @@ exports.run = function(params, options, callback) {
             delete options.run;
             start.run(params,options,callback);
         }else{
-            callback(metadata);
+            callback();
         }
     });
 };
