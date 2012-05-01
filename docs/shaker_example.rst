@@ -192,7 +192,7 @@ Mojito uses an "HTMLFrame" to create the skeleton of the HTML document and to em
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
-                ac.shaker.shakeAll(meta);
+                ac.shaker.run(meta);
 
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {

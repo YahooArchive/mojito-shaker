@@ -90,7 +90,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                 }
 
                 ac.context = Y.merge(ac.context,ac.params.getFromUrl());
-                ac.shaker.shakeAll(meta);
+                ac.shaker.run(meta);
 
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {

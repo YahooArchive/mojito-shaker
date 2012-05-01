@@ -31,7 +31,7 @@ suite.add( new YUITest.TestCase({
             delete this._mojits;
         },
         test_shaker_All:function(){
-             data = this.shaker.shakeAll();
+             data = this.shaker.run();
              this.log(data);
         },
         test_todo_test: function(){

@@ -156,7 +156,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 }
             return loaded;
         },
-        shakeAll: function(meta){
+        run: function(meta){
             var ac = this._ac,
                 assets = ac.assets.getAssets(),
                 appMeta = this._meta.app,
