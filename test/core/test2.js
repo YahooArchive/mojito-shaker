@@ -25,8 +25,6 @@ suite.add( new YUITest.TestCase({
                 store.preload(context);
 
             this.shaker = new Shaker({store:store});
-
-            
         },
         tearDown : function () {
             delete this.shaker;

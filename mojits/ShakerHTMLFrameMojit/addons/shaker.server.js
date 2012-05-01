@@ -189,7 +189,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             //get all mojits and map the action
             for(var m in meta.children){
                 var mojit = meta.children[m];
-                loadedMojits[mojit.base || mojit.type] = meta.children[m].action;
+                loadedMojits[mojit.type || mojit.base] = meta.children[m].action;
             }
             //we just need to rollup the low-coverage Mojits
             noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
