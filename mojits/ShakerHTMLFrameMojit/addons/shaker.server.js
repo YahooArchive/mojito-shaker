@@ -148,6 +148,21 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 return this._getAppRollup(selector,action);
 
         },
+        _matchLoadedMojits: function (ac, meta){
+            var childName, child, mojit, children = meta.children,
+                app = ac.app,
+                specs = app.config.specs,
+                loadedMojits = {};
+
+            for(childName in children){
+                child = children[childName];
+                mojit = child.type || specs[child.base].type;
+                loadedMojits[mojit] = child.action;
+            }
+            
+            return loadedMojits;
+
+        },
         _diffMojits:function(loaded,hc){
             for(var i=0; i<hc.length;i++){
                         if(loaded[hc[i]]){
@@ -187,10 +202,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 allRollups;
 
             //get all mojits and map the action
-            for(var m in meta.children){
-                var mojit = meta.children[m];
-                loadedMojits[mojit.type || mojit.base] = meta.children[m].action;
-            }
+            loadedMojits = this._matchLoadedMojits(ac,meta);
+            
             //we just need to rollup the low-coverage Mojits
             noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
             //rollup non-Bundled Mojits
