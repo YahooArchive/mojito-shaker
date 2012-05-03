@@ -1,0 +1,19 @@
+SHAKER INSTALLATION STEPS FOR THE DEMO EXAMPLE
+==============================================
+
+We are assuming that you already installed "mojito-shaker" npm package locally somewhere.
+This steps are just to run the demo so you can investigate how shaker works in a running example.
+
+1. Assuming you are in the folder where you first install "mojito-shaker", go to the demo app folder:
+	$cd node_modules/mojito-shaker/examples/demo
+
+2. Link the mojito-shaker binary within this folder:
+	$ npm link mojito-shaker
+
+3. Run the commnad for developer mode:
+	$ mojito-shake --run
+
+(4.) Run the command for "production like" mode:
+	$ mojito-shake --context "environment:test" --run
+
+Enjoy! :))
