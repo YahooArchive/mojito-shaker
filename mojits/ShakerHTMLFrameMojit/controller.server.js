@@ -88,12 +88,21 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
-                
+
+                var key;
+
                 if (ac.config.get('dimension')) {
-                    for (var key in ac.config.get('dimension')) {
+                    for (key in ac.config.get('dimension')) {
                         ac.context[key] = ac.config.get('dimension')[key];
                     }
                 }
+
+                // HACK: We need an API to dynamically set dimensions
+                var params = ac.params.getFromUrl();
+                for (key in params) {
+                    ac.context[key] = params[key];
+                }
+
                 ac.shaker.run(meta);
 
                 // Attach assets found in the "meta" to the page
