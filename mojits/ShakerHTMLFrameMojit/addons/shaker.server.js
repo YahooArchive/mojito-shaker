@@ -165,9 +165,9 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         _diffMojits:function(loaded,hc){
             for(var i=0; i<hc.length;i++){
-                        if(loaded[hc[i]]){
-                            delete loaded[hc[i]];
-                        }
+                    if(loaded.hasOwnProperty(hc[i])){
+                        delete loaded[hc[i]];
+                    }
                 }
             return loaded;
         },
