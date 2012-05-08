@@ -13,7 +13,8 @@
     "mime": "1.2.x",
     "buildy": "0.0.x",
     "async": "0.1.x",
-    "mkdirp": "0.3.x"
+    "mkdirp": "0.3.x",
+    "csslint": "0.9.x"
   },
   "keywords": [
     "mojito",
