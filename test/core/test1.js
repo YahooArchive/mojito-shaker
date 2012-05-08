@@ -74,7 +74,7 @@ suite.add( new YUITest.TestCase({
                 mojitPath  = this._mojits[1].path,
                 self = this;
 
-			var data = this.shaker.shakeMojit(mojitName,mojitPath);
+			var data = this.shaker._shakeMojit(mojitName,mojitPath);
 				Assert.isNotUndefined(data[self.defaultAction].meta.dimensions.common);
                 Assert.isTrue(data[self.defaultAction].meta.dimensions.common.files.length === 1);
                 Assert.isTrue(libpath.basename(data[self.defaultAction].meta.dimensions.common.files[0]) == 'common.css');
@@ -84,7 +84,7 @@ suite.add( new YUITest.TestCase({
                 mojitPath  = this._mojits[2].path,
                 self = this;
 
-            var data = this.shaker.shakeMojit(mojitName,mojitPath),
+            var data = this.shaker._shakeMojit(mojitName,mojitPath),
                 action = 'index';
 
             Assert.isNotUndefined(data[action].meta.dimensions.action);
@@ -95,7 +95,7 @@ suite.add( new YUITest.TestCase({
             var mojitName  = this._mojits[3].name,
                 mojitPath  = this._mojits[3].path,
                 b1 = 'index',b2 = 'other',
-                data = this.shaker.shakeMojit(mojitName,mojitPath);
+                data = this.shaker._shakeMojit(mojitName,mojitPath);
            Assert.isNotUndefined(data[b1]);
            Assert.isNotUndefined(data[b1].meta.client);
            Assert.isTrue(libpath.basename(data[b1].meta.client.binders[0]) == 'index.js');
@@ -110,7 +110,7 @@ suite.add( new YUITest.TestCase({
                 self = this,
                 action = 'index';
 
-            var data = this.shaker.shakeMojit(mojitName,mojitPath);
+            var data = this.shaker._shakeMojit(mojitName,mojitPath);
             Assert.isNotUndefined(data[action]);
             Assert.isTrue(data[action].meta.dimensions.common.files.length === 1);
             Assert.isTrue(data[action].meta.dimensions.device.smartphone.files.length === 1);
@@ -120,7 +120,7 @@ suite.add( new YUITest.TestCase({
             Assert.isTrue(data[action].shaken[this.defaultOrder].length == 2);
         },
         test_app_shaker: function(){
-            var data = this.shaker.shakeApp('app', './app1/');
+            var data = this.shaker._shakeApp('app', './app1/');
             Assert.isTrue(data[this.defaultAction].meta.dimensions.common.files.length === 1);
             Assert.isTrue(libpath.basename(data[this.defaultAction].meta.dimensions.common.files[0]) == 'commonassets.css');
         },
@@ -130,7 +130,7 @@ suite.add( new YUITest.TestCase({
                 self = this,
                 action = 'index';
 
-            var data = this.shaker.shakeMojit(mojitName,mojitPath);
+            var data = this.shaker._shakeMojit(mojitName,mojitPath);
 
             Assert.isNotUndefined(data[action]);
             Assert.isTrue(data[action].meta.dimensions.common.files.length === 1);
@@ -147,7 +147,7 @@ suite.add( new YUITest.TestCase({
                 self = this,
                 action = 'index';
 
-            var data = this.shaker.shakeMojit(mojitName,mojitPath);
+            var data = this.shaker._shakeMojit(mojitName,mojitPath);
             Assert.isNotUndefined(data[action]);
             Assert.isTrue(data[action].meta.dimensions.common.files.length === 1);
         },
@@ -157,7 +157,7 @@ suite.add( new YUITest.TestCase({
                 self = this,
                 action = 'index';
 
-            var data = this.shaker.shakeMojit(mojitName,mojitPath);
+            var data = this.shaker._shakeMojit(mojitName,mojitPath);
             var list = data[action].shaken['common-index-smartphone-blue-US-en'];
             //ToDo: More exhaustive checking
             Assert.isTrue(libpath.basename(list[list.length-1]) === 'otherToInclude.css');
