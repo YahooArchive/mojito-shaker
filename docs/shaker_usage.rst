@@ -167,9 +167,7 @@ All that is necessary is to provide a shaker config per environment in your ``ap
 ::
 
     [{
-        "settings": ["master"],
-        // default environment
-        // by default shaker will run in dev mode
+        "settings": ["master"]
     }, {
         "settings": ["environment:test"],
 
