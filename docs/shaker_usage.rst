@@ -175,12 +175,14 @@ All that is necessary is to provide a shaker config per environment in your ``ap
 
         "shaker": {
             "task": "local"
+            "lint": false
         }
     }, {
         "settings": ["environment:stage"],
 
         "shaker": {
             "task": "s3",
+            "images": true,
             "config": {
                 "client": {
                     "key": "<key>",
@@ -191,7 +193,18 @@ All that is necessary is to provide a shaker config per environment in your ``ap
         }
     }]
 
-To build a particular environment, run the shaker command like so: ``mojito shake --context "environment:<env>"``
+Shaker Settings
+---------------
+- ``task`` - {string} Name of task to execute (local, s3). Defaults to null which runs in dev mode.
+- ``compiled_dir`` - {string} Where to output Shaker generated files. Defaults to assets/compiled/.
+- ``images`` - {boolean} Whether to deploy images with rollups. Useful if your CSS contains relative URLs to assets. Defaults to false.
+- ``parallel`` - {integer} How many files to deploy in parallel. Defaults to 20.
+- ``delay`` - {integer} Add network delay for slow hosts. Defaults to 0.
+- ``lint`` - {boolean} Run lint on app files. Defaults to true.
+- ``minify`` - {boolean} Minify JS and CSS. Defaults to true.
+- ``config`` - {object} Object passed through to task.
+
+To build a particular environment, run the shaker command like so: ``mojito shake --context environment:<env>``
 
 As we saw in the Components section, we have different deployment tasks. Next we will see how to use each based on the example application.json above.
 
@@ -201,15 +214,11 @@ Deploying raw (no rollups, developer mode)
 
 Deploying locally (rollups, developer mode)
 ------------------------------------------
-``mojito shake --context "environment:test" --run``
-
-Deploying to Mobstor (Yahoo's! CDN)
-------------------------------------------
-``mojito shake --context "environment:prod" --run``
+``mojito shake --context environment:test --run``
 
 Deploying to  S3 (Amazon CDN)
 ------------------------------------------
-``mojito shake --context "environment:stage" --run``
+``mojito shake --context environment:stage --run``
 
 Deploying elsewhere
 ------------------------------------------
