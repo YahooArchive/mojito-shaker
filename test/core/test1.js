@@ -25,7 +25,7 @@ suite.add( new YUITest.TestCase({
                 store.preload(context);
 
             this.shaker = new Shaker({store:store});
-            this.shaker._resources =  this.shaker._mojitResources();
+            this.shaker._resources =  this.shaker._mojitResources(store._staticURLs);
 
             this.defaultAction = '*';
             this.defaultOrder = 'common-index-device-skin-region-lang';
