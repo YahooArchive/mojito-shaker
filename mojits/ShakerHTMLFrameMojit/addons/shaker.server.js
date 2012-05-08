@@ -157,9 +157,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             for(childName in children){
                 child = children[childName];
                 mojit = child.type || specs[child.base].type;
-                loadedMojits[mojit] = child.action;
+                loadedMojits[mojit] = child.action || 'index';
             }
-            
             return loadedMojits;
 
         },
