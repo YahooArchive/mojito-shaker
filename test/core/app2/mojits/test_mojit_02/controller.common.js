@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2012 Yahoo! Inc. All rights reserved.
  */
-YUI.add('test_mojit_01', function(Y) {
+YUI.add('test_mojit_02', function(Y) {
 
 /**
  * The test_mojit_01 module.
@@ -29,4 +29,4 @@ YUI.add('test_mojit_01', function(Y) {
 
     };
 
-}, '0.0.1', {requires: ['mojito']});
+}, '0.0.1', {requires: ['mojito','mojit-autoload-01-common']});

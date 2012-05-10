@@ -40,4 +40,4 @@ YUI.add('test_mojit_01BinderIndex', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito-client','mojit-c']});
+}, '0.0.1', {requires: ['mojito-client']});
