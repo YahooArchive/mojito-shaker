@@ -127,5 +127,6 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 }, '0.1.0', {requires: [
     'mojito-assets-addon',
     'mojito-deploy-addon',
-    'mojito-config-addon'
+    'mojito-config-addon',
+    'mojito-shaker-addon'
 ]});

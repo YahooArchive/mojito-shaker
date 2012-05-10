@@ -35,7 +35,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         this._adapter = adapter;// where the functions done and error live before attach them to the ac.
         this._command = command;//all the configuration for the mojit
         this._init(ac,adapter);
-        Y.log(adapter.req.app.store._staticURLs);
     }
 
     ShakerAddon.prototype = {
@@ -43,7 +42,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         _init:function(ac,adapter){
             this._appConfig = this._setAppConfig(ac);
             this._meta = YUI._mojito._cache.shaker.meta;
-            this._deployClient = ac.config.get('deploy') === true;
+            this._deployClient = (ac.config && ac.config.get('deploy')) || ac.instance.config.deploy === true;
             this._shakerDeploy = ac.app.config.shaker && true;
         },
         _setAppConfig: function(ac){
