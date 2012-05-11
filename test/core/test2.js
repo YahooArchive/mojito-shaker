@@ -94,6 +94,7 @@ suite.add( new YUITest.TestCase({
                 clientIndex = data['index'].client;
                 clientIndexMeta = data['index'].meta.client;
             Assert.isTrue(clientDefault.length === 0);
+
             Assert.isTrue(clientIndex.length === 3);
             Assert.isTrue(libpath.basename(clientIndexMeta.controllers[0]) === 'controller.common.js');
             Assert.isTrue(libpath.basename(clientIndexMeta.binders[0]) === 'index.js');
@@ -108,13 +109,27 @@ suite.add( new YUITest.TestCase({
                 clientDefault = data[this.defaultAction].client;
                 clientIndex = data['index'].client;
                 clientIndexMeta = data['index'].meta.client;
-            
+
             Assert.isTrue(clientIndex.length === 4);
             Assert.isTrue(libpath.basename(clientIndexMeta.controllers[0]) === 'controller.common.js');
             Assert.isTrue(libpath.basename(clientIndexMeta.binders[0]) === 'index.js');
             Assert.isTrue(libpath.basename(clientIndexMeta.dependencies[0]) === 'mojit-autoload-01.common.js');
-            Assert.isTrue(libpath.basename(clientIndexMeta.models[0]) === 'test.common.js');
-            
+            Assert.isTrue(libpath.basename(clientIndexMeta.dependencies[1]) === 'test.common.js');
+        },
+        test_client_controller_model_affinity_app_dependencies: function() {
+            var mojitName  = this._mojits[4].name,
+                mojitPath  = this._mojits[4].path,
+                self = this;
+
+            var data = this.shaker._shakeMojit(mojitName,mojitPath),
+                clientDefault = data[this.defaultAction].client;
+                clientIndex = data['index'].client;
+                clientIndexMeta = data['index'].meta.client;
+
+            Assert.isTrue(clientIndex.length === 4);
+        },
+        testFinal: function () {
+            Assert.isTrue(true);
         }
 
        }));
