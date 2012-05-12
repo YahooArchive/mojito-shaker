@@ -4,7 +4,8 @@
  * See the accompanying LICENSE file for terms.
  */
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
-    var libfs = require('fs'),libpath = require('path');
+    var libfs = require('fs'),libpath = require('path'),
+        YUI_SEED = 'http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js';
 
 
     function filterAssets(appConfig,list){
@@ -44,6 +45,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             this._meta = YUI._mojito._cache.shaker.meta;
             this._deployClient = (ac.config && ac.config.get('deploy')) || ac.instance.config.deploy === true;
             this._shakerDeploy = ac.app.config.shaker && true;
+            this._shakerYUI = this._deployClient && ac.app.config.upgradeYUIClient;
         },
         _setAppConfig: function(ac){
             var app = ac.app.config.staticHandling || {};
@@ -51,6 +53,54 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             app.frameworkName = app.frameworkName || 'mojito';
             app.prefix = app.prefix || 'static';
             return app;
+        },
+        /*
+        * The above two functions are meant to upgrade YUI and cleanup the clientSide
+        * SHOULD BE REMOVED once Mojito gets the last version and clean the "needs" obj
+        */
+        _checkMojitoNeeds: function (binderMap, store) {
+            var viewId, yui, binder, module, path, yuiModules = {}, yuiArray = [];
+            for (viewId in binderMap) {
+                    if (binderMap.hasOwnProperty(viewId)) {
+                        binder = binderMap[viewId];
+                        for (module in binder.needs) {
+                            if (binder.needs.hasOwnProperty(module)) {
+                                path = binder.needs[module];
+                                // Anything we don't know about we'll assume is
+                                // a YUI library module.
+                                if (store.fileFromStaticHandlerURL(path)) {
+                                    if(!yuiModules[module]){
+                                        yuiArray.push(module);
+                                    }
+                                    yuiModules[module] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            return yuiArray;
+        },
+        _upgradeYUI: function(ac, meta){
+            ac = ac || this._ac;
+            var app = ac.app.config,
+                assets = ac.assets.getAssets(),
+                store = this._adapter.req.app.store,
+                yui = app.yui,
+                yuiInitBlob = assets.bottom.blob[0],
+                seed = yui.seed || (yui.base && yui.base + 'yui/yui-min.js') || YUI_SEED,
+                mojitoModules = this._checkMojitoNeeds(meta.binders, store),
+                modulesStr = mojitoModules.join("',\n\t'");
+                
+            assets.top.js[0] = seed;//get the seed first
+
+            //remove YUI_config since is harcoded and we dont need it
+            yuiInitBlob = yuiInitBlob.replace(/YUI_config = \{.*\}\;\n/,"");
+            yuiInitBlob = yuiInitBlob.replace(/\"needs\": \{([^\}]*)\}/g,'"needs":{}');
+
+            var blobReplace = "YUI().use('" + modulesStr + "', function(Y) {\n" +
+                "\tY.mojito.Loader=function(){this.load=function(n,c){c();};};";
+
+            assets.bottom.blob[0] = yuiInitBlob.replace("YUI().use('*', function(Y) {", blobReplace);
         },
         _matchDimensions :function(selector,dimensions,action,shaken){
             action = action || '*';
@@ -183,6 +233,11 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             assets.top.css = assets.top.css || [];
             assets.bottom.js = assets.bottom.js || [];
             assets.bottom.css = assets.bottom.css || [];
+
+            //TODO: This feature will stay at least 'til they upgrade to YUI 3.5.1
+            if(this._deployClient && this._shakerYUI){
+                this._upgradeYUI(ac, meta);
+            }
 
             //get all resources
             var topjs = assets.top.js || [],

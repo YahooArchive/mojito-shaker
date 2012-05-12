@@ -26,7 +26,10 @@ YUI.add('primary', function(Y, NAME) {
          *        to the Mojito API.
          */
         index: function(ac) {
-            ac.done({"title":"primary"});
+            ac.done({"title":"primary",
+                "data-action": 'filter',
+                "data-params": 'f=5&q=7'
+            });
         },
         dynamic: function(ac){
             //ac.done('AJAX!');
