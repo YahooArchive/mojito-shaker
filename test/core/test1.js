@@ -25,6 +25,7 @@ suite.add( new YUITest.TestCase({
                 store.preload(context);
 
             this.shaker = new Shaker({store:store});
+            this.shaker._mojits = this.shaker._getMojits();
             this.shaker._resources =  this.shaker._mojitResources(store._staticURLs);
 
             this.defaultAction = '*';
@@ -73,7 +74,6 @@ suite.add( new YUITest.TestCase({
             var mojitName  = this._mojits[1].name,
                 mojitPath  = this._mojits[1].path,
                 self = this;
-
 			var data = this.shaker._shakeMojit(mojitName,mojitPath);
 				Assert.isNotUndefined(data[self.defaultAction].meta.dimensions.common);
                 Assert.isTrue(data[self.defaultAction].meta.dimensions.common.files.length === 1);
