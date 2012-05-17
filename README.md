@@ -41,7 +41,7 @@ Edit application.json to configure the mojitDirs and the HTMLFrame so that it lo
     [
         {
             "settings": [ "master" ],
-            "mojitsDirs": ["mojits","node_modules/shaker/mojits"]
+            "mojitsDirs": ["mojits","node_modules/mojito-shaker/mojits"],
             "specs": {
                 "htmlframe": {
                     "type": "ShakerHTMLFrameMojit"
@@ -71,7 +71,7 @@ If you want to build and contribute to the documentation, you will have to insta
 
 ## Licensing and Contributions
 
-Shaker is licensed under a [BSD license](https://github.com/yahoo/shaker/blob/master/LICENSE.txt).
+Shaker is licensed under a [BSD license](https://github.com/yahoo/mojito-shaker/blob/master/LICENSE).
 
 To contribute to the Shaker project, please review the [Mojito Contributor
 License Agreement](http://developer.yahoo.com/cocktails/mojito/cla/).
