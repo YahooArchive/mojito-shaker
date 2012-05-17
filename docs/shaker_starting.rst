@@ -48,7 +48,7 @@ Within a Mojito application root folder:
     [
         {
             "settings": [ "master" ],
-            "mojitsDirs": ["mojits","node_modules/shaker/mojits"]
+            "mojitsDirs": ["mojits","node_modules/mojito-shaker/mojits"],
             "specs": {
                 "htmlframe": {
                     "type": "ShakerHTMLFrame"
