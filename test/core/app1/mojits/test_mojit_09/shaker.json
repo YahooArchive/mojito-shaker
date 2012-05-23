@@ -1,0 +1,10 @@
+{
+	"augments":[
+		{
+			"on": {
+				"region": "US",
+				"lang": "fr"
+			}
+		}
+	]
+}
