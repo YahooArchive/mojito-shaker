@@ -1,6 +1,6 @@
 {
   "name": "mojito-shaker",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com <shaker-users@yahoo-inc.com>",
   "contributors": [
@@ -11,7 +11,7 @@
   ],
   "dependencies": {
     "gear": "0.1.x",
-    "gear-lib": "0.0.x",
+    "gear-lib": "0.1.x",
     "mime": "1.2.x",
     "async": "0.1.x",
     "mkdirp": "0.3.x"
