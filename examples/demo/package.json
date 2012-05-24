@@ -1,18 +1,14 @@
 {
     "name": "demo",
     "description": "Demo",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": {
         "name": "Shaker",
         "email": "shaker-dev@yahoo-inc.com"
     },
     "dependencies": {
-        "mojito": ">= 0.1.0",
-        "mojito-shaker": "0.0.x",
-        "gear-lib": "0.1.x"
-    },
-    "engines": {
-        "node": ">= 0.4.2 < 0.5.0"
+        "mojito": ">= 0.2.x",
+        "mojito-shaker": ">= 0.1.x"
     },
     "scripts": {
         "start": "mojito start"
