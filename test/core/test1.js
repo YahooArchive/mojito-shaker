@@ -62,6 +62,14 @@ suite.add( new YUITest.TestCase({
                             {
                                 name: 'test_mojit_07',
                                 path: root +'/'+ 'mojits/test_mojit_07'
+                            },
+                            {
+                                name: 'test_mojit_08',
+                                path: root +'/'+ 'mojits/test_mojit_08'
+                            },
+                            {
+                                name: 'test_mojit_09',
+                                path: root +'/'+ 'mojits/test_mojit_09'
                             }
             ];
             
@@ -162,6 +170,16 @@ suite.add( new YUITest.TestCase({
             //ToDo: More exhaustive checking
             Assert.isTrue(libpath.basename(list[list.length-1]) === 'otherToInclude.css');
             Assert.isTrue(list.length == 7);//because we remove lang!
+        },
+        test_binder_dependencies_cycle : function (){
+            var mojitName  = this._mojits[9].name,
+                mojitPath  = this._mojits[9].path,
+                self = this,
+                action = 'index';
+
+            var data = this.shaker._shakeMojit(mojitName,mojitPath);
+            //A B and C dependendies should be there
+            Assert.isTrue(data[action].meta.client.dependencies.length === 3 );
         },
         test_todo_test: function(){
             Assert.isTrue(true);
