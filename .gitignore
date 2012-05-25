@@ -9,6 +9,8 @@ autoload/compiled/shaker-meta.common.js
 
 examples/demo/npm-debug.log
 
+lib/tasks
+
 .DS_Store
 
 test/core/debug.txt
