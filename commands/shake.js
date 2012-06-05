@@ -100,7 +100,7 @@ exports.run = function(params, options, callback) {
     var store = new ResourceStore(root);
     store.preload(context);
 
-    new Shaker({store:store}).run(function(metadata) {
+    new Shaker({store:store}).run(function(err, metadata) {
         if(options.run){
             delete options.run;
             start.run(params,options,callback);
