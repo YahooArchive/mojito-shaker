@@ -5,7 +5,7 @@
  */
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
     var libfs = require('fs'),libpath = require('path'),
-        YUI_SEED = 'http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js';
+        YUI_SEED = 'http://yui.yahooapis.com/3.5.1/build/yui/yui.js';
 
 
     function filterAssets(appConfig,list){
@@ -95,8 +95,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             assets.top.js[0] = seed;//get the seed first
 
             //remove YUI_config since is harcoded and we dont need it
-            yuiInitBlob = yuiInitBlob.replace(/YUI_config = \{.*\}\;\n/,"");
-            yuiInitBlob = yuiInitBlob.replace(/\"needs\": \{([^\}]*)\}/g,'"needs":{}');
+             yuiInitBlob = yuiInitBlob.replace(/YUI_config = \{.*\}\;\n/,"");
+             yuiInitBlob = yuiInitBlob.replace(/\"needs\": \{([^\}]*)\}/g,'"needs":{}');
 
             var blobReplace = "YUI().use('" + modulesStr + "', function(Y) {\n" +
                 "\tY.mojito.Loader=function(){this.load=function(n,c){c();};};";
@@ -222,7 +222,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 }
             return loaded;
         },
-        run: function(meta){
+        run: function(meta, tunnel){
             var ac = this._ac,
                 assets = ac.assets.getAssets(),
                 appMeta = this._meta.app,
@@ -260,12 +260,19 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             //get all mojits and map the action
             loadedMojits = this._matchLoadedMojits(ac,meta);
-            
+
             //we just need to rollup the low-coverage Mojits
             noBundledMojits = this._diffMojits(loadedMojits,bundleMojits);
+
             //rollup non-Bundled Mojits
             rollupsMojits = this._shakeMojits(noBundledMojits,groupsJS.mojits);
-            
+
+            //if we are in the tunnel communication, we just set the meta and finish execution fast
+            if (tunnel) {
+                meta.assets = {top:{css:rollupsMojits}};
+                return;
+            }
+
             rollupsApp = this._shakeApp(groupsJS.app);
             allRollups = rollupsApp.concat(rollupsMojits);
 
