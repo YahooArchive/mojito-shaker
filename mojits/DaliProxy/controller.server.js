@@ -119,6 +119,7 @@ YUI.add('DaliProxy', function(Y, NAME) {
     };
 
 }, '0.1.0', {requires: [
+    'mojito-shaker-addon',
     'mojito-http-addon',
     'mojito-util'
 ]});
