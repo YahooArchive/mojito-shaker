@@ -43,7 +43,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         _init:function(ac,adapter){
             var shaker = ac.app.config.shaker;
             this._appConfig = this._setAppConfig(ac);
-            this._meta = YUI._mojito._cache.shaker.meta;
+            this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
             this._deployClient = (ac.config && ac.config.get('deploy')) || ac.instance.config.deploy === true;
             this._shakerDeploy = shaker && shaker.task && shaker.task !== "raw";
             this._shakerYUI = this._deployClient && ac.app.config.upgradeYUIClient;
