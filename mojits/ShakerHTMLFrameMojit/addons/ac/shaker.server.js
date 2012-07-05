@@ -41,11 +41,12 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
     ShakerAddon.prototype = {
         namespace: 'shaker',
         _init:function(ac,adapter){
-            var shaker = ac.app.config.shaker;
+            var shaker = this._shakerConfig = ac.app.config.shaker;
             this._appConfig = this._setAppConfig(ac);
             this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
             this._deployClient = (ac.config && ac.config.get('deploy')) || ac.instance.config.deploy === true;
             this._shakerDeploy = shaker && shaker.task && shaker.task !== "raw";
+            this._ssl = shaker && shaker.ssl;
             this._shakerYUI = this._deployClient && ac.app.config.upgradeYUIClient;
         },
         _setAppConfig: function(ac){
@@ -54,6 +55,9 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             app.frameworkName = app.frameworkName || 'mojito';
             app.prefix = app.prefix || 'static';
             return app;
+        },
+        enableSSL: function (val) {
+            this._ssl = val? this._ssl || val : val;
         },
         /*
         * The above two functions are meant to upgrade YUI and cleanup the clientSide
@@ -222,6 +226,24 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 }
             return loaded;
         },
+        sslHostRewrite: function (rollups) {
+            //add the s in http
+            var i;
+            if (this._ssl === true) {
+                for (i = 0; i<rollups.length; i++) {
+                    rollups[i] = rollups[i].replace('http:','https:');
+                }
+
+            } else {
+                var ycs = this._shakerConfig && this._shakerConfig.config && this._shakerConfig.config.ycs;
+                if (ycs) {
+                    for (i = 0; i<rollups.length; i++) {
+                        rollups[i] = (rollups[i].replace(ycs, this._ssl)).replace('http:','https:');
+                    }
+                }
+            }
+
+        },
         run: function(meta, tunnel){
             var ac = this._ac,
                 assets = ac.assets.getAssets(),
@@ -275,6 +297,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             rollupsApp = this._shakeApp(groupsJS.app);
             allRollups = rollupsApp.concat(rollupsMojits);
+
+            if (this._ssl) {
+                this.sslHostRewrite(allRollups);
+            }
 
             rolledCSS = allRollups.filter(function(i){return libpath.extname(i) === '.css';});
             rolledJS = allRollups.filter(function(i){return libpath.extname(i) === '.js';});
