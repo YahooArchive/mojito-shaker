@@ -15,6 +15,7 @@ YUI.add('primary', function(Y, NAME) {
      * @class Controller
      * @constructor
      */
+
     Y.mojito.controllers[NAME] = {
         init: function(config) {
            this.config  = config;
@@ -33,8 +34,22 @@ YUI.add('primary', function(Y, NAME) {
         },
         dynamic: function(ac){
             //ac.done('AJAX!');
-            ac.done({title:'Dynamic done!'});
+            //ac.done({title:'Dynamic done!'});
+
+            var config = {
+                    children: {
+                        myThird: {
+                            type: 'third',
+                            action: 'index'
+                        }
+                    }
+                };
+            ac.composite.execute(config, function (data, meta) {
+                ac.done(data, meta);
+
+            });
         }
+
     };
 
 }, '0.0.1', {requires: ['mojito','foo-addon']});
