@@ -300,6 +300,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             if (this._ssl) {
                 this.sslHostRewrite(allRollups);
+                this._ssl = true;
+                this.sslHostRewrite(mojitoCore);
             }
 
             rolledCSS = allRollups.filter(function(i){return libpath.extname(i) === '.css';});
