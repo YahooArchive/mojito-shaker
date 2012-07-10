@@ -28,6 +28,10 @@
     "start": "bin/mojito-shake"
   },
   "yahoo": {
+    "mojito": {
+      "type": "bundle",
+      "version": "*"
+    },
     "bugzilla": {
       "product": "Search",
       "component": "Shaker"
