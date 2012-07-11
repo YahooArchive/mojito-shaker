@@ -248,7 +248,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             var ac = this._ac,
                 assets = ac.assets.getAssets(),
                 appMeta = this._meta.app,
-                mojitoCore = this._meta.core,
+                mojitoCore = Y.clone(this._meta.core, true),
                 bundleMojits = (appMeta[ac.action] || appMeta['*']).mojits || [],
                 rolledCSS, rolledJS;
 
