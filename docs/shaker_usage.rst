@@ -220,7 +220,7 @@ Deploying to  S3 (Amazon CDN)
 
 Deploying elsewhere
 ------------------------------------------
-All tasks are actually Buildy (https://github.com/mosen/buildy) tasks. It's easy to write your own. There are many examples in the Buildy source. Simply write your custom task, drop it in the tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
+All tasks are actually Gear.js (https://github.com/yahoo/gear) tasks. It's easy to write your own. There are many examples in the Gear source. Simply write your custom task, drop it in the tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
 
 Advanced Configuration
 #########################
