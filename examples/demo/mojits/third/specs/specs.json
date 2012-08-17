@@ -1,0 +1,11 @@
+[{
+	"settings":[ "master" ],
+	"type" : "third",
+	"config": {
+		"assets": { 
+			"top": {
+				"css": ["/static/olysports/assets/css/flags1.css"]
+			}
+		}
+	}
+}]

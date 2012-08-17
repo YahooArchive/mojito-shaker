@@ -9,24 +9,36 @@
 /*global YUI*/
 
 
-YUI.add('HTMLFrameMojit', function(Y, NAME) {
+YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
 
     var renderListAsHtmlAssets = function(list, type) {
         var i,
-            data = '';
+            data = '',
+            url;
 
         if ('js' === type) {
             for (i = 0; i < list.length; i += 1) {
+                // TODO: Fuly escape any HTML chars in the URL to avoid trivial
+                // attribute injection attacks. See owasp-esapi reference impl.
+                url = encodeURI(list[i]);
                 data += '<script type="text/javascript" src="' +
-                    list[i] + '"></script>\n';
+                    url + '"></script>\n';
             }
         } else if ('css' === type) {
             for (i = 0; i < list.length; i += 1) {
+                // TODO: Escape any HTML chars in the URL to avoid trivial
+                // attribute injection attacks. See owasp-esapi reference impl.
+                url = encodeURI(list[i]);
                 data += '<link rel="stylesheet" type="text/css" href="' +
-                    list[i] + '"/>\n';
+                    url + '"/>\n';
             }
         } else if ('blob' === type) {
             for (i = 0; i < list.length; i += 1) {
+                // NOTE: Giant security hole...but used by everyone who uses
+                // Mojito so there's not much we can do except tell authors of
+                // Mojito applications to _never_ use user input to generate
+                // blob content or populate config data. Whatever goes in here
+                // can't be easily encoded without the likelihood of corruption.
                 data += list[i] + '\n';
             }
         } else {
@@ -37,7 +49,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
     };
 
 
-    Y.mojito.controllers[NAME] = {
+    Y.namespace('mojito.controllers')[NAME] = {
 
         index: function(ac) {
             this.__call(ac);
@@ -51,8 +63,9 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
             var child = ac.config.get('child'),
                 cfg;
 
-            // Map the action to the child
-            child.action = ac.action;
+            // Map the action to the child if the action
+            // is not specified as part of the child config.
+            child.action = child.action || ac.action;
 
             // Create a config object for the composite addon
             cfg = {
@@ -62,7 +75,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                 assets: ac.config.get('assets')
             };
 
-            Y.log('executing HTMLFrameMojit child', 'mojito', 'qeperf');
+            Y.log('executing ShakerHTMLFrameMojit child', 'mojito', 'qeperf');
 
             // Now execute the child as a composite
             ac.composite.execute(cfg, function(data, meta) {
@@ -88,23 +101,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
-
-                var key;
-
-                if (ac.config.get('dimension')) {
-                    for (key in ac.config.get('dimension')) {
-                        ac.context[key] = ac.config.get('dimension')[key];
-                    }
-                }
-
-                // HACK: We need an API to dynamically set dimensions
-                var params = ac.params.getFromUrl();
-                for (key in params) {
-                    ac.context[key] = params[key];
-                }
-
                 ac.shaker.run(meta);
-
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {
                     if (!data[location]) {
@@ -117,7 +114,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
                 meta.view = {name: 'index'};
 
-                Y.log('HTMLFrameMojit done()', 'mojito', 'qeperf');
+                Y.log('ShakerHTMLFrameMojit done()', 'mojito', 'qeperf');
 
                 ac.done(data, meta);
             });
@@ -126,7 +123,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
 }, '0.1.0', {requires: [
     'mojito-assets-addon',
+    'mojito-shaker-addon',
     'mojito-deploy-addon',
-    'mojito-config-addon',
-    'mojito-shaker-addon'
+    'mojito-config-addon'
 ]});

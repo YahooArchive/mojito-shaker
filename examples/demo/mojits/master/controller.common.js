@@ -34,6 +34,7 @@ var DIMENSIONS = {
         index: function(ac) {
             var dims = ac.params.getFromUrl(),
                 self = this,
+                lang = ac.intl.lang();
             
                 config = {
                     view: 'index',
@@ -51,6 +52,7 @@ var DIMENSIONS = {
 
             ac.composite.execute(config, function (data, meta) {
                 data.buttons = self.createButtons(ac, dims);
+                data.language = lang.MYLANG;
                 ac.done(data, meta);
             });
         },
@@ -66,7 +68,7 @@ var DIMENSIONS = {
                 className = 'nav nav-' + dim + (dims[dim] ? ' active' : '');
                 params[dim] ? delete params[dim] : params[dim] = DIMENSIONS[dim];
                 
-                url = ac.url.make('htmlframe', 'index', null, 'GET', params);
+                url = ac.url.make('myhtmlframe', 'index', null, 'GET', params);
                 
                 label = dim.substring(0,1).toUpperCase() + dim.substring(1);
                 
@@ -77,4 +79,4 @@ var DIMENSIONS = {
         }
     };
 
-}, '0.0.1', {requires: ['mojito', 'mojito-assets-addon']});
+}, '0.0.1', {requires: ['mojito', 'mojito-assets-addon','mojito-intl-addon']});

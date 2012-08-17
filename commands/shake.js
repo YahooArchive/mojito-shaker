@@ -3,34 +3,6 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
-var path = require('path'),
-    utils,
-    start,
-    ResourceStore,
-    Shaker;
-
-try{
-    utils = require('mojito/lib/management/utils');
-    start = require('mojito/lib/management/commands/start');
-    ResourceStore = require('mojito/lib/store.server');
-}catch (e) {
-    utils = require('mojito/management/utils');
-    start = require('mojito/management/commands/start');
-    ResourceStore = require('mojito/store.server');
-}
-try {
-    Shaker = require('mojito-shaker').Shaker;
-}
-catch (exception){
-    try{
-         var shaker_path = path.join(process.cwd(), 'node_modules', 'mojito-shaker');
-         Shaker = require(shaker_path).Shaker;
-
-    }catch(exception){
-        console.log(exception);
-        utils.error('Please install the mojito-shaker package from the npm registry.');
-    }
-}
 
 /**
  * Convert a CSV string into a context object.
@@ -60,11 +32,11 @@ function contextCsvToObject(s) {
 /**
  * Standard usage string export.
  */
-exports.usage = '\nmojito shake\n' +
-    '\nOptions\n' +
+exports.usage = '\nShaker Options:\n' +
     '\t--context  A comma-separated list of key:value pairs that define the' +
     ' base\n' +
-    '\t           context used to read configuration files\n';
+    '\t           context used to read configuration files\n' +
+    '\t--run      Run Mojito Server after running Shaker\n';
 
 /**
  * Standard options list export.
@@ -79,6 +51,11 @@ exports.options = [
         longName: 'run',
         shortName: null,
         hasVlue:false
+    },
+    {
+        longName: 'help',
+        shortName: null,
+        hasVlue:false
     }
 ];
 
@@ -90,22 +67,14 @@ exports.options = [
  */
 exports.run = function(params, options, callback) {
     options = options || {};
-    var root = process.cwd(),
-        context = {};
-
-    if (options.context) {
-        context = contextCsvToObject(options.context);
+    if (options.help) {
+        console.log(this.usage);
+        return;
     }
-
-    var store = new ResourceStore(root);
-    store.preload(context);
-
-    new Shaker({store:store}).run(function(err, metadata) {
-        if(options.run){
-            delete options.run;
-            start.run(params,options,callback);
-        }else{
-            callback();
-        }
-    });
+    //provisional
+    var ShakerCore = require('../lib/coreRefactor').ShakerCore;
+    var sc = new ShakerCore();
+    sc.run();
+    //if we do async stuff move callback
+    callback();
 };

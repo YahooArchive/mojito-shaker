@@ -1,0 +1,17 @@
+[
+    {
+        "settings": ["master"]
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "selector": "iphone"
+    },
+    {
+        "settings": [ "lang:en" ],
+        "selector": "en"
+    },
+    {
+        "settings": [ "lang:es" ],
+        "selector": "es"
+    }
+]

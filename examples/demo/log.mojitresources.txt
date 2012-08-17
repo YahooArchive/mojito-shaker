@@ -1,0 +1,533 @@
+[
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/addons/ac/foo.common.js",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".js",
+				"basename": "foo.common"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "addon",
+		"subtype": "ac",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "foo",
+		"id": "addon-ac-foo",
+		"yui": {
+			"name": "foo-addon",
+			"version": "0.0.1",
+			"meta": {
+				"requires": [
+					"mojito"
+				]
+			}
+		},
+		"url": "/static/primary/addons/ac/foo.common.js"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/common/primary.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": "common",
+				"subDirArray": [
+					"common"
+				],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "primary"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "common/primary",
+		"id": "asset-css-common/primary",
+		"url": "/static/primary/assets/common/primary.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/lang.esp.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "lang.esp"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "esp",
+		"name": "lang",
+		"id": "asset-css-lang",
+		"url": "/static/primary/assets/lang.esp.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/myasset.common.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "myasset.common"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "common",
+		"name": "myasset",
+		"id": "asset-css-myasset",
+		"url": "/static/primary/assets/myasset.common.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/region/CA/primary-CA.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": "region/CA",
+				"subDirArray": [
+					"region",
+					"CA"
+				],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "primary-CA"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "region/CA/primary-CA",
+		"id": "asset-css-region/CA/primary-CA",
+		"url": "/static/primary/assets/region/CA/primary-CA.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/skin/grey/primary-grey.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": "skin/grey",
+				"subDirArray": [
+					"skin",
+					"grey"
+				],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "primary-grey"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "skin/grey/primary-grey",
+		"id": "asset-css-skin/grey/primary-grey",
+		"url": "/static/primary/assets/skin/grey/primary-grey.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/assets/skin/myasset.mobile.css",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": "skin",
+				"subDirArray": [
+					"skin"
+				],
+				"isFile": true,
+				"ext": ".css",
+				"basename": "myasset.mobile"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "asset",
+		"subtype": "css",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "mobile",
+		"name": "skin/myasset",
+		"id": "asset-css-skin/myasset",
+		"url": "/static/primary/assets/skin/myasset.mobile.css"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/binders/index.iphone.js",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".js",
+				"basename": "index.iphone"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "binder",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "iphone",
+		"name": "index",
+		"id": "binder--index",
+		"yui": {
+			"name": "primaryBinderIndex",
+			"version": "0.0.1",
+			"meta": {
+				"requires": [
+					"mojito-client"
+				]
+			}
+		},
+		"url": "/static/primary/binders/index.iphone.js"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/binders/index.js",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".js",
+				"basename": "index"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "binder",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "index",
+		"id": "binder--index",
+		"yui": {
+			"name": "primaryBinderIndex",
+			"version": "0.0.1",
+			"meta": {
+				"requires": [
+					"mojito-client",
+					"shaker-runtime"
+				]
+			}
+		},
+		"url": "/static/primary/binders/index.js"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/controller.common.iphone.js",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [
+					"."
+				],
+				"isFile": true,
+				"ext": ".js",
+				"basename": "controller.common.iphone"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "controller",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "iphone",
+		"name": "controller",
+		"id": "controller--controller",
+		"yui": {
+			"name": "primary",
+			"version": "0.0.1",
+			"meta": {
+				"requires": [
+					"mojito",
+					"foo-addon"
+				]
+			}
+		},
+		"url": "/static/primary/controller.common.iphone.js"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/controller.common.js",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [
+					"."
+				],
+				"isFile": true,
+				"ext": ".js",
+				"basename": "controller.common"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "controller",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "controller",
+		"id": "controller--controller",
+		"yui": {
+			"name": "primary",
+			"version": "0.0.1",
+			"meta": {
+				"requires": [
+					"mojito",
+					"foo-addon"
+				]
+			}
+		},
+		"url": "/static/primary/controller.common.js"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/definition.json",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [
+					"."
+				],
+				"isFile": true,
+				"ext": ".json",
+				"basename": "definition"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"type": "config",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"mojit": "primary",
+		"name": "definition",
+		"id": "config--definition"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/specs/specs.json",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".json",
+				"basename": "specs"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "spec",
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "specs",
+		"id": "spec--specs",
+		"url": "/static/primary/specs/specs.json"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/views/dynamic.mu.html",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".html",
+				"basename": "dynamic.mu"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "view",
+		"view": {
+			"outputFormat": "html",
+			"engine": "mu"
+		},
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "dynamic",
+		"id": "view--dynamic",
+		"url": "/static/primary/views/dynamic.mu.html"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/views/index.iphone.mu.html",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".html",
+				"basename": "index.iphone.mu"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "view",
+		"view": {
+			"outputFormat": "html",
+			"engine": "mu"
+		},
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "iphone",
+		"name": "index",
+		"id": "view--index",
+		"url": "/static/primary/views/index.iphone.mu.html"
+	},
+	{
+		"source": {
+			"fs": {
+				"fullPath": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary/views/index.mu.html",
+				"rootDir": "/Users/diegof/Sites/mojito-shaker/examples/demo/mojits/primary",
+				"rootType": "mojit",
+				"subDir": ".",
+				"subDirArray": [],
+				"isFile": true,
+				"ext": ".html",
+				"basename": "index.mu"
+			},
+			"pkg": {
+				"name": "demo",
+				"version": "0.1.10",
+				"depth": 0
+			}
+		},
+		"mojit": "primary",
+		"type": "view",
+		"view": {
+			"outputFormat": "html",
+			"engine": "mu"
+		},
+		"affinity": {
+			"affinity": "common"
+		},
+		"selector": "*",
+		"name": "index",
+		"id": "view--index",
+		"url": "/static/primary/views/index.mu.html"
+	}
+]
+✔ mojito done.

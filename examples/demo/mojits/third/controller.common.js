@@ -31,14 +31,18 @@ YUI.add('third', function(Y, NAME) {
         index: function(ac) {
             var datos =  {
                 some: 'Some!'
-            };
+            },
+            lang = ac.intl.lang();
+
+            ac.assets.addCss('foo.css');
            // ac.assets.addCss('./index.css');
             ac.done({
                 status: 'Mojito is working.',
-                data: datos
+                data: datos,
+                language: lang.OTHERLANG
             });
         }
 
     };
 
-}, '0.0.1', {requires: ['mojito', 'thirdModelFoo']});
+}, '0.0.1', {requires: ['mojito','mojito-intl-addon', 'thirdModelFoo']});

@@ -1,0 +1,44 @@
+digraph "simple_components@999.999.999 server" {
+    // defaults
+    rankdir="LR";
+    fontsize="11";
+    node [fontsize="11",shape="rectangle",style="filled,rounded",fillcolor="white"];
+    edge [color="grey33",arrowsize="0.5",fontsize="8"];
+    graph [style="filled",color="lightgrey"];
+
+    // edges
+    "autoloadDep" -> "autoloadDepDep";
+    "test_mojit_01" -> "mojito";
+    "test_mojit_01" -> "test_mojit_01ModelFoo";
+    "test_mojit_01" -> "controllerDep";
+
+    // subgraphs
+    subgraph "cluster_2" {
+        // nodes
+        "mojito";
+
+        // this graph
+        label="package mojito@0.4.0";
+    };
+    subgraph "cluster_3" {
+        // nodes
+        "autoloadDep";
+        "autoloadDepDep";
+        "controllerDep";
+        "test_mojit_01";
+        "test_mojit_01ModelFoo";
+
+        // this graph
+        label="mojit test_mojit_01";
+    };
+
+    // this graph
+    clusterrank="local";
+    compound="true";
+    model="circuit";
+    overlap="false";
+    ranksep="1.5";
+    remincross="true";
+    splines="polyline";
+    start="self";
+};
