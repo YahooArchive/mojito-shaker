@@ -58,7 +58,7 @@ suite.add( new YUITest.TestCase({
             
         },
         'test components mojit 01': function () {
-            var result = this.shaker.shakeMojitInContext('test_mojit_01', {});
+            var result = this.shaker.shakeMojitByContext('test_mojit_01', {});
             this.shaker.logger.dump(result);
 
         },

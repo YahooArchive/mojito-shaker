@@ -59,7 +59,8 @@ suite.add( new YUITest.TestCase({
             
         },
         'test multiple': function () {
-            this.shaker.shakeMojit('test_mojit_01');
+            var result = this.shaker.shakeMojitByContext('test_mojit_03', {lang: 'es-ES', device: 'iphone'});
+            //console.log(this.shaker._getUsedContexts());
         }
        }));
 
