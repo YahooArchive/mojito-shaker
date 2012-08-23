@@ -2,7 +2,8 @@
     {
         "settings": ["master"],
         "shaker": {
-        	"master": "this is master"
+        	"master": "this is master",
+            "slave": "true"
         }
     },
     {

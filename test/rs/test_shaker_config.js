@@ -56,6 +56,16 @@ suite.add( new YUITest.TestCase({
             var mojits = this.shaker.getMojitList();
             Assert.isTrue(mojits.length === 4);
             Assert.isTrue(mojits[0] === 'test_mojit_01');
+        },
+        'test get Merge config for app level': function (){
+            var config = this.shaker.getMergedShakerConfigByContext('shared', {});
+            Assert.isTrue(Y.Object.size(config) === 4);
+            Assert.isTrue(config.slave === 'true');
+        },
+        'test get Merge config for mojit level': function (){
+            var config = this.shaker.getMergedShakerConfigByContext('test_mojit_01', {});
+            Assert.isTrue(Y.Object.size(config) === 5);
+            Assert.isNotUndefined(config.child);
         }
 
        }));

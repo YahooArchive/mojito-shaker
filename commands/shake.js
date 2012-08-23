@@ -74,7 +74,6 @@ exports.run = function(params, options, callback) {
     //provisional
     var Shaker = require('mojito-shaker').Shaker;
     var sc = new Shaker(options);
-    sc.run();
+    sc.run(callback);
     //if we do async stuff move callback
-    callback();
 };

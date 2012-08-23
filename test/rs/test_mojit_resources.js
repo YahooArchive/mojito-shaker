@@ -90,6 +90,10 @@ suite.add( new YUITest.TestCase({
         'test mojit resources: MVC + globalAppDependencies': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_08', {});
             Assert.isNotUndefined(result.dependencies['autoloadGlobal']);
+        },
+        'test core resources': function (){
+            var result = this.shaker.shakeCore();
+            Assert.isTrue(result.length === 33);
         }
        }));
 

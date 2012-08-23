@@ -37,11 +37,17 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
             this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
+          //  this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
         },
 
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
+        },
+        checkShakerStatus: function (){
+            Y.later(1000,this,function (data) {
+                Y.log('Shaker is checking the status of your app...');
+            });
         },
         findResourceVersionByConvention: function(source, mojitType) {
             // console.log('============  shaker.server.js: findResourceVerionByConvention ========');

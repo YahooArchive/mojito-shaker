@@ -2,7 +2,8 @@
     {
         "settings": ["master"],
         "shaker":{
-        	"mode": "master"
+        	"mode": "master",
+            "child":"yes"
         }
     },
     {

@@ -5,6 +5,7 @@
 var YUITest = require('yuitest').YUITest,
     Shaker = require('../../lib/shaker.js').Shaker,
     libfs = require('fs');
+    async = require('async');
     libpath = require('path');
 
 var Assert = YUITest.Assert;
@@ -35,7 +36,6 @@ suite.add( new YUITest.TestCase({
                 meta = metaMojit.index;
 
             shaker.processMojitJS(meta.js, meta.views, {}, function (err, data) {
-                //core.logger.dump(' ' + data[0]);
                 self.resume(function (){
                 Assert.isNull(err);
                 });
@@ -75,9 +75,38 @@ suite.add( new YUITest.TestCase({
             });
             this.wait(1000);
         },
-*/
-        'test shaker overall process': function (){
-            
+        'test shaker and process mojit ': function () {
+            var self = this,
+                mojit = 'test_mojit_07',
+                context = {},
+                shaker = this.shaker,
+                core = shaker._core;
+                metaMojit = core.bundleShakenMojit(mojit, context, core.shakeMojitByContext(mojit, context));
+                shaker.processMojit(metaMojit,{minify:true}, function (err, data) {
+                    //core.logger.dump(data);
+                    self.resume(function (){
+                        Assert.isNull(err);
+                    });
+                });
+                this.wait(1000);
+        },
+        */
+        'test core processing': function (){
+            var self = this,
+                mojit = 'test_mojit_07',
+                context = {},
+                shaker = this.shaker,
+                core = shaker._core,
+                coreResources = core.shakeCore();
+                shaker.processMojitJS(coreResources,[],{}, function (err, data) {
+                    self.resume(function (){
+                        Assert.isNull(err);
+                    });
+                });
+            this.wait(1000);
+        },
+        'test broza': function (){
+            Assert.isTrue(true);
         }
        }));
 
