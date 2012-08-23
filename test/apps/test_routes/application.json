@@ -1,0 +1,29 @@
+[
+    {
+        "settings": ["master"],
+        "staticHandling":{
+            "useRollups":false
+        },
+        "specs": {
+            "myhtmlframe": {
+                "type": "HTMLFrameMojit",
+                "config": {
+                    "deploy": true,
+                    "title": "Shaker Demo",
+                    "child": {
+                        "type": "Mock"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "selector": "iphone"
+    },
+    {
+        "settings": [ "lang:es-ES" ],
+        "selector": "esp"
+    }
+    
+]

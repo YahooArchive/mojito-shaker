@@ -75,6 +75,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             }*/
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
+            console.log(arguments);
             // if (env ==='client'){
             //     console.log('========================= EXPANDING INSTANCE =====');
             //     instance.config = {assets: {top: {css: ['instance.css']}}};

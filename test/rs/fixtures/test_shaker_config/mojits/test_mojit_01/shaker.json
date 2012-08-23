@@ -1,0 +1,14 @@
+[
+    {
+        "settings": ["master"],
+        "shaker":{
+        	"mode": "master"
+        }
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "shaker":{
+        	"mode": "device-iphone"
+        }
+    }
+]

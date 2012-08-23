@@ -1,0 +1,293 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/Users/diegof/local/bin/npm', 'link', 'mojito-shaker' ]
+info using npm@1.1.21
+info using node@v0.6.17
+verbose config file /Users/diegof/.npmrc
+verbose config file /Users/diegof/local/etc/npmrc
+verbose config file /Users/diegof/local/lib/node_modules/npm/npmrc
+info unbuild /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preuninstall mojito-shaker@0.8.16
+info uninstall mojito-shaker@0.8.16
+verbose unbuild mojito-shaker@0.8.16 [ true,
+verbose unbuild mojito-shaker@0.8.16   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules',
+verbose unbuild mojito-shaker@0.8.16   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules' ]
+verbose binRoot [ '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/.bin',
+verbose binRoot   { 'mojito-shake': 'bin/mojito-shake' } ]
+info postuninstall mojito-shaker@0.8.16
+verbose link symlinking /Users/diegof/local/lib/node_modules/mojito-shaker to /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+info build /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+verbose caching /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/package.json
+verbose loadDefaults mojito-shaker@0.8.16
+info preinstall mojito-shaker@0.8.16
+verbose linkStuff [ false,
+verbose linkStuff   false,
+verbose linkStuff   false,
+verbose linkStuff   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules' ]
+info linkStuff mojito-shaker@0.8.16
+verbose linkBins mojito-shaker@0.8.16
+verbose bins linking [ { 'mojito-shake': 'bin/mojito-shake' },
+verbose bins linking   '/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/.bin',
+verbose bins linking   false ]
+verbose linkMans mojito-shaker@0.8.16
+verbose rebuildBundles mojito-shaker@0.8.16
+verbose rebuildBundles [ '.bin',
+verbose rebuildBundles   'async',
+verbose rebuildBundles   'gear',
+verbose rebuildBundles   'gear-lib',
+verbose rebuildBundles   'glob',
+verbose rebuildBundles   'mime',
+verbose rebuildBundles   'mkdirp',
+verbose rebuildBundles   'mojito-shaker',
+verbose rebuildBundles   'semver',
+verbose rebuildBundles   'yui' ]
+verbose rebuild bundle /Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker/node_modules/mojito-shaker
+ERR! EEXIST, symlink '../mojito-shaker/bin/mojito-shake'
+ERR! File exists: ../mojito-shaker/bin/mojito-shake
+ERR! Move it away, and try again.
+ERR! 
+ERR! System Darwin 11.4.0
+ERR! command "node" "/Users/diegof/local/bin/npm" "link" "mojito-shaker"
+ERR! cwd /Users/diegof/Sites/mojito-shaker/test/apps/test_routes
+ERR! node -v v0.6.17
+ERR! npm -v 1.1.21
+ERR! path ../mojito-shaker/bin/mojito-shake
+ERR! code EEXIST
+ERR! message EEXIST, symlink '../mojito-shaker/bin/mojito-shake'
+ERR! errno {}
+verbose exit [ 1, true ]

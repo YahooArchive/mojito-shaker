@@ -72,8 +72,8 @@ exports.run = function(params, options, callback) {
         return;
     }
     //provisional
-    var ShakerCore = require('../lib/coreRefactor').ShakerCore;
-    var sc = new ShakerCore();
+    var Shaker = require('mojito-shaker').Shaker;
+    var sc = new Shaker(options);
     sc.run();
     //if we do async stuff move callback
     callback();

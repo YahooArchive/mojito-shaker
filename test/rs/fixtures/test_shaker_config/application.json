@@ -1,0 +1,15 @@
+[
+    {
+        "settings": ["master"],
+        "shaker": {
+        	"master": "this is master"
+        }
+    },
+    {
+        "settings": ["device:iphone"],
+        "selector": "iphone",
+        "shaker": {
+        	"device": "shaker-iphone"
+        }
+    }
+]

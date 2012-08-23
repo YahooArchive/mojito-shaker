@@ -1,0 +1,16 @@
+[
+    {
+        "settings": ["master"],
+        "shaker":{
+        	"mode": "APP - Master",
+            "slave": "false"
+        }
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "shaker":{
+        	"mode": "APP - device-iphone",
+            "slave2": "true"
+        }
+    }
+]

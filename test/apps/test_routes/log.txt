@@ -1,0 +1,997 @@
+{
+	"iphone-*": {
+		"mojits": {
+			"Composite": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/controller.common.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [
+										"."
+									],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "controller.common"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "controller",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "controller",
+							"id": "controller--controller",
+							"yui": {
+								"name": "Composite",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"mojito",
+										"CompositeModelFoo"
+									]
+								}
+							},
+							"url": "/static/Composite/controller.common.js"
+						},
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "CompositeBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Composite/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Composite/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Composite/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"Mock": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "MockBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Mock/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Mock/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Mock/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"Test": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "TestBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Test/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Test/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Test/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"DaliProxy": {},
+			"HTMLFrameMojit": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/HTMLFrameMojit/views/index.iphone.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/HTMLFrameMojit",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.iphone.mu"
+								},
+								"pkg": {
+									"name": "mojito-shaker",
+									"version": "0.8.16",
+									"depth": 1
+								}
+							},
+							"mojit": "HTMLFrameMojit",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "iphone",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/HTMLFrameMojit/views/index.iphone.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"ShakerHTMLFrameMojit": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/ShakerHTMLFrameMojit/views/index.iphone.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/ShakerHTMLFrameMojit",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.iphone.mu"
+								},
+								"pkg": {
+									"name": "mojito-shaker",
+									"version": "0.8.16",
+									"depth": 1
+								}
+							},
+							"mojit": "ShakerHTMLFrameMojit",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "iphone",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/ShakerHTMLFrameMojit/views/index.iphone.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"LazyLoad": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [],
+					"assetResources": []
+				}
+			},
+			"TunnelProxy": {}
+		},
+		"app": [
+			{
+				"source": {
+					"fs": {
+						"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/assets/favicon.ico",
+						"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes",
+						"rootType": "app",
+						"subDir": ".",
+						"subDirArray": [],
+						"isFile": true,
+						"ext": ".ico",
+						"basename": "favicon"
+					},
+					"pkg": {
+						"name": "test_routes",
+						"version": "0.0.1",
+						"depth": 0
+					}
+				},
+				"mojit": "shared",
+				"type": "asset",
+				"subtype": "ico",
+				"affinity": {
+					"affinity": "common"
+				},
+				"selector": "*",
+				"name": "favicon",
+				"id": "asset-ico-favicon",
+				"url": "/static/test_routes/assets/favicon.ico"
+			}
+		]
+	},
+	"*": {
+		"mojits": {
+			"Composite": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/controller.common.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [
+										"."
+									],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "controller.common"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "controller",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "controller",
+							"id": "controller--controller",
+							"yui": {
+								"name": "Composite",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"mojito",
+										"CompositeModelFoo"
+									]
+								}
+							},
+							"url": "/static/Composite/controller.common.js"
+						},
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "CompositeBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Composite/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Composite/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Composite",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Composite",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Composite/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"Mock": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "MockBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Mock/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Mock/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Mock",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Mock",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Mock/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"Test": {
+				"index": {
+					"js": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/binders/index.js",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".js",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "binder",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "binder--index",
+							"yui": {
+								"name": "TestBinderIndex",
+								"version": "0.0.1",
+								"meta": {
+									"requires": [
+										"event-mouseenter",
+										"mojito-client"
+									]
+								}
+							},
+							"url": "/static/Test/binders/index.js"
+						}
+					],
+					"css": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/assets/index.css",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".css",
+									"basename": "index"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "asset",
+							"subtype": "css",
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "asset-css-index",
+							"url": "/static/Test/assets/index.css"
+						}
+					],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/mojits/Test",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "test_routes",
+									"version": "0.0.1",
+									"depth": 0
+								}
+							},
+							"mojit": "Test",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/Test/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"DaliProxy": {},
+			"HTMLFrameMojit": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/HTMLFrameMojit/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/HTMLFrameMojit",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "mojito-shaker",
+									"version": "0.8.16",
+									"depth": 1
+								}
+							},
+							"mojit": "HTMLFrameMojit",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/HTMLFrameMojit/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"ShakerHTMLFrameMojit": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [
+						{
+							"source": {
+								"fs": {
+									"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/ShakerHTMLFrameMojit/views/index.mu.html",
+									"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/node_modules/mojito-shaker/mojits/ShakerHTMLFrameMojit",
+									"rootType": "mojit",
+									"subDir": ".",
+									"subDirArray": [],
+									"isFile": true,
+									"ext": ".html",
+									"basename": "index.mu"
+								},
+								"pkg": {
+									"name": "mojito-shaker",
+									"version": "0.8.16",
+									"depth": 1
+								}
+							},
+							"mojit": "ShakerHTMLFrameMojit",
+							"type": "view",
+							"view": {
+								"outputFormat": "html",
+								"engine": "mu"
+							},
+							"affinity": {
+								"affinity": "common"
+							},
+							"selector": "*",
+							"name": "index",
+							"id": "view--index",
+							"url": "/static/ShakerHTMLFrameMojit/views/index.mu.html"
+						}
+					],
+					"assetResources": []
+				}
+			},
+			"LazyLoad": {
+				"index": {
+					"js": [],
+					"css": [],
+					"views": [],
+					"assetResources": []
+				}
+			},
+			"TunnelProxy": {}
+		},
+		"app": [
+			{
+				"source": {
+					"fs": {
+						"fullPath": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes/assets/favicon.ico",
+						"rootDir": "/Users/diegof/Sites/mojito-shaker/test/apps/test_routes",
+						"rootType": "app",
+						"subDir": ".",
+						"subDirArray": [],
+						"isFile": true,
+						"ext": ".ico",
+						"basename": "favicon"
+					},
+					"pkg": {
+						"name": "test_routes",
+						"version": "0.0.1",
+						"depth": 0
+					}
+				},
+				"mojit": "shared",
+				"type": "asset",
+				"subtype": "ico",
+				"affinity": {
+					"affinity": "common"
+				},
+				"selector": "*",
+				"name": "favicon",
+				"id": "asset-ico-favicon",
+				"url": "/static/test_routes/assets/favicon.ico"
+			}
+		]
+	}
+}
+✔ mojito done.
