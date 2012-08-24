@@ -4,11 +4,14 @@
         "staticHandling":{
             "useRollups":false
         },
+        "yui":{
+           "//dependencyCalculations": "precomputed"
+        },
         "specs": {
             "myhtmlframe": {
                 "type": "ShakerHTMLFrameMojit",
                 "config": {
-                    "deploy": true,
+                    "deploy": false,
                     "title": "Shaker Demo",
                     "child": {
                         "type": "master"

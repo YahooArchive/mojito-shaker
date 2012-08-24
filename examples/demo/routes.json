@@ -5,5 +5,10 @@
         "verb": ["get"],
         "path": "/",
         "call": "myhtmlframe.index"
+    },
+    "diego": {
+        "verb": ["get"],
+        "path": "/diego",
+        "call": "myhtmlframe.index"
     }
 }]

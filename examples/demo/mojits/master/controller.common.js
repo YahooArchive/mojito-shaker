@@ -51,6 +51,8 @@ var DIMENSIONS = {
                 };
 
             ac.composite.execute(config, function (data, meta) {
+                //ac.assets.addJs('top.js','top');
+                //ac.assets.addJs('bottom.js','bottom');
                 data.buttons = self.createButtons(ac, dims);
                 data.language = lang.MYLANG;
                 ac.done(data, meta);

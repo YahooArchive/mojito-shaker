@@ -123,7 +123,7 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
 
 }, '0.1.0', {requires: [
     'mojito-assets-addon',
-    'mojito-shaker-addon',
     'mojito-deploy-addon',
-    'mojito-config-addon'
+    'mojito-config-addon',
+    'mojito-shaker-addon'
 ]});

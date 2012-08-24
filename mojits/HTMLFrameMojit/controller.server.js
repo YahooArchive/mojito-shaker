@@ -12,6 +12,7 @@
 YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
     var renderListAsHtmlAssets = function(list, type) {
+        console.log(list);
         var i,
             data = '',
             url;

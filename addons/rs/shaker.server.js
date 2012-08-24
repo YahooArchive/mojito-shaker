@@ -37,7 +37,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
             this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-          //  this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
+          //this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
         },
 
         destructor: function() {
@@ -88,7 +88,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 mojitAction,
                 shakerMeta,
                 isFrame,
-                cssList = [];
+                cssList = [],
+                jsList = [];
 
             if (!mojitType) {
                 appConfig = this.rs.getAppConfig(ctx);
@@ -103,9 +104,10 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 console.log('Mojit: '  + mojitType);
                 cssList = isFrame ? shakerMeta.app[strContext].app :
                     shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
-                console.log(cssList);
+
+                jsList = isFrame ? shakerMeta.core : shakerMeta.app[strContext].mojits[mojitType][mojitAction].js;
             }
-            instance.config = {assets: {top: {css: cssList}}};
+            instance.config = {assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}};
             //return new Y.Do.AlterArgs(null,[env, instance, ctx, cb]);
         }
 
