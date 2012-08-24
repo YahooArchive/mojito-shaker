@@ -67,6 +67,9 @@ exports.options = [
  */
 exports.run = function(params, options, callback) {
     options = options || {};
+    if (options.context) {
+        options.context = contextCsvToObject(options.context);
+    }
     if (options.help) {
         console.log(this.usage);
         return;

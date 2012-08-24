@@ -35,7 +35,9 @@
     },
     {
         "settings": [ "environment:corp"],
-        "some": true
+        "shaker": {
+            "task": "local"
+        }
     }
     
 ]
