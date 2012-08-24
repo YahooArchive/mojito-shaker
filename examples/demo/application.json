@@ -11,16 +11,7 @@
                     "deploy": true,
                     "title": "Shaker Demo",
                     "child": {
-                        "type": "master",
-                        "config": {
-                            "assets": {
-                                "top": {
-                                    "css": [
-                                        "/static/poc.css"
-                                    ]
-                                }
-                            }
-                        }
+                        "type": "master"
                     }
                 }
             }

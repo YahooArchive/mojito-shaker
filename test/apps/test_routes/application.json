@@ -14,6 +14,16 @@
                         "type": "Mock"
                     }
                 }
+            },
+            "composite": {
+                "type": "HTMLFrameMojit",
+                "config": {
+                    "deploy": true,
+                    "title": "Shaker Demo",
+                    "child": {
+                        "type": "Composite"
+                    }
+                }
             }
         }
     },

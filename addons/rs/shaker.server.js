@@ -81,12 +81,32 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             }*/
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
-            console.log(arguments);
-            // if (env ==='client'){
-            //     console.log('========================= EXPANDING INSTANCE =====');
-            //     instance.config = {assets: {top: {css: ['instance.css']}}};
-            //     return new Y.Do.AlterArgs(null,[env, instance, ctx, cb]);
-            // }
+            var mojitType = instance.type,
+                strContext = this.rs.selector.getPOSLFromContext(ctx),
+                base = {},
+                appConfig,
+                mojitAction,
+                shakerMeta,
+                isFrame,
+                cssList = [];
+
+            if (!mojitType) {
+                appConfig = this.rs.getAppConfig(ctx);
+                base = appConfig.specs[instance.base];
+                mojitType = base.type;
+            }
+            isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1;
+            mojitAction = instance.action || base.action || 'index';
+            shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
+
+            if (shakerMeta) {
+                console.log('Mojit: '  + mojitType);
+                cssList = isFrame ? shakerMeta.app[strContext].app :
+                    shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
+                console.log(cssList);
+            }
+            instance.config = {assets: {top: {css: cssList}}};
+            //return new Y.Do.AlterArgs(null,[env, instance, ctx, cb]);
         }
 
     });

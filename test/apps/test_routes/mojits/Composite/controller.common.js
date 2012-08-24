@@ -42,7 +42,7 @@ YUI.add('Composite', function(Y, NAME) {
                     }
                 };
 
-                ac.assets.addCss('./index.css');
+              //  ac.assets.addCss('./index.css');
                 ac.composite.execute(config, function (data, meta){
                     ac.done({
                         status: 'Mojito is working.',

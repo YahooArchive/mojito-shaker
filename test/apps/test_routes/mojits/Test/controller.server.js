@@ -34,7 +34,7 @@ YUI.add('Test', function(Y, NAME) {
                     ac.error(err);
                     return;
                 }
-                ac.assets.addCss('./index.css');
+               // ac.assets.addCss('./index.css');
                 ac.done({
                     status: 'Mojito is working.',
                     data: data

@@ -25,7 +25,6 @@ suite.add( new YUITest.TestCase({
         },
         tearDown : function () {
         },
-/*
         'test shaker js process default': function () {
             var self = this,
                 mojit = 'test_mojit_07',
@@ -41,7 +40,9 @@ suite.add( new YUITest.TestCase({
                 });
             });
             this.wait(1000);
+            
         },
+/*
         'test shaker js process with minification': function () {
             var self = this,
                 mojit = 'test_mojit_07',
@@ -90,7 +91,7 @@ suite.add( new YUITest.TestCase({
                 });
                 this.wait(1000);
         },
-        */
+        
         'test core processing': function (){
             var self = this,
                 mojit = 'test_mojit_07',
@@ -104,7 +105,9 @@ suite.add( new YUITest.TestCase({
                     });
                 });
             this.wait(1000);
-        },
+        }
+        ,
+        */
         'test broza': function (){
             Assert.isTrue(true);
         }

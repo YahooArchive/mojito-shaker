@@ -9,6 +9,6 @@
     " ----------- MOCKAPP --------- ": {
         "verb": ["get"],
         "path": "/mock",
-        "call": "myhtmlframe.index"
+        "call": "composite.index"
     }
 }]

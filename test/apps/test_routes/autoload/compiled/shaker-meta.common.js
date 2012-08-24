@@ -13,7 +13,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Composite/views/index.mu.html"
 						],
 						"css": [
-							"/static/Composite/assets/index.css"
+							"/static/Composite/assets/c.css"
 						]
 					}
 				},
@@ -24,7 +24,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Mock/views/index.mu.html"
 						],
 						"css": [
-							"/static/Mock/assets/index.css"
+							"/static/Mock/assets/mock.css"
 						]
 					}
 				},
@@ -35,7 +35,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Test/views/index.mu.html"
 						],
 						"css": [
-							"/static/Test/assets/index.css"
+							"/static/Test/assets/test.css"
 						]
 					}
 				},
@@ -79,7 +79,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Composite/views/index.mu.html"
 						],
 						"css": [
-							"/static/Composite/assets/index.css"
+							"/static/Composite/assets/c.css"
 						]
 					}
 				},
@@ -90,7 +90,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Mock/views/index.mu.html"
 						],
 						"css": [
-							"/static/Mock/assets/index.css"
+							"/static/Mock/assets/mock.css"
 						]
 					}
 				},
@@ -101,7 +101,7 @@ YUI._mojito._cache.shaker.meta =
 							"/static/Test/views/index.mu.html"
 						],
 						"css": [
-							"/static/Test/assets/index.css"
+							"/static/Test/assets/test.css"
 						]
 					}
 				},
