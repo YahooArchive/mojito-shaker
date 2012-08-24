@@ -4,6 +4,11 @@
         "staticHandling":{
             "useRollups":false
         },
+        "shaker":{
+            "routeBundle": {
+                "index": ["primary", "secondary"]
+            }
+        },
         "yui":{
            "//dependencyCalculations": "precomputed"
         },
@@ -27,6 +32,10 @@
     {
         "settings": [ "lang:es-ES" ],
         "selector": "esp"
+    },
+    {
+        "settings": [ "environment:corp"],
+        "some": true
     }
     
 ]
