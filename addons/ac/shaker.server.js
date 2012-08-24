@@ -17,12 +17,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             this._hookDeploy(ac, adapter);
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
-                                 
         },
         _hookDeploy: function (ac) {
             var originalFnc = ac.deploy.getScripts,
-                proxyFnc = this._removeMojitoCalculatedAssets,
-                originalResult;
+                proxyFnc = this._removeMojitoCalculatedAssets;
             ac.deploy.getScripts = function () {
                 return proxyFnc(originalFnc.apply(this, arguments));
             };
@@ -31,12 +29,15 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             delete calculatedAssets.bottom;
             return calculatedAssets;
         },
-        run: function (meta) {
+        checkClienDeployment: function () {
             var ac = this._ac,
                 assets = ac.assets.getAssets();
             if (!this._deployClient) {
                 delete assets.bottomShaker;
             }
+        },
+        run: function (meta) {
+            this.checkClienDeployment();
         }
     };
 

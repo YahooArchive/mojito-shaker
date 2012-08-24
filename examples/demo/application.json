@@ -11,7 +11,7 @@
             "myhtmlframe": {
                 "type": "ShakerHTMLFrameMojit",
                 "config": {
-                    "deploy": false,
+                    "deploy": true,
                     "title": "Shaker Demo",
                     "child": {
                         "type": "master"

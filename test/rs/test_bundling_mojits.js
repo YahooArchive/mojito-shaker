@@ -27,6 +27,10 @@ suite.add( new YUITest.TestCase({
             var bundled = this.shaker.bundleShakenMojit('test_mojit_07', {}, shakenMojit);
             //this.shaker.logger.dump(bundled);
             Assert.isTrue(true);
+        },
+        'test shake all': function (){
+            var r = this.shaker.shakeAllContexts();
+            this.shaker.logger.dump(r['*']);
         }
        }));
 
