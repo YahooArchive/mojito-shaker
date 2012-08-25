@@ -4,6 +4,9 @@
  * See the accompanying LICENSE file for terms.
  */
 
+start = require('mojito/lib/app/commands/start');
+Shaker = require('mojito-shaker').Shaker;
+
 /**
  * Convert a CSV string into a context object.
  * @param {string} s A string of the form: 'key1:value1,key2:value2'.
@@ -67,16 +70,25 @@ exports.options = [
  */
 exports.run = function(params, options, callback) {
     options = options || {};
+    var context = {};
+
     if (options.context) {
-        options.context = contextCsvToObject(options.context);
+        context = contextCsvToObject(options.context);
     }
+
     if (options.help) {
         console.log(this.usage);
         return;
     }
-    //provisional
-    var Shaker = require('mojito-shaker').Shaker;
-    var sc = new Shaker(options);
-    sc.run(callback);
+
+    var shaker = new Shaker({context: context});
+    shaker.run(function (err, data) {
+        if (options.run) {
+            delete options.run;
+            start.run(params, options, callback);
+        } else {
+            callback(err, data);
+        }
+    });
     //if we do async stuff move callback
 };
