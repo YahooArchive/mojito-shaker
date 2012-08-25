@@ -7,6 +7,10 @@
         "shaker":{
             "routeBundle": {
                 "index": ["primary", "secondary"]
+            },
+            "rollupConfig": {
+                "fetchViews": "none",
+                "fetchController": "none"
             }
         },
         "yui":{
