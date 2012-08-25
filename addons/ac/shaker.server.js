@@ -3,6 +3,7 @@
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
+ 
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
     function ShakerAddon(command, adapter, ac) {
@@ -36,8 +37,16 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 delete assets.bottomShaker;
             }
         },
+        checkRouteBundling: function () {
+            var ac = this._ac,
+                url = this._adapter.req.url,
+                method = this._adapter.req.method;
+            console.log(ac.url.find(url, method));
+
+        },
         run: function (meta) {
             this.checkClienDeployment();
+            this.checkRouteBundling();
         }
     };
 

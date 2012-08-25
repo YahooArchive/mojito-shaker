@@ -9,8 +9,8 @@
                 "index": ["primary", "secondary"]
             },
             "rollupConfig": {
-                "fetchViews": "none",
-                "fetchController": "none"
+                "//fetchViews": "none",
+                "//fetchController": "none"
             }
         },
         "yui":{
