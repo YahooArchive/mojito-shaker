@@ -5,6 +5,7 @@
             "useRollups":false
         },
         "shaker":{
+            "task": "mobstor",
             "routeBundle": {
                 "index": ["primary", "secondary"]
             },
@@ -13,7 +14,7 @@
                 "//fetchController": "none"
             }
         },
-        "yui":{
+        "yui": {
            "//dependencyCalculations": "precomputed"
         },
         "specs": {
@@ -41,6 +42,31 @@
         "settings": [ "environment:corp"],
         "shaker": {
             "task": "local"
+        }
+    },
+    {
+        "settings": [ "environment:test"],
+        "shaker":{
+            "module": "xxx-mobstor",
+            "task": "mobstor",
+            "taskConfig": {
+                "mobstor": {
+                    "ycs": "",
+                    "host": "",
+                    "cert": "",
+                    "proxy": {
+                        "host": "",
+                        "port": 1111
+                    }
+                }
+            },
+            "routeBundle": {
+                "index": ["primary", "secondary"]
+            },
+            "rollupConfig": {
+                "//fetchViews": "none",
+                "//fetchController": "none"
+            }
         }
     }
     
