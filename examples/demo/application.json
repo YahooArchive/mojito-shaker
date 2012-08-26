@@ -5,7 +5,7 @@
             "useRollups":false
         },
         "shaker":{
-            "task": "mobstor",
+            "task": "raw",
             "routeBundle": {
                 "index": ["primary", "secondary"]
             },
