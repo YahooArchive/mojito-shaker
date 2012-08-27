@@ -104,8 +104,10 @@ YUI.add('mojito-resource-store-adapter', function(Y, NAME) {
                         }, {});
                         return;
                     }
-                    my.store.shaker.augmentInstanceAssets(base, context);
 
+                    if (my.store.shaker) {
+                        my.store.shaker.augmentInstanceAssets(base, context);
+                    }
                     // Add the final "base" to the cache
                     my.cache(env, instance, context, base);
                     callback(null, base);
