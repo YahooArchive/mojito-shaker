@@ -105,19 +105,29 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         },
         augmentInstanceAssets: function (spec, ctx){
             var strContext = this.rs.selector.getPOSLFromContext(ctx),
-                shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
-            var mojitType = spec.type,
-                        mojitAction = spec.action,
-                        isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
-                        cssList = [], jsList = [];
+                shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+                mojitType = spec.type,
+                mojitAction = spec.action,
+                isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
+                cssList = [], jsList = [], mojitShaken;
+                console.log('Expand for: ' + mojitType + ' action:' + mojitAction);
 
             if (shakerMeta) {
-                cssList = isFrame ? shakerMeta.app[strContext].app :
-                    shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
-
-                jsList = isFrame ? shakerMeta.core : shakerMeta.app[strContext].mojits[mojitType][mojitAction].js;
+                if(isFrame) {
+                    cssList = shakerMeta.app[strContext].app;
+                    jsList = shakerMeta.core;
+                } else {
+                    mojitShaken = shakerMeta.app[strContext] &&
+                                  shakerMeta.app[strContext].mojits[mojitType] &&
+                                  shakerMeta.app[strContext].mojits[mojitType][mojitAction];
+                    if (mojitShaken) {
+                        cssList =  mojitShaken.css;
+                        jsList = mojitShaken.js;
+                    }
+                }
+                spec.config = Y.merge(spec.config,{assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}});
             }
-            spec.config = Y.merge(spec.config,{assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}});
+            
         }
 
     });
