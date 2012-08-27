@@ -8,7 +8,7 @@
     },
     "diego": {
         "verb": ["get"],
-        "path": "/diego",
-        "call": "myhtmlframe.index"
+        "path": "/search",
+        "call": "myhtmlframe.search"
     }
 }]

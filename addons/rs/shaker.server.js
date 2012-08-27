@@ -81,34 +81,43 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             }*/
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
-            var mojitType = instance.type,
-                strContext = this.rs.selector.getPOSLFromContext(ctx),
-                base = {},
-                appConfig,
-                mojitAction,
-                shakerMeta,
-                isFrame,
-                cssList = [],
-                jsList = [];
+            var strContext = this.rs.selector.getPOSLFromContext(ctx),
+                shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+                newCb = function (err, spec) {
+                    console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
+                    var mojitType = spec.type,
+                        mojitAction = spec.action,
+                        isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
+                        cssList = [], jsList = [];
 
-            if (!mojitType) {
-                appConfig = this.rs.getAppConfig(ctx);
-                base = appConfig.specs[instance.base];
-                mojitType = base.type;
-            }
-            isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1;
-            mojitAction = instance.action || base.action || 'index';
-            shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
+                    if (shakerMeta) {
+                        cssList = isFrame ? shakerMeta.app[strContext].app :
+                            shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
+
+                        jsList = isFrame ? shakerMeta.core : shakerMeta.app[strContext].mojits[mojitType][mojitAction].js;
+                    }
+                    spec.config = Y.merge(spec.config,{assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}});
+                    //console.log(JSON.stringify(spec.config.assets, null,'\t'));
+
+                cb.call(this, err, spec);
+            };
+            //return new Y.Do.AlterArgs(null,[env, instance, ctx, newCb]);
+        },
+        augmentInstanceAssets: function (spec, ctx){
+            var strContext = this.rs.selector.getPOSLFromContext(ctx),
+                shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
+            var mojitType = spec.type,
+                        mojitAction = spec.action,
+                        isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
+                        cssList = [], jsList = [];
 
             if (shakerMeta) {
-                console.log('Mojit: '  + mojitType);
                 cssList = isFrame ? shakerMeta.app[strContext].app :
                     shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
 
                 jsList = isFrame ? shakerMeta.core : shakerMeta.app[strContext].mojits[mojitType][mojitAction].js;
             }
-            instance.config = {assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}};
-            //return new Y.Do.AlterArgs(null,[env, instance, ctx, cb]);
+            spec.config = Y.merge(spec.config,{assets: {topShaker: {css: cssList}, bottomShaker: {js:jsList}}});
         }
 
     });

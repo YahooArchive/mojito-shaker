@@ -58,6 +58,33 @@ var DIMENSIONS = {
                 ac.done(data, meta);
             });
         },
+        search: function(ac) {
+            var dims = ac.params.getFromUrl(),
+                self = this,
+                lang = ac.intl.lang();
+            
+                config = {
+                    view: 'index',
+                    children: {
+                        primary: {
+                            type: 'primary',
+                            action: 'index'
+                        },
+                        secondary: {
+                            type: 'secondary',
+                            action: 'index'
+                        }
+                    }
+                };
+
+            ac.composite.execute(config, function (data, meta) {
+                //ac.assets.addJs('top.js','top');
+                //ac.assets.addJs('bottom.js','bottom');
+                data.buttons = self.createButtons(ac, dims);
+                data.language = lang.MYLANG;
+                ac.done(data, meta);
+            });
+        },
         createButtons: function (ac, dims) {
             var buttons = [],
                 className,
