@@ -12,7 +12,6 @@
 YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
     var renderListAsHtmlAssets = function(list, type) {
-        console.log(list);
         var i,
             data = '',
             url;
@@ -76,7 +75,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                 assets: ac.config.get('assets')
             };
 
-            Y.log('executing HTMLFrameMojit child', 'mojito', 'qeperf');
+            Y.log('executing ShakerHTMLFrameMojit child', 'mojito', 'qeperf');
 
             // Now execute the child as a composite
             ac.composite.execute(cfg, function(data, meta) {
@@ -102,7 +101,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                     ac.deploy.constructMojitoClientRuntime(ac.assets,
                         meta.binders);
                 }
-
+                ac.shaker.run(meta);
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {
                     if (!data[location]) {
@@ -115,9 +114,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
                 meta.view = {name: 'index'};
 
-                Y.log('HTMLFrameMojit done()', 'mojito', 'qeperf');
-                console.log('=================================== NO MORE FUCK QUERY ==========================');
-                console.dir(ac);
+                Y.log('HTMLFrameMojit (Shaker version) done()', 'mojito', 'qeperf');
 
                 ac.done(data, meta);
             });
@@ -127,5 +124,6 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 }, '0.1.0', {requires: [
     'mojito-assets-addon',
     'mojito-deploy-addon',
-    'mojito-config-addon'
+    'mojito-config-addon',
+    'mojito-shaker-addon'
 ]});
