@@ -15,9 +15,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
     ShakerAddon.prototype = {
         namespace: 'shaker',
         _init:function(ac, adapter){
+            this._initShaker();
             this._hookDeploy(ac, adapter);
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
+        },
+        _initShaker: function (){
+            this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
         },
         _hookDeploy: function (ac) {
             var originalFnc = ac.deploy.getScripts,
@@ -38,11 +42,31 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
         },
         checkRouteBundling: function () {
-            var ac = this._ac,
-                url = this._adapter.req.url,
-                method = this._adapter.req.method;
-            console.log(ac.url.find(url, method));
+            if(!this._meta.app) return;
 
+            var ac = this._ac,
+                adapter = this._adapter,
+                core = this._meta.core,
+                command = this._command,
+                store = adapter.req.app.store,
+                url = adapter.req.url,
+                method = adapter.req.method,
+                route = ac.url.find(url, method),
+                strContext = store.selector.getPOSLFromContext(ac.context).join('-'),
+                shakerApp = this._meta.app[strContext],
+                shakerBundle = shakerApp.routesBundle[route.name],
+                assets,
+                shakerAssetsTop,
+                shakerAssetsBottom;
+
+            if (shakerBundle) {
+                assets = ac.assets.getAssets();
+                shakerAssetsTop = assets.topShaker;
+                shakerAssetsBottom = assets.bottomShaker;
+                shakerAssetsTop.css = shakerBundle.css;
+                shakerAssetsBottom.js = core.concat(shakerBundle.js);
+            }
+                
         },
         run: function (meta) {
             this.checkClienDeployment();

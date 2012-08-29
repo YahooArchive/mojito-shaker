@@ -7,7 +7,7 @@
         "shaker":{
             "task": "raw",
             "routeBundle": {
-                "index": ["primary", "secondary"]
+                "/": ["master", "primary", "secondary"]
             },
             "rollupConfig": {
                 "//fetchViews": "none",
