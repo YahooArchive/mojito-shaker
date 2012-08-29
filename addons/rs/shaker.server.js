@@ -104,14 +104,13 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             //return new Y.Do.AlterArgs(null,[env, instance, ctx, newCb]);
         },
         augmentInstanceAssets: function (spec, ctx){
-            var strContext = this.rs.selector.getPOSLFromContext(ctx),
+            var strContext = this.rs.selector.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 mojitType = spec.type,
                 mojitAction = spec.action,
                 isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
                 cssList = [], jsList = [], mojitShaken;
                 console.log('Expand for: ' + mojitType + ' action:' + mojitAction);
-
             if (shakerMeta) {
                 if(isFrame) {
                     cssList = shakerMeta.app[strContext].app;
