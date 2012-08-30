@@ -35,13 +35,12 @@ suite.add( new YUITest.TestCase({
         'test action assets dimension (device:iphone)': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_02', {device:'iphone'}),
                 assets = result.assets;
-            // this.shaker.logger.dump(assets);
-            Assert.isTrue(assets.length === 4);
+            Assert.isTrue(assets.length === 3);
             Assert.isTrue(result.assets[0].source.fs.basename === 'base.iphone');
-            Assert.isTrue(result.assets[3].source.fs.basename === 'poc');
-            // Assert.isNotUndefined(result.actions.index.assets);
-            // Assert.isTrue(result.actions.index.assets.length === 1);
-            // Assert.isTrue(result.actions.index.assets[0].source.fs.basename === 'index.iphone');
+            Assert.isTrue(result.assets[2].source.fs.basename === 'poc');
+            Assert.isNotUndefined(result.actions.index.assets);
+            Assert.isTrue(result.actions.index.assets.length === 1);
+            Assert.isTrue(result.actions.index.assets[0].source.fs.basename === 'index.iphone');
         }
        }));
 
