@@ -92,7 +92,9 @@ YUI.add('TunnelProxy', function(Y, NAME) {
                 return;
             }
             //Shaker change: we need the action to pass to expandInstance
-            proxyCommand.instance.action = proxyCommand.action;
+            if (proxyCommand.instance) {
+                proxyCommand.instance.action = proxyCommand.action;
+            }
             // dispatch the command as the proxy
             ac._dispatch(proxyCommand, makeAdapter(ac));
         }

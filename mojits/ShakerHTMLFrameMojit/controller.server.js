@@ -93,6 +93,8 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
                     'Powered by Mojito ' + Y.mojito.version;
                 data.mojito_version = Y.mojito.version;
 
+                data.enableDynamicTitle = ac.config.get('enableDynamicTitle');
+
                 // Add all the assets we have been given to our local store
                 ac.assets.addAssets(meta.assets);
 
