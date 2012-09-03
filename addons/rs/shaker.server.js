@@ -30,14 +30,14 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function(config) {
-            Y.log('============== ShakerAddon =============');
+            Y.log('Initializing Shaker Resource Store Plugin','info','Shaker');
             this.rs = config.host;
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
             this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
             this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
-            this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-          //this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
+            //this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
+            //this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
         },
 
         destructor: function() {
@@ -45,7 +45,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.rs = null;
         },
         checkShakerStatus: function (){
-            Y.later(1000,this,function (data) {
+            Y.later(1000, this, function (data) {
                 Y.log('Shaker is checking the status of your app...');
             });
         },

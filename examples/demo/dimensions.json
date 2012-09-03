@@ -10,12 +10,20 @@
                 }
             },
             {
+                "region": {
+                    "US": null,
+                    "CA": null
+                }
+            },
+            {
                 "device": {
-                    "android": null,
+                    "smartphone": {
+                        "android": null,    
+                        "iphone": null,
+                        "ipad": null,
+                        "iemobile": null
+                    },
                     "blackberry": null,
-                    "iemobile": null,
-                    "iphone": null,
-                    "ipad": null,
                     "kindle": null,
                     "opera-mini": null,
                     "palm": null
