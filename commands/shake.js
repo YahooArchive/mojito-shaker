@@ -53,13 +53,19 @@ exports.options = [
     {
         longName: 'run',
         shortName: null,
-        hasVlue:false
+        hasValue:false
     },
     {
         longName: 'help',
         shortName: null,
-        hasVlue:false
+        hasValue:false
+    },
+    {
+        longName: 'debug',
+        shortName: null,
+        hasValue: true
     }
+
 ];
 
 /**
@@ -70,7 +76,8 @@ exports.options = [
  */
 exports.run = function(params, options, callback) {
     options = options || {};
-    var context = {};
+    var context = {},
+        debug = options.debug || 0;
 
     if (options.context) {
         context = contextCsvToObject(options.context);
@@ -80,8 +87,8 @@ exports.run = function(params, options, callback) {
         console.log(this.usage);
         return;
     }
-
-    var shaker = new Shaker({context: context});
+    
+    var shaker = new Shaker({context: context, debugLevel: debug});
     shaker.run(function (err, data) {
         if (options.run) {
             delete options.run;
