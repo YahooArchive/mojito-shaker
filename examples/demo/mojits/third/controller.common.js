@@ -34,7 +34,7 @@ YUI.add('third', function(Y, NAME) {
             },
             lang = ac.intl.lang();
 
-            ac.assets.addCss('foo.css');
+            //ac.assets.addCss('foo.css');
            // ac.assets.addCss('./index.css');
             ac.done({
                 status: 'Mojito is working.',

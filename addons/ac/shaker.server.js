@@ -23,6 +23,11 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         _initShaker: function (){
             this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
         },
+        /*
+        * We have to hook after the getSripts function gets executed
+        * so we can remove/bypass the bottom calculated assets by mojito
+        * check _removeMojitoCalculatedAssets.
+        */
         _hookDeploy: function (ac) {
             var originalFnc = ac.deploy.getScripts,
                 proxyFnc = this._removeMojitoCalculatedAssets;

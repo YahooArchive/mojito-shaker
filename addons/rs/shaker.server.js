@@ -34,10 +34,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.rs = config.host;
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
-            this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
-            this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
+            //this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
+            //this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
             //this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-            //this.afterHostMethod('resolveResourceVersions',this.checkShakerStatus, this);
         },
 
         destructor: function() {
@@ -84,7 +83,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var strContext = this.rs.selector.getPOSLFromContext(ctx),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
-                    console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
+                    //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
@@ -101,7 +100,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
                 cb.call(this, err, spec);
             };
-            //return new Y.Do.AlterArgs(null,[env, instance, ctx, newCb]);
+            return new Y.Do.AlterArgs(null,[env, instance, ctx, newCb]);
         },
         augmentInstanceAssets: function (spec, ctx){
             var strContext = this.rs.selector.getPOSLFromContext(ctx).join('-'),
@@ -110,7 +109,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 mojitAction = spec.action,
                 isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
                 cssList = [], jsList = [], mojitShaken;
-                console.log('Expand for: ' + mojitType + ' action:' + mojitAction);
+                //console.log('Expand for: ' + mojitType + ' action:' + mojitAction);
             if (shakerMeta) {
                 if(isFrame) {
                     cssList = shakerMeta.app[strContext].app;
