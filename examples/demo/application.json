@@ -26,6 +26,11 @@
                     "title": "Shaker Demo",
                     "child": {
                         "type": "master"
+                    },
+                    "assets": {
+                        "top": {
+                            "css": ["poc.css"]
+                        }
                     }
                 }
             }
