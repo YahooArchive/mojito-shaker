@@ -51,13 +51,29 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     var mojitType = spec.type,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
+                        shakerBase,
                         cssList = [], jsList = [];
 
+                    //check if we have the shaker Metadata avaliable (if not we are screwed...)
                     if (shakerMeta) {
-                        cssList = isFrame ? shakerMeta.app[strContext].app :
-                            shakerMeta.app[strContext].mojits[mojitType][mojitAction].css;
+                        //if is a type of Frame, we will ship the app stuff and the mojito core
+                        if (isFrame) {
+                            cssList = shakerMeta.app[strContext].app;
+                            jsList = shakerMeta.core;
+                        //add the css and js for the particular mojit & action
+                        } else {
 
-                        jsList = isFrame ? shakerMeta.core : shakerMeta.app[strContext].mojits[mojitType][mojitAction].js;
+                            //I do this to check if on the nested meta we have all the info we need...
+                            //May I implement a getter from the metadata?
+                            shakerBase = shakerMeta.app[strContext];
+                            shakerBase = shakerBase && shakerBase.mojits[mojitType];
+                            shakerBase = shakerBase && shakerBase[mojitAction];
+
+                            //if everything is fine we assing it the resources needed
+                            cssList = shakerBase && shakerBase.css;
+                            jsList = shakerBase && shakerBase.js;
+                        }
+                            
                     }
                     //augmenting the default config
                     spec.config.assets = spec.config.assets || {};
