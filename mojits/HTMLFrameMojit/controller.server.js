@@ -75,7 +75,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                 assets: ac.config.get('assets')
             };
 
-            Y.log('executing ShakerHTMLFrameMojit child', 'mojito', 'qeperf');
+            Y.log('executing (Shaker)HTMLFrameMojit child', 'mojito', 'qeperf');
 
             // Now execute the child as a composite
             ac.composite.execute(cfg, function(data, meta) {
@@ -92,6 +92,8 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
                 data.title = ac.config.get('title') ||
                     'Powered by Mojito ' + Y.mojito.version;
                 data.mojito_version = Y.mojito.version;
+
+                data.enableDynamicTitle = ac.config.get('enableDynamicTitle');
 
                 // Add all the assets we have been given to our local store
                 ac.assets.addAssets(meta.assets);
@@ -114,7 +116,7 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
 
                 meta.view = {name: 'index'};
 
-                Y.log('HTMLFrameMojit (Shaker version) done()', 'mojito', 'qeperf');
+                Y.log('(Shaker)HTMLFrameMojit done()', 'mojito', 'qeperf');
 
                 ac.done(data, meta);
             });
@@ -122,6 +124,8 @@ YUI.add('HTMLFrameMojit', function(Y, NAME) {
     };
 
 }, '0.1.0', {requires: [
+    'mojito-composite-addon',
+    'mojito-url-addon',
     'mojito-assets-addon',
     'mojito-deploy-addon',
     'mojito-config-addon',

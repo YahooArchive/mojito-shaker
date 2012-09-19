@@ -124,6 +124,8 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
     };
 
 }, '0.1.0', {requires: [
+    'mojito-composite-addon',
+    'mojito-url-addon',
     'mojito-assets-addon',
     'mojito-deploy-addon',
     'mojito-config-addon',

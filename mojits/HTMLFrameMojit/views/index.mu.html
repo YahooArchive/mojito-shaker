@@ -9,11 +9,15 @@
 {{^meta}}
 <meta name="creator" content="Yahoo! Shaker Mojito {{mojito_version}}">
 {{/meta}}
+{{#enableDynamicTitle}}
+	<title>{{dynamicTitle}}</title>
+{{/enableDynamicTitle}}
+{{^enableDynamicTitle}}
+	<title>{{title}}</title>
+{{/enableDynamicTitle}}
 
-<title>{{title}}</title>
 {{{topShaker}}}
 {{{top}}}
-
 </head>
 <body>
     

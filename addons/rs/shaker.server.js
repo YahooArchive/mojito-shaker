@@ -48,7 +48,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
                     //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
-                    var mojitType = spec.type,
+                    var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
                         shakerBase,
