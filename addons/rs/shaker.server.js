@@ -44,7 +44,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.rs = null;
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
-            var strContext = this.rs.selector.getPOSLFromContext(ctx),
+            var strContext = this.rs.selector.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
                     //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
