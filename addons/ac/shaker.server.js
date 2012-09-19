@@ -6,6 +6,15 @@
  
 YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
+    function arrayDiff(origin, exclude) {
+        if (!exclude || !exclude.length) {
+            return origin;
+        }
+        return origin.filter(function (i) {
+            return (exclude.indexOf(i) <= -1);
+        });
+    }
+
     function ShakerAddon(command, adapter, ac) {
         this._ac = ac;// the future action context of the mojit (not attached yet if mojit created dynamically)
         this._adapter = adapter;// where the functions done and error live before attach them to the ac.
@@ -22,9 +31,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         },
         _initShaker: function (){
             this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
+            this._shakerConfig = this._ac.app.config.shaker || {};
         },
         /*
-        * We have to hook after the getSripts function gets executed
+        * We have to hook after the getSripts function gets executed (and the assets of the framework get merged)
         * so we can remove/bypass the bottom calculated assets by mojito
         * check _removeMojitoCalculatedAssets.
         */
@@ -46,6 +56,37 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 delete assets.bottomShaker;
             }
         },
+        /*
+        * This function basically will anaylize which mojits are bundled and which mojits are executed.
+        * and if some mojits is missing we have to merged with the bundled route.
+        * (The executed mojits are within assets metadata)
+        * IMPORTANT NOTE: This function will not work properly until mojit merge the pull request
+        * https://github.com/yahoo/mojito/pull/530
+        */
+        checkLowCoveredMojits: function (assets, route, metaBundle, metaShakerApp) {
+            var shakerConfig = this._shakerConfig,
+                executedMojits = assets.shakerRuntimeMeta && assets.shakerRuntimeMeta.mojits,
+                routeMojits = shakerConfig.routeBundle[route.name],
+                lowCoverageMojits = arrayDiff(executedMojits, routeMojits),
+                mojit;
+
+            //console.log(lowCoverageMojits);
+
+            lowCoverageMojits.forEach(function (mojitActionName) {
+                var parts = mojitActionName.split('.'),
+                    mojitName = parts[0],
+                    mojitAction = parts[1],
+                    mojitAssets = metaShakerApp.mojits[mojitName] || {},
+                    mojitActionAssets = mojitAssets[mojitAction] || [];
+
+                    //console.log(mojitActionAssets);
+                    //TODO: MERGE THE LOW COVERAGE ASSETS WITH THE BUNDLE!!!!!
+            });
+
+            //remove the metadata since we dont need it anymore...
+            delete assets.shakerRuntimeMeta;
+
+        },
         checkRouteBundling: function () {
             if(!this._meta.app) return;
 
@@ -66,6 +107,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             if (shakerBundle) {
                 assets = ac.assets.getAssets();
+                this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
                 shakerAssetsTop = assets.topShaker;
                 shakerAssetsBottom = assets.bottomShaker;
                 shakerAssetsTop.css = shakerBundle.css;

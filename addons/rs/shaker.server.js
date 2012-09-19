@@ -47,7 +47,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var strContext = this.rs.selector.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
-                    //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
+                    console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
@@ -62,7 +62,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                             jsList = shakerMeta.core;
                         //add the css and js for the particular mojit & action
                         } else {
-
                             //I do this to check if on the nested meta we have all the info we need...
                             //May I implement a getter from the metadata?
                             shakerBase = shakerMeta.app[strContext];
@@ -77,6 +76,12 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     }
                     //augmenting the default config
                     spec.config.assets = spec.config.assets || {};
+
+                    //we put here which mojits are being executed
+                    //So in ShakerHTMLFrame runtime we can do the magic of bundling...
+                    spec.config.assets.shakerRuntimeMeta = {
+                        mojits: [mojitType + '.' + mojitAction]
+                    };
                     spec.config.assets.topShaker = {
                         css: cssList
                     };

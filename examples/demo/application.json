@@ -8,7 +8,7 @@
             "task": "raw",
             "minify": true,
             "routeBundle": {
-                "/none": ["master", "primary", "secondary"]
+                "diego": ["master.index"]
             },
             "rollupConfig": {
                 "//fetchViews": "none",
@@ -26,11 +26,6 @@
                     "title": "Shaker Demo",
                     "child": {
                         "type": "master"
-                    },
-                    "assets": {
-                        "top": {
-                            "css": ["poc.css"]
-                        }
                     }
                 }
             }
