@@ -1,14 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-{{{prefetch}}}
-<script type="text/javascript">var MOJITO_INIT=new Date().getTime();</script>
 {{#meta}}
-<meta name="{{name}}" content="{{content}}">
+	<meta name="{{name}}" content="{{content}}">
 {{/meta}}
 {{^meta}}
-<meta name="creator" content="Yahoo! Shaker Mojito {{mojito_version}}">
+	<meta name="creator" content="Yahoo! Shaker Mojito {{mojito_version}}">
 {{/meta}}
+
+{{{prefetch}}}
+<script type="text/javascript">var MOJITO_INIT=new Date().getTime();</script>
 {{#enableDynamicTitle}}
 	<title>{{dynamicTitle}}</title>
 {{/enableDynamicTitle}}
