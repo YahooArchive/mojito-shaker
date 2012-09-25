@@ -81,7 +81,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 }
                 this._poslCache[cacheKey] = posl;
             }
-            return Y.mojito.util.copy(posl);
+            return posl;
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
             var strContext = this.getPOSLFromContext(ctx).join('-'),
