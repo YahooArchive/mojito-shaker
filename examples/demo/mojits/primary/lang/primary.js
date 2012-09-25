@@ -1,8 +1,10 @@
-YUI.add("lang/test_mojit_07", function (Y) {
+/*jslint nomen:true, indent: 4, plusplus: true */
+
+YUI.add("lang/primary", function (Y) {
     "use strict";
     Y.Intl.add(
 
-        "test_mojit_07",
+        "primary",
         "",
 
         {

@@ -98,7 +98,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 url = adapter.req.url,
                 method = adapter.req.method,
                 route = ac.url.find(url, method),
-                strContext = store.selector.getPOSLFromContext(ac.context).join('-'),
+                strContext = store.shaker.getPOSLFromContext(ac.context).join('-'),
                 shakerApp = this._meta.app[strContext],
                 shakerBundle = shakerApp.routesBundle[route.name],
                 assets,

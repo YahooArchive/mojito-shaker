@@ -16,3 +16,7 @@ lib/tasks
 test/core/debug.txt
 
 examples/npm-debug.log
+
+test/rs/log.txt
+
+test/rs/log.txt

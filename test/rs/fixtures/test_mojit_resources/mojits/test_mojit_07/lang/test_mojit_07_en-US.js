@@ -1,13 +1,13 @@
-YUI.add("lang/test_mojit_07_es-ES", function (Y) {
+YUI.add("lang/test_mojit_07_en-US", function (Y) {
 
     "use strict";
     Y.Intl.add(
 
         "test_mojit_07",
-        "en-US",
+        "es-ES",
 
         {
-            "MYLANG": "ENGLISH (US)"
+            "MYLANG": "SPANISH (SPAIN)"
         }
 
     );

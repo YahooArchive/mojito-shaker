@@ -36,8 +36,13 @@
         "selector": "iphone"
     },
     {
-        "settings": [ "lang:es-ES" ],
-        "selector": "esp"
+        "settings": [ "lang:en-CA" ],
+        "selector": "enCA"
+    },
+    {
+        "settings": [ "lang:en-US" ],
+        "selector" : "enUS"
+        
     },
     {
         "settings": [ "environment:corp"],

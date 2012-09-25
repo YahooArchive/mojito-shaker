@@ -32,25 +32,66 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         initializer: function(config) {
             Y.log('Initializing Shaker Resource Store Plugin','info','Shaker');
             this.rs = config.host;
+            this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
-            //this.afterHostMethod('findResourceVersionByConvention', this.findResourceVersionByConvention, this);
-            //this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
+            this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
         },
-
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
+        /*
+        * The store is not going to match the lang context if
+        * there is no explicit files with the lang selector
+        * so we need to force for languages to be able to compute them.
+        */
+        populateLangSelectors: function () {
+            var store = this.rs,
+                selector = store.selector;
+
+            selector._appConfigYCB.walkSettings(function(settings, config) {
+                //we add the selectors in the store.
+                if (settings.lang) {
+                    store.selectors[config.selector || settings.lang] = true;
+                }
+                return true;
+            });
+        },
+        getPOSLFromContext: function (ctx) {
+            var store = this.rs,
+                cacheKey,
+                posl,
+                p,
+                part,
+                parts;
+
+            cacheKey = Y.JSON.stringify(ctx);
+            posl = this._poslCache[cacheKey];
+            if (!posl) {
+                posl = ['*'];
+                // TODO:  use rs.config for this too
+                parts = store.selector._appConfigYCB.readNoMerge(ctx, {});
+                for (p = 0; p < parts.length; p += 1) {
+                    part = parts[p];
+                    if (part.selector && store.selectors[part.selector]) {
+                        posl.unshift(part.selector);
+                    }
+                }
+                this._poslCache[cacheKey] = posl;
+            }
+            return Y.mojito.util.copy(posl);
+        },
         expandInstanceAssets: function (env, instance, ctx, cb) {
-            var strContext = this.rs.selector.getPOSLFromContext(ctx).join('-'),
+            var strContext = this.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
+                    console.log(strContext);
                     console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
-                        isFrame = mojitType.indexOf('HTMLFrameMojit') !== -1,
+                        isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,
                         shakerBase,
                         cssList = [], jsList = [];
 
