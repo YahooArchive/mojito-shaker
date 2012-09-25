@@ -87,8 +87,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var strContext = this.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
-                    console.log(strContext);
-                    console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
+                    //console.log(strContext);
+                    //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,
