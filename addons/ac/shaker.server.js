@@ -23,11 +23,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
     }
     ShakerAddon.prototype = {
         namespace: 'shaker',
-        _init:function(ac, adapter){
+        _init:function (ac, adapter) {
             this._initShaker();
             this._hookDeploy(ac, adapter);
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
+            //HACK FOR THE LOADER REMOVE WHEN MOJITO UPDATES > 0.4.4
+            delete YUI.Env._renderedMods;
         },
         _initShaker: function (){
             this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};

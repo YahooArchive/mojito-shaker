@@ -37,8 +37,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.mojitoRoot = config.mojitoRoot;
             this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-            //HACK FOR THE LOADER REMOVE WHEN MOJITO UPDATES > 0.4.4
-            delete YUI.Env._renderedMods;
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
