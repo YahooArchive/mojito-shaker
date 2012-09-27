@@ -452,38 +452,6 @@ YUI.add('addon-rs-yui', function(Y, NAME) {
             //SUPER HACK MEANWHILE MOJIT DOESNT UPDATE!
             if (!this.loader) {
                 this.loader = new Y.Loader({ ignoreRegistered: true });
-                this.loader._resetModules = function () {
-                    var self = this, i, o;
-                    for (i in self.moduleInfo) {
-                        if (self.moduleInfo.hasOwnProperty(i)) {
-                            var mod = self.moduleInfo[i],
-                                name = mod.name,
-                                details  = (YUI.Env.mods[name] ? YUI.Env.mods[name].details : null);
-             
-                            if (details) {
-                                self.moduleInfo[name]._reset = true;
-                                self.moduleInfo[name].requires = details.requires || [];
-                                self.moduleInfo[name].optional = details.optional || [];
-                                self.moduleInfo[name].supersedes = details.supercedes || [];
-                            }
-             
-                            if (mod.defaults) {
-                                for (o in mod.defaults) {
-                                    if (mod.defaults.hasOwnProperty(o)) {
-                                        if (mod[o]) {
-                                            mod[o] = mod.defaults[o];
-                                        }
-                                    }
-                                }
-                            }
-                            delete mod.langCache;
-                            delete mod.skinCache;
-                            if (mod.skinnable) {
-                                self._addSkin(self.skin.defaultSkin, mod.name);
-                            }
-                        }
-                    }
-                };
             }
 
             var loader = this.loader,
@@ -509,14 +477,6 @@ YUI.add('addon-rs-yui', function(Y, NAME) {
                 };
             }
 
-            // HACK
-            // We need to clear YUI's cached dependencies, since there's no
-            // guarantee that the previously calculated dependencies have been done
-            // using the same context as this calculation.
-            delete YUI.Env._renderedMods;
-
-            // Use ignoreRegistered here instead of the old `delete YUI.Env._renderedMods` hack
-            loader._resetModules();
             // Only override the default if it's required
             if (this.yuiConfig && this.yuiConfig.base) {
                 loader.base = this.yuiConfig.base;
