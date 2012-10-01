@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Shaker Meta Tool</title>
+<style>
+	@import url('http://fonts.googleapis.com/css?family=Damion');
+
+* {
+	margin: 0;
+	padding: 0;
+	-webkit-font-smoothing: antialiased;
+}
+
+html,body{
+	height:100%;
+}
+
+body {
+	background: #DBD2BE;	
+	font: 16px/25px Lato, sans-serif;
+	color: #3D372F;
+	text-shadow: 0 1px 0 rgba(255,255,255,.25);
+	padding-left: 315px;
+	padding-right: 330px;
+}
+
+a {
+	color: white;
+	cursor: pointer;	
+	font-weight:bold;
+	-webkit-transition: color .25s;
+	-moz-transition: color .25s;
+	-ms-transition: color .25s;
+	-o-transition: color .25s;
+	transition: color .25s;
+}
+a:hover {
+	color: #21343a;
+}
+
+li.project > a{
+	font-weight:normal;
+	text-decoration:none;
+}
+	
+p {
+	clear: both;
+	padding-bottom: 10px;
+}
+
+.highlight {
+	background: #83786D;
+	padding: 2px 5px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+h1 {
+	color: #fff;
+	font: italic 2.2em/1.1 Damion, sans-serif;
+	text-transform: lowercase;
+	text-align: center;
+}
+	h1 i {
+		color: #fbc785;
+	}
+
+h1 + h2 {
+	color: #3d372f;
+	text-align:center;
+	font-size: 12px;
+	font-weight: bold;
+	text-shadow:white 1px 1px 3px;
+	text-transform: uppercase;	
+}
+nav {
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 228px;
+	padding: 10px 30px;
+	background: #cf7f39 no-repeat 50% 100%;
+	color: #8a999d;
+	text-shadow: 0 1px 1px #212627;
+	
+	-webkit-box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+	-moz-box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+	box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+
+}
+	nav ul {
+		border-bottom: 1px solid #e0a54a;
+
+		margin: 30px -30px;
+
+		list-style: none;
+		text-align: right;
+	}
+		nav ul li {
+			position: relative;
+			border-top: 1px solid #e0a54a;
+		}
+		nav ul a {
+			display: block;
+			padding: 5px 25px;
+
+			color: #fbc785;
+
+			font-size: 16px;
+			font-weight: bold;
+			text-decoration: none;
+			
+			-webkit-transition: background .5s, color .5s;
+			-moz-transition: background .5s, color .5s;
+			-ms-transition: background .5s, color .5s;
+			-o-transition: background .5s, color .5s;
+			transition: background .5s, color .5s;
+		}
+			nav ul a:hover {
+				color: #e9f5f8;
+			}
+			nav ul .active a {
+				background: rgba(179,197,202,.1);
+				color: #fff;
+			}
+
+aside {
+	position: fixed;
+	overflow: auto;
+	right: 0;
+	width:300px;
+	height:100%;
+	padding-top: 10px;
+	background: #cf7f39 no-repeat 50% 100%;
+	color: #8a999d;
+	text-shadow: 0 1px 1px #212627;
+	-webkit-box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+	-moz-box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+	box-shadow: inset 0 2px 15px rgba(0,0,0,.3), inset 0 -10px 20px rgba(0,0,0,.1);
+
+}
+
+	aside ul {
+		border-bottom: 1px solid #e0a54a;
+		margin: 15px 15px;
+		list-style: none;
+		text-align: right;
+	}
+		aside ul li {
+			position: relative;
+			border-top: 1px solid #e0a54a;
+		}
+		aside ul a {
+			display: block;
+			padding: 0 5px;
+
+			color: #fbc785;
+
+			font-size: 14px;
+			font-weight: bold;
+			text-decoration: none;
+			
+			-webkit-transition: background .5s, color .5s;
+			-moz-transition: background .5s, color .5s;
+			-ms-transition: background .5s, color .5s;
+			-o-transition: background .5s, color .5s;
+			transition: background .5s, color .5s;
+		}
+			aside ul a:hover {
+				color: #e9f5f8;
+				background: rgba(179,197,202,.1);
+			}
+			aside ul .active a {
+				background: rgba(179,197,202,.1);
+				color: #fff;
+			}
+
+.filters {
+	position:relative;
+	background: rgba(54, 158, 187, .8);
+	height:40px;
+	border-radius: 0 0px 10px 10px;
+}
+.filters ul {
+	padding: 8px 0;
+	position:absolute;
+	right: 10px;
+}
+.filters li{
+	display: inline-block;
+}
+	
+div.panels {
+}
+	div.panels div {
+	}
+
+	div.panels ul {
+		list-style: none;
+		padding:0;
+		margin:0;
+	}
+	
+	div.panels h2 {
+		padding: 10px 0;
+
+		font-size: 20px;
+		font-weight: normal;
+
+		color: #B75024;
+	}
+	div.panels h3 {
+
+	}
+
+.resource-list {
+	cursor: pointer;
+}
+
+.resource-list li {
+	position:relative;
+	margin:4px 0;
+	padding-left:4px;
+	border-radius: 10px;
+}
+
+.resource-list > li {
+
+	background: rgba(76,170,13,0.5);
+	padding:4px 10px 4px;
+}
+
+.resource-list  ul > li {
+	margin:4px;
+	padding:4px 10px 4px;
+	background: rgba(196, 202, 54, 0.5);
+}
+.resource-list  ul ul > li {
+background: rgba(255, 255, 255, 0.75);
+}
+
+.resource-list .css {
+	background: rgba(25, 25, 25, 0.75);
+	color:white;
+}
+
+.resource-list .js {
+	
+}
+</style>
+	<script src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+	<script src="../autoload/compiled/shaker-meta.common.js"></script>
+	<script>
+		YUI().use('node','event','jsonp','substitute','shaker/metaMojits','event-delegate', function (Y) {
+			var contextContainer = '.context-list',
+				contextItemTemplate = '<li class="context"><a href="#{id}">{name}</a></li>',
+
+				mojitsContainer = '.mojits .resource-list';
+				mojitTemplate = '<li><h3>{mojitName}</h3><ul class="mojit-actions">{actions}</ul></li>';
+				mojitActionTemplate = '<li><h4>{mojitAction}</h4><ul class="asset-list">{actions}</ul></li>';
+				resourceItemTemplate = '<li class="{type}">{url}</li>';
+				window.mY = Y;
+				Y.SHAKERAPP = {
+					init: function () {
+						if (YUI._mojito) {
+							this.metadata = YUI._mojito._cache.shaker.meta;
+							this.bind();
+							this.populatePage();
+						} else {
+							alert('Error: Metadata not loaded correctly!\nDid you Shake?');
+						}
+					},
+					bind: function () {
+						Y.delegate('click', this._toggleList, '.panels', 'li');	
+						Y.delegate('click', this._changeContext, contextContainer, 'a',this);	
+						Y.one('#filter-css').on('change', function (){
+							Y.all('.css').toggleView(this.get('check'));
+						});
+						Y.one('#filter-js').on('change', function (){
+							Y.all('.js').toggleView(this.get('check'));
+						});
+					},
+					_changeContext: function (e) {
+						var contextKey = e.target.getAttribute('href');
+						this.populateMojitsByContext(contextKey);
+					},
+					_toggleList: function (e) {
+						var li = e.currentTarget.ancestor('li', true),
+							ul = li.one('ul');
+						e.halt();
+
+						if (ul) {
+							ul.toggleView();
+						}
+					},
+					populateContext: function (contextList) {
+						var aux = '';
+						Y.Array.forEach(contextList, function (contextKey) {
+							var item = contextKey.replace('*','default');
+							aux += Y.Lang.substitute(contextItemTemplate,{name: item, id:item});
+						});
+						Y.one(contextContainer).setHTML(aux);
+					},
+					populateMojitAction: function (meta, mojitName, mojitAction) {
+						var css = meta.css,
+							js = meta.js,
+							aux = '';
+
+						Y.Array.forEach(css, function (item){
+							aux += Y.Lang.substitute(resourceItemTemplate,{type:'css', url: item});
+						});
+						Y.Array.forEach(js, function (item){
+							aux += Y.Lang.substitute(resourceItemTemplate,{type:'js', url: item});
+						});
+						return aux;
+
+					},
+					populateMojit: function (metaMojit, mojitName) {
+						var aux = '';
+						Y.Object.each(metaMojit, function (meta, mojitAction) {
+							var actions = this.populateMojitAction(meta, mojitName, mojitAction);
+							aux += Y.substitute(mojitActionTemplate,{mojitAction: mojitAction, actions: actions});
+						},this);
+						return aux;
+					},	
+					populateMojitsByContext: function (contextKey){
+						contextKey = contextKey.indexOf('#') !== -1 ? 
+											contextKey.slice(1).replace('default','*'): contextKey;
+						var metadata = this.metadata.app,
+							mojitList = metadata[contextKey] && metadata[contextKey].mojits,
+							aux = '';
+
+						if (!mojitList) {
+							alert('ERROR: Invalid Context!');
+							return;
+						}
+						Y.Object.each(mojitList, function (mojitMeta, mojitName) {
+							var actions = this.populateMojit(mojitMeta, mojitName);
+							aux += Y.substitute(mojitTemplate,{mojitName: mojitName, actions: actions});
+						},this);
+
+						Y.one(mojitsContainer).setHTML(aux);
+					},
+					populatePage: function () {
+						var metadata = this.metadata,
+							app = metadata.app,
+							contextList = (Y.Object.keys(app)).reverse(),
+							contextKey = Y.getLocation().hash || '#default';
+
+						this.populateContext(contextList);
+						this.populateMojitsByContext(contextKey);
+						Y.all('.resource-list > li > ul').hide();
+					}
+				};
+				Y.SHAKERAPP.init();
+		});
+	</script>
+</head>
+
+<body>
+	<nav>
+		<h1>shaker<i>-analyzer</i></h1>
+		<h2>Contextualized metadata</h2>
+		<ul class="context-list">
+		</ul>
+	</nav>
+	<aside class="shaker-results">
+		<h1>Assets<i> Results</i></h1>
+		<ul>
+			<!-- <li><a>Foo</a></li>
+			<li><a>Foo</a></li> -->
+		</ul>
+	</aside>
+	<div class="filters"> 
+		<ul>
+			<li>Filter CSS <input id="filter-css" type="checkbox"/></li>
+			<li>Filter JS <input id="filter-js" type="checkbox"/></li>
+		</ul>
+	</div>
+	<div class="panels">
+		<div class="mojits">
+			<h2>Mojits</h2>
+			<ul class="resource-list"></ul>
+		</div>
+		<div class="app">
+			<h2>App</h2>
+		</div>
+		
+		<div class="routes">
+			<h2>Route bundle</h2>
+		</div>
+	</div>
+
+	
+
+</body>
+</html>

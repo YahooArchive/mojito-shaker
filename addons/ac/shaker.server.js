@@ -103,7 +103,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 strContext = store.shaker.getPOSLFromContext(ac.context).join('-'),
                 shakerApp = this._meta.app[strContext],
                 shakerBundle = shakerApp.routesBundle[route.name],
-                assets,
+                assets = ac.assets.getAssets(),
                 shakerAssetsTop,
                 shakerAssetsBottom;
 
@@ -115,6 +115,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerAssetsTop.css = shakerBundle.css;
                 shakerAssetsBottom.js = core.concat(shakerBundle.js);
             }
+            //remove the metadata since we dont need it anymore...
+            delete assets.shakerRuntimeMeta;
                 
         },
         run: function (meta) {

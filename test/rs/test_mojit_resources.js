@@ -21,7 +21,7 @@ suite.add( new YUITest.TestCase({
         },
         tearDown : function () {
         },
-        /*'test mojit resources: controller': function () {
+        'test mojit resources: controller': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_01', {});
             Assert.isTrue(result.controllers.length === 1);
             Assert.isTrue(result.controllers[0].source.fs.basename === 'controller.common');
@@ -84,18 +84,17 @@ suite.add( new YUITest.TestCase({
             Assert.isTrue(result.langs[2].source.fs.basename === 'test_mojit_07_es-ES');
             Assert.isNotUndefined(result.dependencies['lang/test_mojit_07']);
         },
-        */
         'test mojit resources: langs regarding context dimensions': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_07', {lang:'en-US'});
             //Assert.isNotUndefined(result.dependencies['lang/test_mojit_07_es-ES']);
             for(var i in result.dependencies) {
                 console.log(i);
             }
-        },/*
+        },
         'test mojit resources: MVC + globalAppDependencies': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_08', {});
             Assert.isNotUndefined(result.dependencies['autoloadGlobal']);
-        },*/
+        },
         'test core resources': function (){
             var result = this.shaker.shakeCore();
             Assert.isTrue(result.length > 0);
