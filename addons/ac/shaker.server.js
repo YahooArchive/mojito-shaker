@@ -28,8 +28,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             this._hookDeploy(ac, adapter);
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
-            //HACK FOR THE LOADER REMOVE WHEN MOJITO UPDATES > 0.4.4
-            delete YUI.Env._renderedMods;
         },
         _initShaker: function (){
             this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
@@ -85,9 +83,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                     //TODO: MERGE THE LOW COVERAGE ASSETS WITH THE BUNDLE!!!!!
             });
 
-            //remove the metadata since we dont need it anymore...
-            delete assets.shakerRuntimeMeta;
-
         },
         checkRouteBundling: function () {
             if(!this._meta.app) return;
@@ -108,7 +103,6 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerAssetsBottom;
 
             if (shakerBundle) {
-                assets = ac.assets.getAssets();
                 this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
                 shakerAssetsTop = assets.topShaker;
                 shakerAssetsBottom = assets.bottomShaker;
