@@ -37,10 +37,21 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.mojitoRoot = config.mojitoRoot;
             this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
+            this.beforeHostMethod('findResourceVersionByConvention', this.hookClientForShaker, this);
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
+        },
+        hookClientForShaker: function (source, type) {
+            var shakerRootDir = this.rs.config.appRoot + '/node_modules/mojito-shaker/autoload',
+                filename = 'shaker-output-handler.client.js';
+
+            if(source.fs.basename === ('output-handler.client')) {
+                source.fs.rootDir = shakerRootDir;
+                source.fs.fullPath = shakerRootDir + '/' + filename;
+            }
+            
         },
         /*
         * The store is not going to match the lang context if

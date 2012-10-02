@@ -27,7 +27,7 @@ YUI.add('mojito-output-handler', function(Y, NAME) {
             blobNode = '',
             doneChecker;
             
-        console.log(assets);
+        
         delete assets.shakerRuntimeMeta;
 
         Y.Object.each(assets, function(types, location) {
