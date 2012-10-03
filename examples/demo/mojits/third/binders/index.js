@@ -24,6 +24,7 @@ YUI.add('thirdBinderIndex', function(Y, NAME) {
          */
         init: function(mojitProxy) {
             this.mojitProxy = mojitProxy;
+            Y.log('=========== ThirdMojit Binder deployed!');
         },
 
         /**

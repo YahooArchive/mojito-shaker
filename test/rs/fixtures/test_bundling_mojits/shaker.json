@@ -1,0 +1,12 @@
+[
+    {
+        "settings": ["master"],
+        "shaker":{
+        	"mojitStuf": {}
+        }
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "selector": "iphone"
+    }
+]

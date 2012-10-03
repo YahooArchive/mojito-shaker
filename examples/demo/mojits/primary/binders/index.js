@@ -28,7 +28,7 @@ YUI.add('primaryBinderIndex', function(Y, NAME) {
             this.mojitProxy = mojitProxy;
             Y.log('Loaded binder for primary mojit!');
         },
-
+        
         /**
          * The binder method, invoked to allow the mojit to attach DOM event
          * handlers.
@@ -43,10 +43,9 @@ YUI.add('primaryBinderIndex', function(Y, NAME) {
             this.mojitProxy.invoke('dynamic',Y.bind(this.resultInvoke,this));
         },
         resultInvoke:function(err, data, meta){
-            Y.log(arguments);
-            console.log(data);
+            Y.one('#main').append(data);
         }
 
     };
 
-}, '0.0.1', {requires: ['mojito-client']});
+}, '0.0.1', {requires: ['mojito-client','shaker-runtime']});

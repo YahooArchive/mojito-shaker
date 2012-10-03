@@ -1,0 +1,11 @@
+[{
+	"settings":[ "master" ],
+	"type" : "primary",
+	"config": {
+		"assets": { 
+			"top": {
+				"css": ["/static/olysports/assets/css/XXXX.css"]
+			}
+		}
+	}
+}]

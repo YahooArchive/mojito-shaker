@@ -1,25 +1,32 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-{{{prefetch}}}
-<script type="text/javascript">var MOJITO_INIT=new Date().getTime();</script>
 {{#meta}}
-<meta name="{{name}}" content="{{content}}">
+	<meta name="{{name}}" content="{{content}}">
 {{/meta}}
 {{^meta}}
-<meta name="creator" content="Yahoo! Mojito {{mojito_version}}">
+	<meta name="creator" content="Yahoo! Shaker Mojito {{mojito_version}}">
 {{/meta}}
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>{{title}}</title>
+{{{prefetch}}}
+<script type="text/javascript">var MOJITO_INIT=new Date().getTime();</script>
+{{#enableDynamicTitle}}
+	<title>{{dynamicTitle}}</title>
+{{/enableDynamicTitle}}
+{{^enableDynamicTitle}}
+	<title>{{title}}</title>
+{{/enableDynamicTitle}}
 
+{{{topShaker}}}
 {{{top}}}
-
 </head>
 <body>
     
 {{{child}}}
-    
+
+{{{bottomShaker}}}
+
 {{{bottom}}}
-{{{postfetch}}}
+    
 </body>
 </html>

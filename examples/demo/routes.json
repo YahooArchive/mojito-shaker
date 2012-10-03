@@ -4,6 +4,11 @@
     "/": {
         "verb": ["get"],
         "path": "/",
-        "call": "htmlframe.index"
+        "call": "myhtmlframe.index"
+    },
+    "diego": {
+        "verb": ["get"],
+        "path": "/search",
+        "call": "myhtmlframe.search"
     }
 }]

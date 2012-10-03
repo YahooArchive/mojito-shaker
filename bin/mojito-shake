@@ -5,21 +5,30 @@
  * See the accompanying LICENSE file for terms.
  */
 
-/*
- * IMPORTANT NOTE!
- *
- * This binary was made as a copy of management/cli.js with some hacks to get Shaker running.
- * The purpose of this file, is only be a hook until the mojito team integrates the real shaker command within the mojito npm package.
- * See: https://github.com/yahoo/mojito/pull/137
- * You should use the real shaker command after that pull request gets integrated.
- */
- var utils;
-try{
-    utils = require('mojito/lib/management/utils');
-} catch(e) {
-    utils = require('mojito/management/utils');
-}
+/*jslint anon:true, sloppy:true*/
 
+var libmojito = require('mojito'),
+    utils = require('mojito/lib/management/utils'),
+    libpath = require('path');
+/*
+ * A command is expected to export the following:
+ *   run     - The function that executes the command. The signature is:
+ *               run(params, options, callback);
+ *   usage   - Help information for this command, as a string.
+ *   options - Option info for supported options. Optional.
+ *
+ * Option info must be provided as an array of option objects, each with the
+ * following keys:
+ *   shortName - Short (1-char) option name, without leading dash (e.g. 'v').
+ *   longName  - Long option name, without leading dashes (e.g. 'verbose').
+ *   hasValue  - True is this option requires a value. Optional; default false.
+ */
+
+
+/*
+ * Creates a map keyed by both short and long option names, to simplify lookup
+ * of option info from command line args.
+ */
 function makeOptionMap(optionInfo) {
     var optionMap = {};
 
@@ -36,6 +45,15 @@ function makeOptionMap(optionInfo) {
 
     return optionMap;
 }
+
+
+/*
+ * Parses command line args based on the provided option info. Returns a map
+ * with three keys:
+ *   params  - an array of the specified parameters
+ *   options - a map of options, keyed by long name
+ *   errors  - an array of error strings for reporting
+ */
 function parseArgs(args, optionInfo) {
     var optionMap = makeOptionMap(optionInfo),
         params = [],
@@ -74,17 +92,14 @@ function parseArgs(args, optionInfo) {
 
 function main() {
     var args = process.argv.slice(2),
-        commandName = 'shake',//HARDCODING SHAKER COMMAND.
         command,
         argInfo;
 
     try {
-        //HARCODING SHAKER COMMAND
-        command = require('../commands/' + commandName);
+        command = require('../commands/shake');
     } catch (e) {
-        utils.error('Invalid command: ' + command,
-                    'mojito <command> [<params>] [<options>]');
-        return;
+            utils.error('Invalid command!');
+            return;
     }
 
     if (args.length === 0) {
@@ -100,6 +115,7 @@ function main() {
         utils.error('Invalid command line.', "Try 'mojito help <command>'.");
         return;
     }
+
     command.run(argInfo.params, argInfo.options, function(err) {
         if (err) {
             utils.error(err);
@@ -113,4 +129,3 @@ function main() {
 // require/import process so simply importing/require()ing the cli.js will cause
 // the main() operation to be invoked.
 main();
-

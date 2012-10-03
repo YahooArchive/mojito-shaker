@@ -1,0 +1,14 @@
+[
+    {
+        "settings": ["master"],
+        "shaker":{
+        	"routeBundle": {
+        		"indexAction": ["test_mojit_07", "test_mojit_08"]
+        	}
+        }
+    },
+    {
+        "settings": [ "device:iphone" ],
+        "selector": "iphone"
+    }
+]
