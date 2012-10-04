@@ -24,14 +24,20 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
     ShakerAddon.prototype = {
         namespace: 'shaker',
         _init:function (ac, adapter) {
-            this._initShaker();
-            this._hookDeploy(ac, adapter);
+            var metaLoaded = this._initShaker();
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
+            if (metaLoaded) {
+                this._hookDeploy(ac, adapter);
+            } else {
+                Y.log('[SHAKER] Metadata not found. Application running without Shaker...','error');
+            }
         },
         _initShaker: function (){
-            this._meta = YUI._mojito._cache.shaker ? YUI._mojito._cache.shaker.meta : {};
+            var shakerMeta = YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
             this._shakerConfig = this._ac.app.config.shaker || {};
+            this._meta = shakerMeta || {};
+            return shakerMeta;
         },
         /*
         * We have to hook after the getSripts function gets executed (and the assets of the framework get merged)
