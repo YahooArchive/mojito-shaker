@@ -108,4 +108,11 @@ var DIMENSIONS = {
         }
     };
 
-}, '0.0.1', {requires: ['mojito', 'mojito-assets-addon','mojito-intl-addon']});
+}, '0.0.1', {requires: [
+        'mojito', 
+        'mojito-assets-addon',
+        'mojito-intl-addon', 
+        'mojito-params-addon', 
+        'mojito-composite-addon',
+        'mojito-url-addon'
+        ]});
