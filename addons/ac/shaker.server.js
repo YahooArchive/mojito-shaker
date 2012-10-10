@@ -34,8 +34,9 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
         },
         _initShaker: function (){
-            var shakerMeta = YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta;
-            this._shakerConfig = this._ac.app.config.shaker || {};
+            var shakerMeta = YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+                config = this._ac.app ? this._ac.app.config.shaker : this._ac.config.getAppConfig().shaker;
+            this._shakerConfig = config && config.shaker || {};
             this._meta = shakerMeta || {};
             return shakerMeta;
         },
@@ -127,4 +128,4 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
     Y.mojito.addons.ac.shaker = ShakerAddon;
 
-}, '0.0.1', {requires: ['mojito']});
+}, '0.0.1', {requires: ['mojito', 'mojito-config-addon']});
