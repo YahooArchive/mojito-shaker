@@ -102,10 +102,13 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
-                        isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,
+                        isFrame,
                         shakerBase,
-                        cssList = [], jsList = [];
+                        cssList = [],
+                        jsList = [];
 
+                    isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1 ||
+                                mojitType.indexOf('FirstByteFrameMojit') !== -1;
                     //check if we have the shaker Metadata avaliable (if not raise a metadata error)
                     if (shakerMeta) {
                         //if is a type of Frame, we will ship the app stuff and the mojito core (this go first)
@@ -121,8 +124,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                             shakerBase = shakerBase && shakerBase.mojits[mojitType];
                             shakerBase = shakerBase && shakerBase[mojitAction];
 
-                             if (!shakerBase) {
-                                Y.log('[SHAKER] Mojit: ' + mojitType + ' not expanded. Metadata not found','error');
+                            if (!shakerBase) {
+                                Y.log('[SHAKER] Mojit: ' + mojitType + ' not expanded. Metadata not found', 'error');
                             } else {
                                 //if everything is fine we assing it the resources needed
                                 cssList = shakerBase && shakerBase.css;

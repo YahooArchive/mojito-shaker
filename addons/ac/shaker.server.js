@@ -111,9 +111,9 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             if (shakerBundle) {
                 this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
-                shakerAssetsTop = assets.topShaker;
-                shakerAssetsBottom = assets.bottomShaker;
-                shakerAssetsTop.css = shakerBundle.css;
+                shakerAssetsTop = assets.topShaker || {};
+                shakerAssetsBottom = assets.bottomShaker || {};
+                shakerAssetsTop.css = shakerBundle.css || {};
                 shakerAssetsBottom.js = core.concat(shakerBundle.js);
             }
             //remove the metadata since we dont need it anymore...
