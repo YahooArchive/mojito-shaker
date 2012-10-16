@@ -106,13 +106,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerApp = this._meta.app[strContext],
                 shakerBundle = shakerApp.routesBundle[route.name],
                 assets = ac.assets.getAssets(),
-                shakerAssetsTop,
-                shakerAssetsBottom;
+                shakerAssetsTop = {},
+                shakerAssetsBottom = {};
 
             if (shakerBundle) {
                 this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
                 shakerAssetsTop = assets.topShaker;
-                shakerAssetsBottom = assets.bottomShaker;
+                shakerAssetsBottom = assets.bottomShaker || {js:[], css: []};
                 shakerAssetsTop.css = shakerBundle.css;
                 shakerAssetsBottom.js = core.concat(shakerBundle.js);
             }

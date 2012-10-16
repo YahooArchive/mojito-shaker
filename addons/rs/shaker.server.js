@@ -121,13 +121,13 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                             shakerBase = shakerBase && shakerBase.mojits[mojitType];
                             shakerBase = shakerBase && shakerBase[mojitAction];
 
-                             if (!shakerBase) {
-                                Y.log('[SHAKER] Mojit: ' + mojitType + ' not expanded. Metadata not found','error');
-                            } else {
+                             if (shakerBase) {
                                 //if everything is fine we assing it the resources needed
                                 cssList = shakerBase && shakerBase.css;
                                 jsList = shakerBase && shakerBase.js;
-                            }
+                             } else {
+                                //Y.log('[SHAKER] Mojit: ' + mojitType + ' not expanded. Metadata not found','error');
+                             }
                         }
 
                         //augment the default config
