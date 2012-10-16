@@ -37,7 +37,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.mojitoRoot = config.mojitoRoot;
             this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-            this.beforeHostMethod('findResourceVersionByConvention', this.hookClientForShaker, this);
+            //this.beforeHostMethod('parseResourceVersion', this.hookClientForShaker, this);
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
@@ -47,7 +47,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var shakerRootDir = this.rs.config.appRoot + '/node_modules/mojito-shaker/autoload',
                 filename = 'shaker-output-handler.client.js';
 
-            if(source.fs.basename === ('output-handler.client')) {
+            if (source.fs.basename === ('output-handler.client')) {
                 source.fs.rootDir = shakerRootDir;
                 source.fs.fullPath = shakerRootDir + '/' + filename;
             }
@@ -96,7 +96,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
             var strContext = this.getPOSLFromContext(ctx).join('-'),
-                shakerMeta = YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+                shakerMeta = YUI._mojito && YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
                 newCb = function (err, spec) {
                     //console.log(strContext);
                     //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);

@@ -116,6 +116,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerAssetsTop.css = shakerBundle.css;
                 shakerAssetsBottom.js = core.concat(shakerBundle.js);
             }
+
+            if (this._shakerConfig.removeJSCalculations) {
+                shakerAssetsBottom.js = [];
+            }
             //remove the metadata since we dont need it anymore...
             delete assets.shakerRuntimeMeta;
                 
