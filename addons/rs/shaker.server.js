@@ -101,7 +101,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     //console.log(strContext);
                     //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
-                        mojitAction = spec.action || 'index',
+                        mojitAction = spec.action,
                         isFrame,
                         shakerBase,
                         cssList = [],
