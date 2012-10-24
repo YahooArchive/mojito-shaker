@@ -35,23 +35,25 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
-            this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
+            //this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-            //this.beforeHostMethod('parseResourceVersion', this.hookClientForShaker, this);
+            //this.afterHostMethod('parseResourceVersion', this.afterParseMethod, this);
+            this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
-        hookClientForShaker: function (source, type) {
-            var shakerRootDir = this.rs.config.appRoot + '/node_modules/mojito-shaker/autoload',
-                filename = 'shaker-output-handler.client.js';
+        afterParseMethod: function (source, type, subtype, mojitType) {
+            //console.log(Y.Do.currentRetVal);
+        },
+        mojitResourcesResolved: function (e) {
+            var env = e.env,
+                posl = e.posl,
+                mojit = e.type,
+                ress = e.ress;
 
-            if (source.fs.basename === ('output-handler.client')) {
-                source.fs.rootDir = shakerRootDir;
-                source.fs.fullPath = shakerRootDir + '/' + filename;
-            }
-            
+            console.log(JSON.stringify(ress, null , '\t'));
         },
         /*
         * The store is not going to match the lang context if
