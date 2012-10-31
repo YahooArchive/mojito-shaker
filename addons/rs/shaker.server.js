@@ -30,7 +30,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function(config) {
-            Y.log('Resource Store Plugin initialized correctly.','info','Shaker');
             this.rs = config.host;
             this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
@@ -38,22 +37,36 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             //this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
             this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
             //this.afterHostMethod('parseResourceVersion', this.afterParseMethod, this);
-            this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+            //this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+
+            if (!this.initilized) {
+                this.meta = this.rs.config.readConfigJSON('shaker-meta.json');
+            }
+            if (this.meta) {
+                Y.log('Metadata loaded correctly.','info','Shaker');
+            }else {
+                Y.log('Metadata not found.','error','Shaker');
+            }
+            
+
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
         afterParseMethod: function (source, type, subtype, mojitType) {
-            //console.log(Y.Do.currentRetVal);
+            console.log(Y.Do.currentRetVal);
         },
         mojitResourcesResolved: function (e) {
             var env = e.env,
                 posl = e.posl,
-                mojit = e.type,
+                mojit = e.mojit,
                 ress = e.ress;
 
-            console.log(JSON.stringify(ress, null , '\t'));
+            for(var i in ress) {ress[i].url = 'http://yahoo.com/foo.js';}
+            //console.log('====' + ress[0].url);
+            console.log(mojit);
+
         },
         /*
         * The store is not going to match the lang context if
@@ -98,10 +111,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         },
         expandInstanceAssets: function (env, instance, ctx, cb) {
             var strContext = this.getPOSLFromContext(ctx).join('-'),
-                shakerMeta = YUI._mojito && YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+                shakerMeta = this.meta,
                 newCb = function (err, spec) {
-                    //console.log(strContext);
-                    //console.log('Mojit: ' + spec.type + 'action: ' + spec.action);
+                    console.log('Mojit: ' + spec.type + ' action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,

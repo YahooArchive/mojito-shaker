@@ -9,7 +9,7 @@
 /*global YUI*/
 
 
-YUI.add('mojito-output-handler', function(Y, NAME) {
+YUI.add('shaker-output-handler', function(Y, NAME) {
     var attachAssets,
         complete,
         loaded = {

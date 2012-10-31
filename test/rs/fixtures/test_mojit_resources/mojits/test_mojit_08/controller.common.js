@@ -2,7 +2,7 @@
  * Copyright (c) 2012 Yahoo! Inc. All rights reserved.
  */
 /*jslint anon:true, sloppy:true, nomen:true*/
-YUI.add('test_mojit_08', function(Y, NAME) {
+YUI.add('test_mojit_08Controller', function(Y, NAME) {
 
 /**
  * The test_mojit_01 module.
@@ -32,4 +32,4 @@ YUI.add('test_mojit_08', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito', 'autoloadBase', 'test_mojit_08ModelFoo','autoloadGlobal', 'mojito-intl-addon']});
+}, '0.0.1', {requires: ['addon-ac-poc','mojito', 'autoloadBase', 'test_mojit_08ModelFoo','autoloadGlobal', 'mojito-intl-addon']});
