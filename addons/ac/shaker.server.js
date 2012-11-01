@@ -35,7 +35,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
         },
         _initShaker: function (){
-            var shakerMeta = YUI._mojito._cache && YUI._mojito._cache.shaker && YUI._mojito._cache.shaker.meta,
+            var shakerMeta = this._adapter.req.app.store.shaker.meta,
                 config = this._ac.app ? this._ac.app.config.shaker : this._ac.config.getAppConfig().shaker;
             this._shakerConfig = config || {};
             this._meta = shakerMeta || {};
