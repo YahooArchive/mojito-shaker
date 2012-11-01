@@ -18,6 +18,8 @@
  */
 YUI.add('addon-rs-shaker', function(Y, NAME) {
 
+    var libpath = require('path');
+
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
     }
@@ -40,7 +42,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             //this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
 
             if (!this.initilized) {
-                this.meta = this.rs.config.readConfigJSON('shaker-meta.json');
+                this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
             }
             if (this.meta) {
                 Y.log('Metadata loaded correctly.','info','Shaker');
