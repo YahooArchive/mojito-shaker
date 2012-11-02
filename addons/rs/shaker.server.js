@@ -18,6 +18,8 @@
  */
 YUI.add('addon-rs-shaker', function(Y, NAME) {
 
+    var libpath = require('path');
+    
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
     }
@@ -113,7 +115,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var strContext = this.getPOSLFromContext(ctx).join('-'),
                 shakerMeta = this.meta,
                 newCb = function (err, spec) {
-                    console.log('Mojit: ' + spec.type + ' action: ' + spec.action);
+                    //console.log('Mojit: ' + spec.type + ' action: ' + spec.action);
                     var mojitType = spec.type || spec.base || spec.id,
                         mojitAction = spec.action,
                         isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,
