@@ -94,11 +94,9 @@ suite.add( new YUITest.TestCase({
             // this.shaker.logger.dump(sorted);
             var m = 'test_mojit_08';
             var ctx = {lang:'es-ES'};
-            var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m,ctx));
-            //this.shaker.logger.dump(r);
-            for (var i=0; i< r.index.js.length; i++) {
-                console.log(r.index.js[i].url);
-            }
+
+            var r = this.shaker.getAllYuiResources();
+            console.log(Y.Object.keys(r));
 
 
 

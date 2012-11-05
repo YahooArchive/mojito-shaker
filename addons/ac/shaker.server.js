@@ -28,6 +28,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             var metaLoaded = this._initShaker();
             this._deployClient = (ac.config && ac.config.get('deploy')) ||
                                  (ac.instance.config && ac.instance.config.deploy === true);
+
+            this._augmentAppAssets(ac);
             if (metaLoaded) {
                 this._hookDeploy(ac, adapter);
             } else {
@@ -40,6 +42,16 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             this._shakerConfig = config || {};
             this._meta = shakerMeta || {};
             return shakerMeta;
+        },
+        /*
+        * We add here the assets at the app level
+        */
+        _augmentAppAssets: function (ac) {
+            var instance = ac.command.instance,
+                viewObj = instance.views[instance.action];
+                actionAssets = (viewObj && viewObj.assets) || {};
+            ac.assets.addAssets(actionAssets);
+            delete viewObj.assets;
         },
         /*
         * We have to hook after the getSripts function gets executed (and the assets of the framework get merged)

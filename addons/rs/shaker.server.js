@@ -37,38 +37,69 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
             //this.afterHostMethod('preloadResourceVersions', this.populateLangSelectors, this);
-            this.beforeHostMethod('expandInstanceForEnv', this.expandInstanceAssets, this);
-            //this.afterHostMethod('parseResourceVersion', this.afterParseMethod, this);
-            //this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+            this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
 
             if (!this.initilized) {
                 this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
+                if(this.meta) {
+                    Y.log('Metadata loaded correctly.','info','Shaker');
+                    Y.log('Preloading store', 'info','mojito-store');
+                } else {
+                    Y.log('Metadata not found.','error','Shaker');
+                }
             }
-            if (this.meta) {
-                Y.log('Metadata loaded correctly.','info','Shaker');
-            }else {
-                Y.log('Metadata not found.','error','Shaker');
-            }
-            
-
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
-        afterParseMethod: function (source, type, subtype, mojitType) {
-            console.log(Y.Do.currentRetVal);
-        },
         mojitResourcesResolved: function (e) {
             var env = e.env,
                 posl = e.posl,
-                mojit = e.mojit,
-                ress = e.ress;
+                mojitName = e.mojit,
+                ress = e.ress,
+                strContext = posl.join('-'),
+                isFrame = mojitName.indexOf('ShakerHTMLFrameMojit') !== -1,
+                shakerMeta = this.meta,
+                shakerBase,
+                actionMeta,
+                css,
+                resource;
+                
+            if (!shakerMeta) {
+                return;
+            }
 
-            for(var i in ress) {ress[i].url = 'http://yahoo.com/foo.js';}
-            //console.log('====' + ress[0].url);
-            console.log(mojit);
+            //if the mojit is the ShakerHTMLFrame, we are going to put the common assets there.
+            if (isFrame) {
+                shakerBase = shakerMeta.app[strContext];
+                shakerBase = shakerBase && shakerBase.app;
+            } else {
+                //I do this to check if on the nested meta we have all the info we need...
+                //NOTE: May I implement a getter from the metadata?
+                shakerBase = shakerMeta.app[strContext];
+                shakerBase = shakerBase && shakerBase.mojits[mojitName];
+            }
 
+            for(var i in ress) {
+                //ress[i].url = 'http://yahoo.com/foo.js';
+                resource = ress[i];
+                //we got a view, let's attach the proper assets
+                if (resource.type === 'view') {
+                     actionMeta =  (isFrame ? {css:shakerBase} : shakerBase && shakerBase[resource.name]) || {};
+                     ress[i].view.assets = {
+                        topShaker: {
+                            css: actionMeta.css
+                        }
+                    };
+                }
+                //we got a binder we attach the binder rollup
+                // if (resource.type === 'binder') {
+                //     //NOTE: Shall we atatch the core to this?
+                //     actionMeta = (shakerBase && shakerBase[resource.name]) || {};
+                //     ress[i].assets = { bottomShaker: {js: actionMeta.js || []} };
+                // }
+            }
         },
         /*
         * The store is not going to match the lang context if
@@ -110,67 +141,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 this._poslCache[cacheKey] = posl;
             }
             return posl;
-        },
-        expandInstanceAssets: function (env, instance, ctx, cb) {
-            var strContext = this.getPOSLFromContext(ctx).join('-'),
-                shakerMeta = this.meta,
-                newCb = function (err, spec) {
-                    console.log('Mojit: ' + spec.type + ' action: ' + spec.action);
-                    var mojitType = spec.type || spec.base || spec.id,
-                        mojitAction = spec.action,
-                        isFrame = mojitType.indexOf('ShakerHTMLFrameMojit') !== -1,
-                        shakerBase,
-                        cssList = [], jsList = [];
-
-                    //check if we have the shaker Metadata avaliable (if not raise a metadata error)
-                    if (shakerMeta) {
-                        //if is a type of Frame, we will ship the app stuff and the mojito core (this go first)
-                        if (isFrame) {
-                            cssList = shakerMeta.app[strContext].app;
-                            jsList = shakerMeta.core;
-
-                        //is a regular mojit expand it with the metadata:
-                        } else {
-                            //I do this to check if on the nested meta we have all the info we need...
-                            //NOTE: May I implement a getter from the metadata?
-                            shakerBase = shakerMeta.app[strContext];
-                            shakerBase = shakerBase && shakerBase.mojits[mojitType];
-                            shakerBase = shakerBase && shakerBase[mojitAction];
-
-                             if (shakerBase) {
-                                //if everything is fine we assing it the resources needed
-                                cssList = shakerBase && shakerBase.css;
-                                jsList = shakerBase && shakerBase.js;
-                             } else {
-                                //Y.log('[SHAKER] Mojit: ' + mojitType + ' not expanded. Metadata not found','error');
-                             }
-                        }
-
-                        //augment the default config
-                        spec.config.assets = spec.config.assets || {};
-
-                        //we put here which mojits are being executed
-                        //So in ShakerHTMLFrame runtime we can do the magic of bundling...
-                        spec.config.assets.shakerRuntimeMeta = {
-                            mojits: [mojitType + '.' + mojitAction]
-                        };
-                        spec.config.assets.topShaker = {
-                            css: cssList
-                        };
-
-                        spec.config.assets.bottomShaker = {
-                            js: jsList
-                        };
-
-                        cb.call(this, err, spec);
-
-                    } else {
-                        Y.log('[SHAKER] Metadata not found... Did you Shake?', 'error');
-                        cb.call(this, err, spec);
-                    }
-                };
-
-            return new Y.Do.AlterArgs(null,[env, instance, ctx, newCb]);
         }
     });
     Y.namespace('mojito.addons.rs');
