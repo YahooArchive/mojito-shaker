@@ -62,6 +62,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 isFrame = mojitName.indexOf('ShakerHTMLFrameMojit') !== -1,
                 shakerMeta = this.meta,
                 shakerBase,
+                frameActionMeta,
                 actionMeta,
                 css,
                 resource;
@@ -74,6 +75,11 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             if (isFrame) {
                 shakerBase = shakerMeta.app[strContext];
                 shakerBase = shakerBase && shakerBase.app;
+                frameActionMeta = {
+                    css: shakerBase,
+                    js: shakerMeta.core
+
+                };
             } else {
                 //I do this to check if on the nested meta we have all the info we need...
                 //NOTE: May I implement a getter from the metadata?
@@ -86,19 +92,14 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 resource = ress[i];
                 //we got a view, let's attach the proper assets
                 if (resource.type === 'view') {
-                     actionMeta =  (isFrame ? {css:shakerBase} : shakerBase && shakerBase[resource.name]) || {};
+                     actionMeta =  (isFrame ? frameActionMeta: shakerBase && shakerBase[resource.name]) || {css:[], blobCSS:[]};
                      ress[i].view.assets = {
                         topShaker: {
-                            css: actionMeta.css
+                            css: actionMeta.css,
+                            blob: actionMeta.blobCSS || []
                         }
                     };
                 }
-                //we got a binder we attach the binder rollup
-                // if (resource.type === 'binder') {
-                //     //NOTE: Shall we atatch the core to this?
-                //     actionMeta = (shakerBase && shakerBase[resource.name]) || {};
-                //     ress[i].assets = { bottomShaker: {js: actionMeta.js || []} };
-                // }
             }
         },
         /*
