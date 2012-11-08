@@ -48,8 +48,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
         */
         _augmentAppAssets: function (ac) {
             var instance = ac.command.instance,
-                viewObj = instance.views[instance.action];
-                actionAssets = (viewObj && viewObj.assets) || {};
+                action = instance.action || ac.command.action || 'index',
+                viewObj = instance.views[action] || {},
+                actionAssets = viewObj && viewObj.assets;
+
             ac.assets.addAssets(actionAssets);
             delete viewObj.assets;
         },

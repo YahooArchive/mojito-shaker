@@ -36,7 +36,17 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
+
+            //change the urls if we are not in the compiling step
+            if (!process.shakerCompile) {
+                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+            }
+
+            //aguments the view with assets
             this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+
+            //for hooking in to the content.
+            //not yet necesary, but it will...
             //this.beforeHostMethod('processResourceContent', this.precomputeResource, this);
 
             if (!this.initilized) {
@@ -52,6 +62,20 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
+        },
+        /*
+        * Here we need to change the urls
+        */
+        resolveResourceVersions: function () {
+            var store = this.rs,
+                resources = store.getAllURLResources();
+            Y.Object.each(resources, function (resource) {
+                var extension = libpath.extname(resource.url),
+                    newUrl = resource.url.substring(0,resource.url.length - extension.length) + '_4defa' + extension;
+                
+                resource.url = newUrl;
+            });
+
         },
         mojitResourcesResolved: function (e) {
             var env = e.env,
