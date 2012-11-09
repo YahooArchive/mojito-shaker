@@ -20,3 +20,5 @@ examples/npm-debug.log
 test/rs/log.txt
 
 test/rs/log.txt
+
+npm-debug.log
