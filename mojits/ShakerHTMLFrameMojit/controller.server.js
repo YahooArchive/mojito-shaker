@@ -104,7 +104,7 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
                         meta.binders);
                 }
                 
-                //ac.shaker.run(meta);
+                ac.shaker.run(meta);
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {
                     if (!data[location]) {

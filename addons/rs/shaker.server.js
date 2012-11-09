@@ -47,10 +47,12 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     return;
                 }
             }
-            
+
             if (!process.shakerCompile) {
-                //change the urls if we are not in the compiling step
-                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+                if (this.meta.comboCDN) {
+                    //change the urls if we are not in the compiling step
+                    this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+                }
                 //aguments the view with assets
                 this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
                 //for hooking in to the content.

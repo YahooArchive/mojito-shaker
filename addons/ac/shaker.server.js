@@ -79,11 +79,8 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             }
         },
         /*
-        * This function basically will anaylize which mojits are bundled and which mojits are executed.
-        * and if some mojits is missing we have to merged with the bundled route.
-        * (The executed mojits are within assets metadata)
-        * IMPORTANT NOTE: This function will not work properly until mojit merge the pull request
-        * https://github.com/yahoo/mojito/pull/530
+        * This function is not being used any more
+        * but eventually we need to figure out how to make it work
         */
         checkLowCoveredMojits: function (assets, route, metaBundle, metaShakerApp) {
             var shakerConfig = this._shakerConfig,
@@ -135,9 +132,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             if (this._shakerConfig.removeJSCalculations) {
                 shakerAssetsBottom.js = [];
             }
-            //remove the metadata since we dont need it anymore...
-            delete assets.shakerRuntimeMeta;
-                
+            
         },
         run: function (meta) {
             this.checkClienDeployment();
