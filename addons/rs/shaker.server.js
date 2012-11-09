@@ -37,18 +37,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
 
-            //change the urls if we are not in the compiling step
-            if (!process.shakerCompile) {
-                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
-            }
-
-            //aguments the view with assets
-            this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
-
-            //for hooking in to the content.
-            //not yet necesary, but it will...
-            //this.beforeHostMethod('processResourceContent', this.precomputeResource, this);
-
             if (!this.initilized) {
                 this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
                 if(this.meta) {
@@ -56,7 +44,18 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     Y.log('Preloading store', 'info','mojito-store');
                 } else {
                     Y.log('Metadata not found.','error','Shaker');
+                    return;
                 }
+            }
+            
+            if (!process.shakerCompile) {
+                //change the urls if we are not in the compiling step
+                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+                //aguments the view with assets
+                this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+                //for hooking in to the content.
+                //not yet necesary, but it will...
+                //this.beforeHostMethod('processResourceContent', this.precomputeResource, this);
             }
         },
         destructor: function() {
