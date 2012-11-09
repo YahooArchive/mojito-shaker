@@ -39,11 +39,11 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
             if (!this.initilized) {
                 this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
-                if(this.meta) {
+                if(this.meta && !Y.Object.isEmpty(this.meta)) {
                     Y.log('Metadata loaded correctly.','info','Shaker');
                     Y.log('Preloading store', 'info','mojito-store');
                 } else {
-                    Y.log('Metadata not found.','error','Shaker');
+                    Y.log('Metadata not found.','warn','Shaker');
                     return;
                 }
             }
