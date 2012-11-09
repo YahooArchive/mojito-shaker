@@ -122,16 +122,16 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerAssetsBottom = {};
 
             if (shakerBundle) {
-                this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
+                //this.checkLowCoveredMojits(assets, route, shakerBundle, shakerApp);
                 shakerAssetsTop = assets.topShaker || {js:[], css: []};
                 shakerAssetsBottom = assets.bottomShaker || {js:[], css: []};
                 shakerAssetsTop.css = shakerBundle.css;
                 shakerAssetsBottom.js = core.concat(shakerBundle.js);
+                //revisit this thing
+                assets.bottomShaker = shakerAssetsBottom;
+                assets.topShaker = shakerAssetsTop;
             }
 
-            if (this._shakerConfig.removeJSCalculations) {
-                shakerAssetsBottom.js = [];
-            }
             
         },
         run: function (meta) {
