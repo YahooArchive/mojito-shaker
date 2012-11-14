@@ -23,81 +23,12 @@ suite.add( new YUITest.TestCase({
         },
         'mojito resources test': function (){
             var store = this.shaker.store;
-            /*
-            * getMOjitTYpeDetails return only the barebones resources:
-                {
-                    "assets": {
-                        "favicon.ico": "/static/mojito/assets/favicon.ico",
-                        "mycss.css": "/static/test_mojit_08/assets/mycss.css"
-                    },
-                    "binders": {
-                        "foo": "test_mojit_08_BinderFoo",
-                        "index": "test_mojit_08_BinderIndex"
-                    },
-                    "models": {
-                        "model": "test_mojit_08ModelFoo"
-                    },
-                    "views": {
-                        "foo": {
-                            "content-path": "/static/test_mojit_08/views/foo.mu.html",
-                            "engine": "mu"
-                        },
-                        "index": {
-                            "content-path": "/static/test_mojit_08/views/index.mu.html",
-                            "engine": "mu"
-                        }
-                    },
-                    "definition": {},
-                    "defaults": {},
-                    "controller": "test_mojit_08",
-                    "acAddons": [
-                        "poc",
-                        "config",
-                        "intl"
-                    ],
-                    "assetsRoot": "/static/test_mojit_08/assets"
-                }
-            */
-            //var pr = store.getMojitTypeDetails('client',{},'test_mojit_08');
-            //this.shaker.logger.dump(pr);
-
-             // var ress = store.getResources('client',{}, {mojit:'test_mojit_08'});
-             // console.log(ress);
-            //     res,
-            //     required = {},
-            //     binders = {},
-            //     controllers = {},
-            //     langs = {};
-
-            // for (r = 0; r < ress.length; r += 1) {
-            //     res = ress[r];
-            //     if (!res.yui || !res.yui.name) {
-            //         continue;
-            //     }
-            //     if ('controller' === res.type) {
-            //         controllers[res.yui.name] = store.yui._makeYUIModuleConfig('client', res);
-            //         required[res.yui.name] = true;
-            //     }
-            //     if ('binder' === res.type) {
-            //         binders[res.yui.name] = store.yui._makeYUIModuleConfig('client', res);
-            //     }
-
-            //     if ('yui-lang' === res.type) {
-            //         langs[res.yui.name] = store.yui._makeYUIModuleConfig('client', res);
-            //     }
-
-            // }
-
-            // var sorted = store.yui._precomputeYUIDependencies('en', 'client', 'test_mojit_08', controllers, required, true);
-            // //store.yui._addLangsToSorted('client', sorted, 'en', langsRes);
-            
-            // this.shaker.logger.dump(sorted);
+       
             var m = 'test_mojit_08';
             var ctx = {lang:'es-ES'};
 
-            var r = this.shaker.getAllYuiResources();
-            console.log(Y.Object.keys(r));
-
+            var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m, ctx));
+            console.log(r);
 
 
 

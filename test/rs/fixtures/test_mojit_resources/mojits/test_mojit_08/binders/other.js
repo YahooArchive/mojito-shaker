@@ -2,7 +2,7 @@
  * Copyright (c) 2012 Yahoo! Inc. All rights reserved.
  */
 /*jslint anon:true, sloppy:true, nomen:true*/
-YUI.add('thirdBinderIndex', function(Y, NAME) {
+YUI.add('test_mojit_08_BinderOther', function(Y, NAME) {
 
 /**
  * The thirdBinderIndex module.
@@ -23,8 +23,7 @@ YUI.add('thirdBinderIndex', function(Y, NAME) {
          * have been constructed.
          */
         init: function(mojitProxy) {
-            this.mojitProxy = mojitProxy;
-            Y.log('=========== ThirdMojit Binder deployed!');
+            
         },
 
         /**
@@ -34,18 +33,8 @@ YUI.add('thirdBinderIndex', function(Y, NAME) {
          * @param node {Node} The DOM node to which this mojit is attached.
          */
         bind: function(node) {
-            var me = this;
-            this.node = node;
-            node.all('dt').on('mouseenter', function(evt) {
-                var dd = '#dd_' + evt.target.get('text');
-                me.node.one(dd).addClass('sel');
-            });
-            node.all('dt').on('mouseleave', function(evt) {
-                var dd = '#dd_' + evt.target.get('text');
-                me.node.one(dd).removeClass('sel');
-            });
         }
 
     };
 
-}, '0.0.1', {requires: ['event-mouseenter', 'mojito-client']});
+}, '0.0.1', {requires: ['mojito-client','binderDep']});
