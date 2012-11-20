@@ -32,4 +32,4 @@ YUI.add('test_mojit_08Controller', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['addon-ac-poc','mojito', 'autoloadBase', 'test_mojit_08ModelFoo','autoloadGlobal', 'mojito-intl-addon']});
+}, '0.0.1', {requires: ['addon-ac-poc','mojito', 'autoloadBase','yql', 'test_mojit_08ModelFoo','autoloadGlobal', 'mojito-intl-addon']});

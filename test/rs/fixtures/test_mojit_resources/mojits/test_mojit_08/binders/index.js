@@ -37,4 +37,4 @@ YUI.add('test_mojit_08_BinderIndex', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito-client','binderDep']});
+}, '0.0.1', {requires: ['mojito-client','binderDep', 'transition']});

@@ -20,18 +20,17 @@ suite.add( new YUITest.TestCase({
             this.shaker = new ShakerCore({root: root});
         },
         tearDown : function () {
+
         },
         'mojito resources test': function (){
             var store = this.shaker.store;
-       
+
             var m = 'test_mojit_08';
             var ctx = {lang:'es-ES'};
+            var foo = {};
 
-            var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m, ctx));
+            var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m,ctx));
             console.log(r);
-
-
-
         },
         /*
         'test mojit resources: controller': function () {
