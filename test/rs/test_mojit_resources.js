@@ -29,8 +29,18 @@ suite.add( new YUITest.TestCase({
             var ctx = {lang:'es-ES'};
             var foo = {};
 
-            var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m,ctx));
-            console.log(r);
+            // var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m,ctx));
+            // console.log(r);
+
+            var shared = store.yui.getConfigShared('client', {});
+            var dep = store.yui._precomputeYUIDependencies('en', 'client', 'shared',shared.modules, {"mojito-client": true}, true);
+            console.log(dep);
+            // var m = 'test_mojit_03';
+            // var ctx = {lang:'es-ES'};
+            // var foo = {};
+
+            // var r = this.shaker.bundleShakenMojit(m, ctx, this.shaker.shakeMojitByContext(m,ctx));
+            // this.shaker.logger.dump(r);
         },
         /*
         'test mojit resources: controller': function () {

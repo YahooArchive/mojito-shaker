@@ -1,6 +1,12 @@
 [
     {
-        "settings": ["master"]
+        "settings": ["master"],
+        "shaker": {
+            "rollupConfig": {
+                "//bundleViews": true,
+                "//bundleController": true
+            }
+        }
     },
     {
         "settings": [ "lang:es-ES" ],

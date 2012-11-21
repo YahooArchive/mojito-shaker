@@ -32,4 +32,4 @@ YUI.add('test_mojit_03', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito','autoloadBase']});
+}, '0.0.1', {requires: ['mojito', 'autoloadBase']});
