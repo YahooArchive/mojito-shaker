@@ -37,6 +37,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
 
+            var yuiRS = this.rs.yui;
+
             if (!this.initilized) {
                 this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
                 if(this.meta && !Y.Object.isEmpty(this.meta)) {
@@ -47,14 +49,23 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     return;
                 }
             }
-
+            //if we are in runtime we need to hook some methods...
             if (!process.shakerCompile) {
-                if (this.meta.comboCDN) {
+                if (true || this.meta.comboCDN) {
                     //change the urls if we are not in the compiling step
-                    this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+                   
                 }
-                //aguments the view with assets
+                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+
+                //alter seed
+                //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppSeedFiles', this);
+
+                //alter bootstrap config
+                //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppGroupConfig', this);
+
+                //augments the view with assets
                 this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+
                 //for hooking in to the content.
                 //not yet necesary, but it will...
                 //this.beforeHostMethod('processResourceContent', this.precomputeResource, this);
@@ -68,15 +79,28 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         * Here we need to change the urls
         */
         resolveResourceVersions: function () {
-            var store = this.rs,
-                resources = store.getAllURLResources();
-            Y.Object.each(resources, function (resource) {
-                var extension = libpath.extname(resource.url),
-                    newUrl = resource.url.substring(0,resource.url.length - extension.length) + '_4defa' + extension;
-                
-                resource.url = newUrl;
-            });
-
+            console.log('shaker =======');
+            var r,
+                res,
+                ress,
+                m,
+                mojit,
+                mojits,
+                urls = {};
+            mojits = this.rs.listAllMojits();
+            mojits.push('shared');
+            for (m = 0; m < mojits.length; m += 1) {
+                mojit = mojits[m];
+                ress = this.rs.getResourceVersions({mojit: mojit});
+                for (r = 0; r < ress.length; r += 1) {
+                    res = ress[r];
+                    if (res.yui) {
+                        res.url = '/pv' + res.url;
+                    }
+                    
+                }
+            }
+            //console.log(JSON.stringify(this.rs._mojitResources['client']['["*"]']['Main'][48],null,'\t'));
         },
         mojitResourcesResolved: function (e) {
             var env = e.env,
@@ -132,4 +156,4 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
     Y.namespace('mojito.addons.rs');
     Y.mojito.addons.rs.shaker = RSAddonShaker;
 
-}, '0.0.1', { requires: ['plugin', 'oop']});
+}, '0.0.1', { requires: ['plugin', 'oop','addon-rs-url','addon-rs-yui']});

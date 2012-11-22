@@ -33,7 +33,7 @@ suite.add( new YUITest.TestCase({
             // console.log(r);
 
             var shared = store.yui.getConfigShared('client', {});
-            var dep = store.yui._precomputeYUIDependencies('en', 'client', 'shared',shared.modules, {"mojito-client": true}, true);
+            var dep = store.yui._precomputeYUIDependencies('en', 'client', 'shared', shared.modules, {"mojito-client": true}, true);
             console.log(dep);
             // var m = 'test_mojit_03';
             // var ctx = {lang:'es-ES'};
