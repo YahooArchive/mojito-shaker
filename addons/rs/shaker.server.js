@@ -55,6 +55,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     //change the urls if we are not in the compiling step
                    
                 }
+                //change url's for the cdn
                 this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
 
                 //alter seed
@@ -79,7 +80,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         * Here we need to change the urls
         */
         resolveResourceVersions: function () {
-            console.log('shaker =======');
             var r,
                 res,
                 ress,
@@ -100,7 +100,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     
                 }
             }
-            //console.log(JSON.stringify(this.rs._mojitResources['client']['["*"]']['Main'][48],null,'\t'));
         },
         mojitResourcesResolved: function (e) {
             var env = e.env,
