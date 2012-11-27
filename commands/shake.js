@@ -5,8 +5,7 @@
  */
 
 start = require('mojito/lib/app/commands/start');
-Shaker = require('mojito-shaker').Shaker;
-
+Shaker = require('mojito-shaker/lib/shaker').Shaker;
 /**
  * Convert a CSV string into a context object.
  * @param {string} s A string of the form: 'key1:value1,key2:value2'.
