@@ -36,6 +36,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
             this.mojitoRoot = config.mojitoRoot;
+            this.appConfig = config.host.getStaticAppConfig() || {};
+            this.shakerConfig = this.appConfig.shaker || {};
 
             var yuiRS = this.rs.yui;
 
@@ -49,17 +51,18 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     return;
                 }
             }
+            //either on build tim or runtime we need to change the urls...
+            //but only when comboCDN is enabled.
+            if (this.shakerConfig.comboCDN) {
+                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+            }
+
             //if we are in runtime we need to hook some methods...
             if (!process.shakerCompile) {
-                if (true || this.meta.comboCDN) {
-                    //change the urls if we are not in the compiling step
-                   
-                }
-                //change url's for the cdn
-                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
-
                 //alter seed
-                //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppSeedFiles', this);
+                if (this.shakerConfig.comboCDN) {
+                    Y.Do.after(this.alterAppSeedFiles, yuiRS, 'getAppSeedFiles', this);
+                }
 
                 //alter bootstrap config
                 //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppGroupConfig', this);
@@ -76,30 +79,56 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
+        alterAppSeedFiles: function () {
+            var i,
+                newUrl,
+                cdnUrls = this.meta.cdnModules;
+                currentSeed = Y.Do.currentRetVal;
+
+            for (i in currentSeed) {
+                newUrl = cdnUrls[currentSeed[i]];
+                if (newUrl) {
+                    currentSeed[i] = newUrl;
+                }
+            }
+            //console.log(currentSeed);
+        },
         /*
         * Here we need to change the urls
         */
-        resolveResourceVersions: function () {
+        resolveResourceVersions: function (cdnUrls) {
             var r,
                 res,
                 ress,
                 m,
                 mojit,
                 mojits,
+                meta,
                 urls = {};
+
+            //get rewritten urls
+            cdnUrls = cdnUrls || this.meta.cdnModules;
+
+            if(!cdnUrls) {
+                return;
+            }
+
+            //iterate over mojits
             mojits = this.rs.listAllMojits();
             mojits.push('shared');
+
             for (m = 0; m < mojits.length; m += 1) {
                 mojit = mojits[m];
                 ress = this.rs.getResourceVersions({mojit: mojit});
                 for (r = 0; r < ress.length; r += 1) {
                     res = ress[r];
-                    if (res.yui) {
-                        res.url = '/pv' + res.url;
+                    //CHECK ABOUT THE VIEWS HERE...
+                    if (res.yui && cdnUrls[res.url]) {
+                        res.url = cdnUrls[res.url];
                     }
-                    
                 }
             }
+
         },
         mojitResourcesResolved: function (e) {
             var env = e.env,
