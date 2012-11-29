@@ -1,0 +1,14 @@
+[
+    {
+        "settings": ["master"],
+        "shaker": {}
+    },
+    {
+        "settings": [ "lang:es-ES" ],
+        "selector": "es"
+    },
+    {
+    	"settings": ["device:iphone"],
+    	"selector": "iphone"
+    }
+]
