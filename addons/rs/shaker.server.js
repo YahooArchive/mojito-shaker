@@ -42,7 +42,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var yuiRS = this.rs.yui;
 
             if (!this.initilized) {
-                this.meta = this.rs.config.readConfigJSON(libpath.join(this.appRoot, 'shaker-meta.json'));
+                this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, 'shaker-meta.json'));
                 if(this.meta && !Y.Object.isEmpty(this.meta)) {
                     Y.log('Metadata loaded correctly.','info','Shaker');
                     Y.log('Preloading store', 'info','mojito-store');
