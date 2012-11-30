@@ -42,8 +42,10 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var yuiRS = this.rs.yui;
 
             if (!this.initilized) {
+                //first read the shaker metadata
                 this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, 'shaker-meta.json'));
-                if(this.meta && !Y.Object.isEmpty(this.meta)) {
+
+                if (this.meta && !Y.Object.isEmpty(this.meta)) {
                     Y.log('Metadata loaded correctly.','info','Shaker');
                     Y.log('Preloading store', 'info','mojito-store');
                 } else {
@@ -51,39 +53,51 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     return;
                 }
             }
-            //either on build tim or runtime we need to change the urls...
-            //but only when comboCDN is enabled.
+            /*
+            * HOOKS AREA!:
+            * We need to hook some events on the store,
+            * but we will have to do different hooks depending if we are on build time or in runtime
+            * The reason is that there are some hook that are not needeed on runtime or viceversa
+            */
+
+            /*
+            * Either on build time or runtime we need to change the urls...
+            * but only when comboCDN is enabled.
+            */
             if (this.shakerConfig.comboCDN) {
                 this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
             }
 
-            //if we are in runtime we need to hook some methods...
+            // This hooks are for runtime
             if (!process.shakerCompile) {
                 //alter seed
                 if (this.shakerConfig.comboCDN) {
                     Y.Do.after(this.alterAppSeedFiles, yuiRS, 'getAppSeedFiles', this);
                 }
-
                 //alter bootstrap config
                 //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppGroupConfig', this);
 
-                //augments the view with assets
+                // Augments the view with assets
                 this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
-
-                //for hooking in to the content.
-                //not yet necesary, but it will...
-                //this.beforeHostMethod('processResourceContent', this.precomputeResource, this);
             }
         },
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
+        /*
+        * When comboLoad is active we need  to change the seed to point to the CDN...
+        * We rely on the mapping we have on the Shaker metadata
+        */
         alterAppSeedFiles: function () {
             var i,
                 newUrl,
-                cdnUrls = this.meta.cdnModules;
+                cdnUrls = this.meta.cdnModules,
                 currentSeed = Y.Do.currentRetVal;
+
+            if (!cdnUrls) {
+                return;
+            }
 
             for (i in currentSeed) {
                 newUrl = cdnUrls[currentSeed[i]];
@@ -91,10 +105,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     currentSeed[i] = newUrl;
                 }
             }
-            //console.log(currentSeed);
         },
         /*
-        * Here we need to change the urls
+        * Change the URL's of the Store so we get the comboLoad from CDN.
         */
         resolveResourceVersions: function (cdnUrls) {
             var r,
@@ -106,14 +119,14 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 meta,
                 urls = {};
 
-            //get rewritten urls
+            //get the CDN URL mapping
             cdnUrls = cdnUrls || this.meta.cdnModules;
 
             if(!cdnUrls) {
                 return;
             }
 
-            //iterate over mojits
+            //Iterate over all the resources
             mojits = this.rs.listAllMojits();
             mojits.push('shared');
 
@@ -128,8 +141,11 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     }
                 }
             }
-
         },
+        /*
+        * Augment the view spec with the Shaker computed assets.
+        * Will be merged on the action-context module (either on the client or in the server).
+        */
         mojitResourcesResolved: function (e) {
             var env = e.env,
                 posl = e.posl,
@@ -147,24 +163,24 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             if (!shakerMeta) {
                 return;
             }
-            //if the mojit is the ShakerHTMLFrame, we are going to put the common assets there.
+
+            // If the mojit is the ShakerHTMLFrame, we are going to put the common assets there.
             if (isFrame) {
                 shakerBase = shakerMeta.app[strContext];
                 shakerBase = shakerBase && shakerBase.app;
                 frameActionMeta = {
                     css: shakerBase
                 };
+
             } else {
-                //I do this to check if on the nested meta we have all the info we need...
-                //NOTE: May I implement a getter from the metadata?
+                // Check if on the nested meta we have all the info we need...
                 shakerBase = shakerMeta.app[strContext];
                 shakerBase = shakerBase && shakerBase.mojits[mojitName];
             }
 
-            for(var i in ress) {
-                //ress[i].url = 'http://yahoo.com/foo.js';
+            for (var i in ress) {
                 resource = ress[i];
-                //we got a view, let's attach the proper assets
+                // we got a view, let's attach the proper assets if some
                 if (resource.type === 'view') {
                      actionMeta =  (isFrame ? frameActionMeta: shakerBase && shakerBase[resource.name]) || {css:[], blobCSS:[]};
                      ress[i].view.assets = {
@@ -175,9 +191,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     };
                 }
             }
-        },
-        precomputeResource: function(res, content, stat, callback) {
-            //eventually...
         }
        
     });
