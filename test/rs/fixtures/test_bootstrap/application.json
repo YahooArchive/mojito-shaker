@@ -1,0 +1,8 @@
+[
+    {
+        "settings": ["master"],
+        "shaker": {
+            "optimizeBootstrap": true
+        }
+    }
+]

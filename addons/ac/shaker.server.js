@@ -27,7 +27,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             return shakerMeta;
         },
         // Add here the assets at the app level
-        // They have to be the first on the assets queue to preserver the order.
+        // They have to be the first on the assets queue to preserve the order.
         _augmentAppAssets: function (ac) {
             var instance = ac.command.instance,
                 action = instance.action || ac.command.action || 'index',
@@ -60,6 +60,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 assets.topShaker = assets.topShaker || {js: [], css: [], blob:[]};
                 assets.bottomShaker = assets.bottomShaker || {js: [], css: [], blob: []};
 
+                //attach the assets
                 assets.topShaker.css = shakerBundle.css;
                 assets.bottomShaker.js = core.concat(shakerBundle.js);
             }

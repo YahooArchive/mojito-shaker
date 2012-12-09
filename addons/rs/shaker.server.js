@@ -7,18 +7,10 @@
 /*jslint anon:true, sloppy:true, nomen:true*/
 /*global YUI*/
 
-
-/**
- * @module ResourceStoreAddon
- */
-
-/**
- * @class RSAddonUrl
- * @extension ResourceStore.server
- */
 YUI.add('addon-rs-shaker', function(Y, NAME) {
 
-    var libpath = require('path');
+    var libpath = require('path'),
+        libfs = require('fs');
 
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
@@ -39,7 +31,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             this.appConfig = config.host.getStaticAppConfig() || {};
             this.shakerConfig = this.appConfig.shaker || {};
 
-            var yuiRS = this.rs.yui;
+            var yuiRS = this.rs.yui,
+                store = this.rs,
+                shakerConfig = this.shakerConfig;
 
             if (!this.initilized) {
                 //first read the shaker metadata
@@ -50,28 +44,27 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                     Y.log('Preloading store', 'info','mojito-store');
                 } else {
                     Y.log('Metadata not found.','warn','Shaker');
-                    return;
                 }
             }
+
             /*
-            * HOOKS AREA!:
+            * AOP HOOKS:
             * We need to hook some events on the store,
             * but we will have to do different hooks depending if we are on build time or in runtime
             * The reason is that there are some hook that are not needeed on runtime or viceversa
             */
+            if (true || shakerConfig.optimizeBootstrap) {
+                this.beforeHostMethod('makeResourceVersions', this.makeResourceVersions, this);
+            }
 
-            /*
-            * Either on build time or runtime we need to change the urls...
-            * but only when comboCDN is enabled.
-            */
-            if (this.shakerConfig.comboCDN) {
+            if (shakerConfig.comboCDN) {
                 this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
             }
 
             // This hooks are for runtime
             if (!process.shakerCompile) {
                 //alter seed
-                if (this.shakerConfig.comboCDN) {
+                if (shakerConfig.comboCDN) {
                     Y.Do.after(this.alterAppSeedFiles, yuiRS, 'getAppSeedFiles', this);
                 }
                 //alter bootstrap config
@@ -84,6 +77,41 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         destructor: function() {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
+        },
+        /*
+        * We need to add the synthetic bootstrap items
+        */
+        makeResourceVersions: function () {
+            var store = this.rs;
+                yuiRS = store.yui;
+            this.addOptimizedBootstrap(store, yuiRS);
+        },
+        addOptimizedBootstrap: function (store, yuiRS) {
+            var relativePath = libpath.join(__dirname, '../../lib/bootstrap/'),
+                bootstrapResources = ['yui-fake-inline', 'yui-override', 'yui-use-hook'];
+
+            Y.Array.each(bootstrapResources, function (item) {
+                var content = libfs.readFileSync(relativePath + item + '.js','utf8'),
+                    res = {
+                    source: {},
+                    mojit: 'shared',
+                    type: 'yui-module',
+                    subtype: 'synthetic',
+                    name: item,
+                    affinity: 'client',
+                    selector: '*',
+                    yui: {
+                        name: item
+                    }
+                };
+                res.id = [res.type, res.subtype, res.name].join('-');
+                res.source.pkg = store.getAppPkgMeta();
+                res.source.fs = store.makeResourceFSMeta(__dirname, 'app', '../../lib/bootstrap/', item + '.js', true);
+                // adding res to cache
+                yuiRS.appModulesRess[item] = res;
+                yuiRS.resContents[item] = content;
+                store.addResourceVersion(res);
+            }, this);
         },
         /*
         * When comboLoad is active we need  to change the seed to point to the CDN...
@@ -135,7 +163,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 ress = this.rs.getResourceVersions({mojit: mojit});
                 for (r = 0; r < ress.length; r += 1) {
                     res = ress[r];
-                    //CHECK ABOUT THE VIEWS HERE...
+                    //Change the url
                     if (res.yui && cdnUrls[res.url]) {
                         res.url = cdnUrls[res.url];
                     }
