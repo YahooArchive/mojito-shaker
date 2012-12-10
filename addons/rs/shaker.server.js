@@ -10,7 +10,9 @@
 YUI.add('addon-rs-shaker', function(Y, NAME) {
 
     var libpath = require('path'),
-        libfs = require('fs');
+        libfs = require('fs'),
+        //library constants
+        INLINE_SELECTOR ='shaker-inline';
 
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
@@ -23,7 +25,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
-        initializer: function(config) {
+        initializer: function (config) {
             this.rs = config.host;
             this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
@@ -53,13 +55,16 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             * but we will have to do different hooks depending if we are on build time or in runtime
             * The reason is that there are some hook that are not needeed on runtime or viceversa
             */
-            if (true || shakerConfig.optimizeBootstrap) {
+            
+            if (shakerConfig.optimizeBootstrap) {
                 this.beforeHostMethod('makeResourceVersions', this.makeResourceVersions, this);
             }
 
             if (shakerConfig.comboCDN) {
                 this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
             }
+
+            this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
 
             // This hooks are for runtime
             if (!process.shakerCompile) {
@@ -91,7 +96,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 bootstrapResources = ['yui-fake-inline', 'yui-override', 'yui-use-hook'];
 
             Y.Array.each(bootstrapResources, function (item) {
-                var content = libfs.readFileSync(relativePath + item + '.js','utf8'),
+                var content = libfs.readFileSync(relativePath + item + '.js', 'utf8'),
                     res = {
                     source: {},
                     mojit: 'shared',
@@ -104,10 +109,13 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                         name: item
                     }
                 };
+
+                // this is how mojito creates synthetic resources when the server start, so wejust replicate it.
                 res.id = [res.type, res.subtype, res.name].join('-');
                 res.source.pkg = store.getAppPkgMeta();
                 res.source.fs = store.makeResourceFSMeta(__dirname, 'app', '../../lib/bootstrap/', item + '.js', true);
-                // adding res to cache
+
+                // adding synthetic resources to the store and tho the yuiRS since it will cache them.
                 yuiRS.appModulesRess[item] = res;
                 yuiRS.resContents[item] = content;
                 store.addResourceVersion(res);
@@ -171,6 +179,29 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             }
         },
         /*
+        * Converting inlines files to be readable by the store.
+        * parseResourceVersion:
+        * AOP hook!
+        */
+        parseResourceVersion: function (source, type, subtype) {
+            var basename,
+                tmpBasename,
+                inline;
+
+            if (type === 'asset') {
+                basename = source.fs.basename.split('.');
+                inline = basename.pop();
+
+                if (inline === INLINE_SELECTOR ) {
+                    // Add the inline property to source, since we don't have access to the resource itself yet.
+                    source.inline = true;
+                    // put back the basename without the INLINE_SELECTOR so mojito doesnt skip the file.
+                    basename[0] = basename[0] + '-' + INLINE_SELECTOR;
+                    source.fs.basename = basename.join('.');
+                }
+            }
+        },
+        /*
         * Augment the view spec with the Shaker computed assets.
         * Will be merged on the action-context module (either on the client or in the server).
         */
@@ -188,7 +219,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 css,
                 resource;
                 
-            if (!shakerMeta) {
+            if (Y.Object.isEmpty(this.meta)) {
                 return;
             }
 
@@ -210,11 +241,13 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 resource = ress[i];
                 // we got a view, let's attach the proper assets if some
                 if (resource.type === 'view') {
-                     actionMeta =  (isFrame ? frameActionMeta: shakerBase && shakerBase[resource.name]) || {css:[], blobCSS:[]};
+                     actionMeta =  (isFrame ? frameActionMeta : shakerBase && shakerBase[resource.name]) || {css:[], blob:[]};
                      ress[i].view.assets = {
                         topShaker: {
-                            css: actionMeta.css,
-                            blob: actionMeta.blobCSS || []
+                            css: actionMeta.css
+                        },
+                        bottomShaker: {
+                            blob: actionMeta.blob
                         }
                     };
                 }
