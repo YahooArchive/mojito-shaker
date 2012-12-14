@@ -98,13 +98,10 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
                 // Add all the assets we have been given to our local store
                 ac.assets.addAssets(meta.assets);
 
-                // If we are deploying to the client get all the assets required
-                if (ac.config.get('deploy') === true) {
-                    ac.deploy.constructMojitoClientRuntime(ac.assets,
-                        meta.binders);
-                }
-                
+                // SHAKER RUNTIME!
+                // NOTE: We move the deployment of the client to within Shaker addon...
                 ac.shaker.run(meta);
+
                 // Attach assets found in the "meta" to the page
                 Y.Object.each(ac.assets.getAssets(), function(types, location) {
                     if (!data[location]) {

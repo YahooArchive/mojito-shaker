@@ -11,7 +11,11 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
     var libpath = require('path'),
         libfs = require('fs'),
-        //library constants
+        //bootstrap
+        BOOTSTRAP_DIR = '../../lib/bootstrap/',
+        BOOTSTRAP_YUI_OVERRIDE = 'yui-override',
+        BOOTSTRAP_FAKE_YUI = 'yui-fake-inline-min',
+        //inline
         INLINE_SELECTOR ='shaker-inline';
 
     function RSAddonShaker() {
@@ -55,11 +59,12 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             * but we will have to do different hooks depending if we are on build time or in runtime
             * The reason is that there are some hook that are not needeed on runtime or viceversa
             */
-            
+
             if (shakerConfig.optimizeBootstrap) {
                 this.beforeHostMethod('makeResourceVersions', this.makeResourceVersions, this);
             }
 
+            //on build time we need this to reconfigure the url of where the assets come from...
             if (shakerConfig.comboCDN) {
                 this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
             }
@@ -68,8 +73,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
             // This hooks are for runtime
             if (!process.shakerCompile) {
-                //alter seed
-                if (shakerConfig.comboCDN) {
+
+                //alter the url for the seeds or augment it if necesary...
+                if (shakerConfig.comboCDN || shakerConfig.optimizeBootstrap) {
                     Y.Do.after(this.alterAppSeedFiles, yuiRS, 'getAppSeedFiles', this);
                 }
                 //alter bootstrap config
@@ -91,9 +97,16 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 yuiRS = store.yui;
             this.addOptimizedBootstrap(store, yuiRS);
         },
+        /*
+        * Add the synthetic resources for the optimized bootstrap
+        * On runtime we can access the new synthethic files
+        */
         addOptimizedBootstrap: function (store, yuiRS) {
-            var relativePath = libpath.join(__dirname, '../../lib/bootstrap/'),
-                bootstrapResources = ['yui-fake-inline', 'yui-override', 'yui-use-hook'];
+            var relativePath = libpath.join(__dirname, BOOTSTRAP_DIR),
+                bootstrapResources = [
+                    BOOTSTRAP_YUI_OVERRIDE,
+                    BOOTSTRAP_FAKE_YUI
+                ];
 
             Y.Array.each(bootstrapResources, function (item) {
                 var content = libfs.readFileSync(relativePath + item + '.js', 'utf8'),
@@ -119,28 +132,71 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 yuiRS.appModulesRess[item] = res;
                 yuiRS.resContents[item] = content;
                 store.addResourceVersion(res);
+
+                // We save in the shaker addon the content of the hook
+                // because on runtime we want to pick it syncronously
+                if (item === BOOTSTRAP_FAKE_YUI) {
+                    this.fakeYUIBootstrap = content;
+                }
+
             }, this);
         },
+
+        _resolveSeedResourceURL: function (moduleList) {
+            var store = this.rs,
+                yuiRS = store.yui,
+                seed = moduleList,
+                files,
+                i;
+
+            for (i = 0; i < seed.length; i += 1) {
+                if (yuiRS.yuiModulesRess.hasOwnProperty(seed[i])) {
+                        seed[i] = yuiRS.yuiModulesRess[seed[i]].url;
+                } else if (yuiRS.appModulesRess.hasOwnProperty(seed[i])) {
+                        seed[i] = yuiRS.appModulesRess[seed[i]].url;
+                } else {
+                    Y.log('Couldnt find module for seed. Optmized bootstrap may fail', 'warn', 'Shaker');
+                }
+            }
+
+            return seed;
+
+        },
         /*
-        * When comboLoad is active we need  to change the seed to point to the CDN...
-        * We rely on the mapping we have on the Shaker metadata
+        * When comboLoad is active we need to change the seed to point to the CDN...
+        * We rely on the mapping we have on the Shaker metadata.
+        * Also if optimizeBootstrap is set to true we need to augment the seed files to create our own seed.
+        *
+        * NOTE:
+        *   I have to implement _resolveSeedResourceURL, because the original method @getAppSeedFiles
+        *   pulls the seed directly from configuration or it creates it's own,
+        *   so we cannot hook directly those files.
         */
         alterAppSeedFiles: function () {
             var i,
                 newUrl,
-                cdnUrls = this.meta.cdnModules,
+                resources,
+                shakerConfig = this.shakerConfig,
+                cdnUrls = this.meta && this.meta.cdnModules,
                 currentSeed = Y.Do.currentRetVal;
 
-            if (!cdnUrls) {
-                return;
+            if (shakerConfig.optimizeBootstrap) {
+                
+                resources = this._resolveSeedResourceURL(['yui-override']);
+                //the first element has to be the yui-override
+                currentSeed.unshift(resources[0]);
             }
 
-            for (i in currentSeed) {
-                newUrl = cdnUrls[currentSeed[i]];
-                if (newUrl) {
-                    currentSeed[i] = newUrl;
+            // We need to change the url to point to the generated in CDN...
+            if (shakerConfig.comboCDN && cdnUrls) {
+                for (i in currentSeed) {
+                    newUrl = cdnUrls[currentSeed[i]];
+                    if (newUrl) {
+                        currentSeed[i] = newUrl;
+                    }
                 }
             }
+            
         },
         /*
         * Change the URL's of the Store so we get the comboLoad from CDN.
@@ -246,7 +302,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                         topShaker: {
                             css: actionMeta.css
                         },
-                        bottomShaker: {
+                        inlineShaker: {
                             blob: actionMeta.blob
                         }
                     };
