@@ -1,0 +1,42 @@
+[
+    {
+        "settings": ["master"],
+        "shaker": {},
+        "//NOTE": "dimension.json contains the syntethyx environments"
+    },
+    {
+        "settings": ["environment:defaultRollup"],
+        "shaker": {
+            "rollupConfig": {
+                "//this is the default configuration where only binders + deps. are deployed": null,
+                "//bundleViews": false,
+                "//bundleController": false
+            }
+        }
+    },
+    {
+        "settings": ["environment:includeViews"],
+        "shaker": {
+            "rollupConfig":{
+                "bundleViews": true
+            }
+        }
+    },
+    {
+        "settings": ["environment:includeController"],
+        "shaker": {
+            "rollupConfig":{
+                "bundleController": true
+            }
+        }
+    },
+    {
+        "settings": ["environment:includeAll"],
+        "shaker": {
+            "rollupConfig":{
+                "bundleAll": true
+            }
+        }
+    }
+
+]

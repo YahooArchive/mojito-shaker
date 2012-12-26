@@ -2,7 +2,7 @@
  * Copyright (c) 2012 Yahoo! Inc. All rights reserved.
  */
 /*jslint anon:true, sloppy:true, nomen:true*/
-YUI.add('test_mojit_06_BinderIndex', function(Y, NAME) {
+YUI.add('test_mojit_08_BinderOther', function(Y, NAME) {
 
 /**
  * The thirdBinderIndex module.
@@ -37,4 +37,4 @@ YUI.add('test_mojit_06_BinderIndex', function(Y, NAME) {
 
     };
 
-}, '0.0.1', {requires: ['mojito-client','binderDep6']});
+}, '0.0.1', {requires: ['mojito-client','binderDep']});

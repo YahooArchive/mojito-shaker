@@ -58,49 +58,29 @@ suite.add( new YUITest.TestCase({
             Assert.isNotUndefined(result.controller.dependencies);
             Assert.isNotUndefined(result.controller.dependencies['test_mojit_05ModelFoo']);
         },
-        /*
+        
         'test mojit resources: MVC + binder + dependencies': function () {
-            var result = this.shaker.shakeMojitByContext('test_mojit_06', {});
-            //action check
-            Assert.isFalse(Y.Object.isEmpty(result.actions));
-            Assert.isNotUndefined(result.actions['index']);
-            //binder check
-            Assert.isNotUndefined(result.actions.index.dependencies);
-            Assert.isFalse(Y.Object.isEmpty(result.actions.index.dependencies));
-            Assert.isTrue(Y.Object.size(result.actions.index.dependencies) === 2);
-            Assert.isNotUndefined(result.actions.index.dependencies['test_mojit_06_BinderIndex']);
-            Assert.isTrue(result.actions.index.dependencies['test_mojit_06_BinderIndex'].name === 'index');
-            Assert.isNotUndefined(result.actions.index.dependencies['binderDep']);
-            Assert.isTrue(result.actions.index.dependencies['binderDep'].source.fs.basename === 'binderDep.client');
+            var binder = 'test_mojit_06_BinderIndex',
+                binderDep = 'binderDep6',
+                result = shaker.shakeMojitByContext('test_mojit_06', {});
+
+            Assert.isNotUndefined(result.binders[binder]);
+            Assert.isNotUndefined(result.binders[binder].dependencies[binderDep]);
         },
+        
         'test mojit resources: MVC + binder + dependencies + lang(default)': function () {
-            var result = this.shaker.shakeMojitByContext('test_mojit_07', {});
+            var result = shaker.shakeMojitByContext('test_mojit_07', {});
+            //console.log(shaker.logger.dump(result));
+            Assert.isNotUndefined(result.langs);
+            Assert.isNotUndefined(result.langs['lang/test_mojit_07']);
             //lang check
-            Assert.isTrue(result.langs.length === 3);
-            Assert.isTrue(result.langs[0].source.fs.basename === 'test_mojit_07');
-            Assert.isTrue(result.langs[1].source.fs.basename === 'test_mojit_07_en-US');
-            Assert.isTrue(result.langs[2].source.fs.basename === 'test_mojit_07_es-ES');
-            Assert.isNotUndefined(result.dependencies['lang/test_mojit_07']);
         },
-        'test mojit resources: langs regarding context dimensions': function () {
-            var result = this.shaker.shakeMojitByContext('test_mojit_07', {lang:'en-US'});
-            //Assert.isNotUndefined(result.dependencies['lang/test_mojit_07_es-ES']);
-            for(var i in result.dependencies) {
-                console.log(i);
-            }
-        },
-        'test mojit resources: MVC + globalAppDependencies': function () {
-            var result = this.shaker.shakeMojitByContext('test_mojit_08', {});
-            Assert.isNotUndefined(result.dependencies['autoloadGlobal']);
-        },
-        'test core resources': function (){
-            var result = this.shaker.shakeCore();
-            Assert.isTrue(result.length > 0);
+        'test mojit resources: specific lang': function () {
+            var result = shaker.shakeMojitByContext('test_mojit_08', {});
+            Assert.isNotUndefined(result.langs);
+            Assert.isNotUndefined(result.langs['lang/test_mojit_08']);
         }
-        */
-        testFoo : function (){
-            Assert.isTrue(true);
-        }
+
        }));
 
 YUITest.TestRunner.add(suite);
