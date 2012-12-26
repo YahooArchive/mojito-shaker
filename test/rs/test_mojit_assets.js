@@ -27,7 +27,7 @@ suite.add( new YUITest.TestCase({
                 assets = result.assets;
             Assert.isTrue(assets.length === 3);
         },
-        'test action assets': function (){
+        'test action assets': function () {
             var result = this.shaker.shakeMojitByContext('test_mojit_02', {}),
                 assets = result.assets;
             Assert.isTrue(assets.length === 3);

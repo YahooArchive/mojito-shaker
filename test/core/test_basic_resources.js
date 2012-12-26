@@ -19,12 +19,11 @@ var suite = new YUITest.TestSuite({
     }
 });
 
-// For copy paste the logger to debug:
-// console.log(shaker.logger.dump(result));
+//console.log(shaker.logger.dump(result));
 
 suite.add( new YUITest.TestCase({
         name: "Unit Test",
-        
+        //console.log(shaker.logger.dump(result));
         'test mojit resources: controller': function () {
             var result = shaker.shakeMojitByContext('test_mojit_01', {}),
                 controller = result.controller;
