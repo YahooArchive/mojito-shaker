@@ -112,7 +112,7 @@ suite.add( new YUITest.TestCase({
         },
         'test include lang': function () {
             var mojit = 'test_mojit_01',
-                context = {environment:'includeAll',lang:'es-ES'},
+                context = {environment:'includeAll', lang:'es-ES'},
                 shaker = new ShakerCore({root: root, context:context}),
                 result = shaker.bundleShakenMojit(mojit, context, shaker.shakeMojitByContext(mojit, context));
 
