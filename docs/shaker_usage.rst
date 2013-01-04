@@ -2,162 +2,72 @@
 ========
 Usage
 ========
-The Shaker recipe is one part convention and one part configuration. The convention lies in the structure of a mojit or application's ``assets`` directory. The configuration lies in a mojit or application's ``shaker.json`` file, which defines rollups and their contents.
+The Shaker recipe is one part convention and one part configuration. The convention lies on the name you put to your ``resources`` (assets, binders, controllers, etc). The configuration lies in a mojit or application's ``shaker.json`` file, which defines rollups and their contents.
+
+We will see every feature/use-case Shaker can handle.
 
 
-Context Dimensions
-###############
-Before going any further, it is important to understand the core concept of Shaker rollups: context dimensions.
+**Contextualize:** Context Dimensions
+#####################################
 
-Context dimensions are the basic building blocks of Shaker rollups. Shaker supports the following dimensions by default:
+First we need to understand how we can contextualize assets in Mojito, and then how we can leverage this process with Shaker.
 
-- ``common`` - Resources not specific to any dimension.
-- ``action`` - Action-specific resources (it matches the controller action).
-- ``device`` - Device-specific resources.
-- ``skin`` - Skin-specific resources.
-- ``region`` - Region-specific resources.
-- ``lang`` - Language-specific resources.
+How it works out-of-the-box in mojito
+-------------------------------------
 
-The default dimensions are listed here in ascending priority order. This means that a dimension that appears later in the list is capable of augmenting previous dimensions. In order to create new dimensions, you will have to define your own ``dimensions.json`` file, and at runtime set those dimensions to some value since they are not built into Mojito. See the section about `Advanced Configuration <shaker_usage.html#id3>`_ 
+In mojito we have for every request a context. This context has properties like language, region, device, bucket, and any other synthetic dimension that we could potentially add. 
 
-Convention: Assets Directory Structure.
-##########
-
-Shaker prefers a mojit or application's ``assets`` directory be structured according to the context dimensions it is sensitive to. A directory structure that follows these conventions is called conforming. A directory structure that does not follow these conventions is called non-conforming.
-
-A conforming directory structure is quite simple to configure (basically, it does not need any configuration at all). A non-conforming directory structure is also supported, but requires a bit more effort to configure. See the section on Advanced Configuration for more information.
-
-**Example:** The basic ``assets`` directory structure of a conforming mojit.
+Giving a particular dimension we may want to do different things, for example, if I’m on an iPhone I may want mobile-specific CSS, or I may want to execute a different controller. In order to do that mojito has “selectors.” For every particular set of attributes on a context you can define a selector. This is what it looks like in your application.json:
 ::
-
-
-    [mojit]
-       /assets/
-          [dimension]/
-             [value]/
-                [file]
-                ...
-             ...
-          ...
-
-**Example:** The ``assets`` directory structure of a conforming mojit, ``FooMojit``, that is sensitive to the ``common`` and ``region`` dimensions.
-::
-
-   FooMojit/
-      assets/
-         common/
-            foo-common.css
-         region/
-            US/
-               foo-US.css
-            CA/
-               foo-CA.css
-
-
-In the the above example, ``FooMojit`` has ``common`` CSS regardless of the value of any other dimension. In addition, it has additional CSS when the ``region`` dimension value is *US* or *CA*.
-
-**Example** of shaker configuration based on the previous folder structure:
-
-::
-
     {
-      "dimensions": {
-        "common": {},
-        "region": {
-          "US": {},
-          "CA": {}
-        },
-        "lang": {
-          "en": {}
-        }
-      }
+        "settings": ["device:iphone"],
+        "selector": "iphone"
     }
 
-The following table illustrates the content of the rollups for ``FooMojit`` for various values of the ``region`` dimension.
+Creating a resource sensitive to that selector is as simple as adding the selector to the filename:
+
+- controller. ``iphone`` .common.js
+- myview. ``bucket4`` .client.js
+- binder. ``tablet`` .js
+
+Properly configured, Mojito will pick the right version of your resources at run-time.
+
+Note that in Mojito, selectors only work for js files; on CSS they will not have any effect. Shaker will take care of that, and we will in the next section how.
+
+What Shaker do with the context.
+------------------------------
+
+Given the previous selector feature in Mojito, on the client we want to bundle the right resources, for the right context, with no performance overhead. 
+
+At build time Shaker will analyze the application using the Mojito Store API and will generate all the possible combinations that the application is sensible to. This applies not only for JS, but for CSS as well. Moreover, we need to serve different CSS for different actions.
+
+**Example of contextualizing for a Mojito with two actions and two possible devices:**
+
+.. figure:: images/contextualize.png
+    :figwidth: 665px
+    :align: center
+    :alt: Mojito with two actions and two possible devices.
+
+In Mojito all the resources are YUI Modules, which means that in addition to knowing which resources we will pick, we can also know ahead of time the dependencies that those modules require. With those two features, we can ensure that the bundle contains exactly the resources we need.
 
 
 
-+-----------------+------------------------------+
-| Region Value    | Data Type                    |
-+=================+================+++++=========+
-| ``none``        | - common/foo-common.css      |
-+-----------------+------------------------------+
-| ``US``          | - common/foo-common.css      |
-|                 | - region/US/foo-US.css       |
-+-----------------+------------------------------+
-| ``CA``          | - common/foo-common.css      |
-|                 | - region/CA/foo-CA.css       |
-+-----------------+------------------------------+
+CSS Selector Naming rules
+------------------------------
 
-In the above example, the ``region`` dimension maps directly to a conforming ``assets`` directory structure.
+After reading and understading the previous table, let's summarize the rules that Shaker will take into account to deliver the css:
 
-Because each dimension is declared with the empty object ({}), Shaker includes all assets found within the corresponding directories (and subdirectories) when generating the corresponding rollup.
+- Every css file with no selector (foo.css) will be considered "common", therefor will be included in each bundle within the mojit.
 
-For more control over what gets included in a rollup, see the Advanced Configuration section.
+- If a file has selector (foo.iphone.css), will be included when the context matches.
 
-Actions/Binders
-##########
+- If two file has the same name but different selector (foo.css, foo.iphone.css) the right one will be picked in each case. We call this versioning.
 
-The ``actions`` section tells Shaker which controller actions (binders) the mojit or application is sensitive to. Shaker also analyzes which dimensions your mojits and actions are sensitive to in order to generate at the necessary rollups.
-
-Actions at mojit level
-----------------------
-This is the representation for the default shaker configuration at mojit level:
-
-::
-
-    {
-        "actions": {
-            "*": {},
-        },
-        "order": "common-action-device-skin-region-lang"
-    }
-
-If you have any binder in your mojit, shaker will analyze it for you, creating some structure like this:
-
-**Example**: A mojit sensitive to the ``index`` and ``show`` controller actions (binders).
-
-::
-
-    {
-        "actions": {
-            "*": {},
-            "index": {},
-            "show": {}
-        },
-        "order": "common-action-device-skin-region-lang"
-    }
-
-**Note that you don't have to write any configuration for any case if you use the default folder structure.
+- If a file has a name which matches the name of a view, will be included only when the context and the action executed matches (serve the assets for the right actions).
 
 
-Actions at the app level
----------------------
-
-The configuration at the app level is exactly the same as at the mojit level, with only one difference: you can specify which mojits you want to bundle per action. Bundling a mojit means that these mojits' assets will be included within the app rollup, avoiding to request additional rollups for those mojits.
-
-**Example**: App shaker configuration bundling different mojits per action:
-::
-
-    {
-        "actions": {
-            "*": {
-                "mojits":["mojitA","mojitB"]
-            },
-            "appAction1": {
-                "mojits":["mojitA",",mojitB.index","mojitC"]
-            },
-            "appAction2": {
-                "mojits":["mojitD","mojitE"]
-
-            }
-        },
-        "order": "common-action-device-skin-region-lang"
-    }
-
-
-Environment Configuration
-#########################
+Environment Configuration??
+##############################
 
 Shaker allows you to rollup your assets and deploy them in a variety of ways based on the environment context.
 All that is necessary is to provide a shaker config per environment in your ``application.json`` file. A shaker config specifies what task to run and any additional settings the task depends on.
@@ -192,7 +102,7 @@ All that is necessary is to provide a shaker config per environment in your ``ap
     }]
 
 Shaker Settings
----------------
+--------------------
 - ``task`` - {string} Name of task to execute (local, s3). Defaults to null which runs in dev mode.
 - ``compiled_dir`` - {string} Where to output Shaker generated files. Defaults to assets/compiled/.
 - ``images`` - {boolean} Whether to deploy images with rollups. Useful if your CSS contains relative URLs to assets. Defaults to false.
@@ -207,20 +117,25 @@ To build a particular environment, run the shaker command like so: ``mojito shak
 As we saw in the Components section, we have different deployment tasks. Next we will see how to use each based on the example application.json above.
 
 Deploying raw (no rollups, developer mode)
-------------------------------------------
+----------------------------------------------
 ``mojito shake --run``
 
 Deploying locally (rollups, developer mode)
-------------------------------------------
+--------------------------------------------------
 ``mojito shake --context environment:test --run``
 
 Deploying to  S3 (Amazon CDN)
-------------------------------------------
+----------------------------------------------------
 ``mojito shake --context environment:stage --run``
 
 Deploying elsewhere
 ------------------------------------------
 All tasks are actually Gear.js (https://github.com/yahoo/gear) tasks. It's easy to write your own. There are many examples in the Gear source. Simply write your custom task, drop it in the tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.
+
+
+Debugging Shaker
+------------------------------------------
+
 
 Advanced Configuration
 #########################

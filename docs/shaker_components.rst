@@ -4,6 +4,7 @@ Shaker Components
 ========
 
 Shaker is comprised of three components that work together in various ways depending on the environment.
+Note that this chapter doesn't cover any tecnical aspect and is just an overview of the Shaker architecture.
 
 Shaker Core
 ###############

@@ -6,7 +6,7 @@ Getting started
 Prerequisites
 ###############
 
-Mojito npm package v0.3.2 or higher.
+Mojito npm package v0.3.2 or higher. (See compatibility table below.)
 
 Installation Steps
 ##################
@@ -41,14 +41,13 @@ Running Shaker
 
 Within a Mojito application root folder:
 
-* Edit application.json to configure the mojitDirs and the HTMLFrame so that it looks like:
+* Edit application.json to configure and use the ShakerHTMLFrame. It looks like:
 
 ::
 
     [
         {
             "settings": [ "master" ],
-            "mojitsDirs": ["mojits","node_modules/mojito-shaker/mojits"],
             "specs": {
                 "htmlframe": {
                     "type": "ShakerHTMLFrame"
@@ -57,7 +56,6 @@ Within a Mojito application root folder:
         }
     ]
 
-Note: If you installed `mojito-shaker` globally you will have to point to the absolute path instead.
 
 * Execute Shaker and Start the server:
 
@@ -69,3 +67,25 @@ The option ``--run`` will make the server start automatically.
 	``http://localhost:8666``
 
 For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
+
+Compatibility Table
+###################
+
+Since mojito 3.x.x, many api's have changed, a lot of new features were introduced, etc. Which means that shaker had to adapt to this evolution as well. That's why you may encounter some incompatibilities depending the version of Mojito you're using.
+
+**Note:** This documentation is updated and ment to be used with ``Shaker 3`` and ``Mojito 0.5.x``.
+
+Nontherless here a table where you can find the most stable version of ``Shaker`` for each mojito mayor version:
+
+
++-----------------+---------------------------------+
+| Mojito version  | Shaker most stable version      |
++=================+=================================+
+| 0.3.x           | 0.8.x                           |
++-----------------+---------------------------------+
+| 0.4.x           | TODO                            |
++-----------------+---------------------------------+
+| 0.5.x           | TODO                            |
++-----------------+---------------------------------+
+
+
