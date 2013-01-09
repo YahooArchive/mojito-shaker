@@ -54,6 +54,10 @@ YUI.add('shaker-inline-addon', function(Y, NAME) {
         _handleDone: function (selfContext, done, data, meta) {
             var assets = meta.assets,
                 inlineShaker = assets.inlineShaker;
+
+            if (!inlineShaker.blob) {
+                inlineShaker.blob = [];
+            }
             
             if (typeof data === 'string') {
                     data += inlineShaker.blob.join('');
