@@ -13,8 +13,7 @@ Shaker Core
 Shaker Core is the foundation of Shaker. It alone has the ability to parse ``shaker.json`` configuration files, compute and resolve rollup dimensions and dependencies, and ultimately generate rollup metadata.
 
 Shaker Compiler
-##########
-
+################
 .. image:: images/shaker_compiler.png
    :scale: 80%
 
@@ -28,6 +27,7 @@ Shaker compiler can be configured per environment (staging, test, production) th
 
 - ``s3`` - Compile rollups and upload them to Amazon S3 CDN.
 
+**NOTE:** Shaker compiler has nothing to do with any Cocktails product, is just a name for the shaker internals.
 
 Shaker Addon and ShakerHTMLFrame
 ##########
@@ -57,6 +57,6 @@ Runtime:
     #. The Mojito server automatically picks the generated metadata file.
     #. When a request arrives, Mojito computes everything normally until it reaches the ShakerHTMLFrame. Then the Shaker runtime addon gets executed.
     #. The ShakerAddon checks the current context and the executed Mojits, and picks from the metadata the proper rollup to include into the page, overriding the necessary default mojito assets.
-    #. If the client side gets deployed, Shaker also deploys itself to the client to serve future mojit calls.
+    #. All resources gets deployed transparently to the developer.
 
 

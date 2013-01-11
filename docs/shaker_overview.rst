@@ -41,7 +41,7 @@ Mojito does not have the ability to serve complex rollups. Shaker improves Mojit
 ::
 
 	// No logic to write!
-	// Rollups are picked up automatically based on dependencies and filenames :)
+	// Rollups are picked up automatically based on dependencies, context and filenames :)
 
 When dealing with multiple dimensions, the logic that you have to write can quickly become complicated. With Shaker, we do all of this automatically for you. You just put your assets with the right name and Shaker will take care of adding them if needed.
 
@@ -69,8 +69,8 @@ Features
 +--------------------+-----------------------------------------------------------------+
 | ``BUNDLE-JS``      | All JS should be bundled to reduce the number of requests.      |
 +--------------------+-----------------------------------------------------------------+
-| ``DYNAMIC-JS``     | All external scripts load dynamically, so page rendering is not |
-|                    | blocked.                                                        |
+| ``DYNAMIC-JS``     | All scripts load dynamically and in parallel. Rendering is      |
+|                    | never blocked.                                                  |
 +--------------------+-----------------------------------------------------------------+
 | ``CDN``            | All assets are comming from CDN.                                |
 +--------------------+-----------------------------------------------------------------+
