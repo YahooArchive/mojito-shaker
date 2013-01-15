@@ -127,6 +127,8 @@ This information will be stored in a file called shaker-metadata, which will be 
 We will see in the next sections how to customize the content of the rollups (minification, deployment to CDN, bootstraping, etc) throught configuration.
 
 
+.. _env-context:
+
 Environment and context configuration
 ######################################
 
