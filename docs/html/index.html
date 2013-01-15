@@ -1,0 +1,109 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <title>Introducing Shaker</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: true,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+   </head> 
+
+     <div class="header"><h1 class="heading"><a href="#">
+          <span>Shaker</span></a></h1>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../">Mojito Documentation</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="#" title="Shaker">Shaker</a>
+        &#160;&#160;::&#160;&#160;
+        
+        
+           <a href="shaker_overview.html">Overview</a>
+        
+        </p>
+
+      </div>
+      <div class="content">
+   <div class="section" id="introducing-shaker">
+<h1>Introducing Shaker<a class="headerlink" href="#introducing-shaker" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-right" style="width: 500px">
+<a class="reference internal image-reference" href="_images/shaker.jpg"><img alt="Shake it" src="_images/shaker.jpg" /></a>
+<p class="caption"><a class="reference external" href="http://www.flickr.com/photos/breatheindigital/4623226056/">Image Source</a></p>
+</div>
+<p>Shaker is an asset rollup management tool for Mojito applications which reduces the number of HTTP requests, thus improving performance.</p>
+<p>A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof.</p>
+<p>Shaker allows you to create rollups using different combination of dimensions. For example, you may want to serve different assets when people are connected from different devices, different countries, etc.</p>
+<div class="section" id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="shaker_overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_overview.html#what-is-shaker">What is Shaker?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_overview.html#why-shaker">Why Shaker?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_overview.html#overall-goals">Overall Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_overview.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_overview.html#benefits">Benefits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_starting.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_starting.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_starting.html#installation-steps">Installation Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_starting.html#running-shaker">Running Shaker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_starting.html#compatibility-table">Compatibility Table</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_components.html">Shaker Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_components.html#shaker-core">Shaker Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_components.html#shaker-compiler">Shaker Compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_components.html#shaker-addon-and-shakerhtmlframe">Shaker Addon and ShakerHTMLFrame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_components.html#putting-the-pieces-together">Putting The Pieces Together</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#contextualize-context-dimensions"><strong>Contextualize:</strong> Context Dimensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#environment-and-context-configuration">Environment and context configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#bundling-mojits-together">Bundling Mojits together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#inlining-code">Inlining code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#dynamic-parallel-bootstrap">Dynamic &amp; Parallel bootstrap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_usage.html#k-weight-splitting">K-weight splitting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_api_summary.html">Shaker configuration API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_api_summary.html#shaker-configuration-files">Shaker configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_api_summary.html#environment-and-dimension-configuration">Environment and dimension configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_api_summary.html#api-table">API Table</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_examples.html">Shaker App Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_examples.html#application-overview">Application overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_examples.html#application-structure">Application structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_examples.html#shaker-running-on-our-app">Shaker running on our App</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shaker_faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shaker_faq.html#questions">Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shaker_faq.html#contact-info">Contact info</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+   </div>

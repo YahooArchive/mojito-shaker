@@ -1,0 +1,311 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <title>Usage</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: true,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+   </head> 
+
+     <div class="header"><h1 class="heading"><a href="#">
+          <span>Shaker</span></a></h1>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../">Mojito Documentation</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="index.html" title="Shaker">Shaker</a>
+        &#160;&#160;::&#160;&#160;
+        
+           <a href="shaker_components.html">Shaker Components</a>
+        &#160;&#160;::&#160;&#160;
+        
+        
+           <a href="shaker_api_summary.html">Shaker configuration API</a>
+        
+        </p>
+
+      </div>
+      <div class="content">
+   <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The Shaker recipe is one part convention and one part configuration. The convention lies on the name you put to your <tt class="docutils literal"><span class="pre">resources</span></tt> (assets, binders, controllers, etc). The configuration lies in a mojit or application&#8217;s <tt class="docutils literal"><span class="pre">shaker.json</span></tt> file, which defines rollups and their contents.</p>
+<p>We will see every feature/use-case Shaker can handle. Also to clarify more all use-cases, you can find a lot of examples here.</p>
+<div class="section" id="contextualize-context-dimensions">
+<h2><strong>Contextualize:</strong> Context Dimensions<a class="headerlink" href="#contextualize-context-dimensions" title="Permalink to this headline">¶</a></h2>
+<p>First we need to understand how we can contextualize assets in Mojito, and then how we can leverage this process with Shaker.</p>
+<div class="section" id="how-it-works-out-of-the-box-in-mojito">
+<h3>How it works out-of-the-box in mojito<a class="headerlink" href="#how-it-works-out-of-the-box-in-mojito" title="Permalink to this headline">¶</a></h3>
+<p>In mojito we have for every request a context. This context has properties like language, region, device, bucket, and any other synthetic dimension that we could potentially add.</p>
+<p>Giving a particular dimension we may want to do different things, for example, if I’m on an iPhone I may want mobile-specific CSS, or I may want to execute a different controller. In order to do that mojito has “selectors.” For every particular set of attributes on a context you can define a selector. This is what it looks like in your application.json:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;device:iphone&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;selector&quot;</span><span class="o">:</span> <span class="s2">&quot;iphone&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Creating a resource sensitive to that selector is as simple as adding the selector to the filename:</p>
+<ul class="simple">
+<li>controller. <tt class="docutils literal"><span class="pre">iphone</span></tt> .common.js</li>
+<li>myview. <tt class="docutils literal"><span class="pre">bucket4</span></tt> .client.js</li>
+<li>binder. <tt class="docutils literal"><span class="pre">tablet</span></tt> .js</li>
+</ul>
+<p>Properly configured, Mojito will pick the right version of your resources at run-time.</p>
+<p>Note that in Mojito, selectors only work for js files; on CSS they will not have any effect. Shaker will take care of that, and we will in the next section how.</p>
+</div>
+<div class="section" id="what-shaker-do-with-the-context">
+<h3>What Shaker do with the context.<a class="headerlink" href="#what-shaker-do-with-the-context" title="Permalink to this headline">¶</a></h3>
+<p>Given the previous selector feature in Mojito, on the client we want to bundle the right resources, for the right context, with no performance overhead.</p>
+<p>At build time Shaker will analyze the application using the Mojito Store API and will generate all the possible combinations that the application is sensible to. This applies not only for JS, but for CSS as well. Moreover, we need to serve different CSS for different actions.</p>
+<p><strong>Example of contextualizing for a Mojito with two actions and two possible devices:</strong></p>
+<div class="figure align-center" style="width: 665px">
+<img alt="Mojito with two actions and two possible devices." src="_images/contextualize.png" />
+</div>
+<p>In Mojito all the resources are YUI Modules, which means that in addition to knowing which resources we will pick, we can also know ahead of time the dependencies that those modules require. With those two features, we can ensure that the bundle contains exactly the resources we need.</p>
+</div>
+<div class="section" id="js-calculation">
+<h3>JS Calculation<a class="headerlink" href="#js-calculation" title="Permalink to this headline">¶</a></h3>
+<p>Because we are using the YUI module pattern for our resources, at build time we can analyze the dependencies of a mojit for every given context and action.
+For example, this is the controller module of a regular mojit:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">YUI</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Y</span><span class="p">,</span> <span class="nx">NAME</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">...</span>
+<span class="p">},</span> <span class="s1">&#39;0.0.1&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">requires</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;mojito&#39;</span><span class="p">,</span><span class="s1">&#39;mojito-assets-addon&#39;</span><span class="p">,</span> <span class="s1">&#39;mojito-models-addon&#39;</span><span class="p">,</span> <span class="s1">&#39;MainModelFoo&#39;</span><span class="p">]});</span>
+</pre></div>
+</div>
+<p>We know that when this mojit gets dispatched it will need a Model resource called ‘MainModelFoo’, so we can compute that ahead of time and serve everything rolled up.</p>
+<p>In <tt class="docutils literal"><span class="pre">mojito&#64;0.5.x</span></tt> a new feature was introduced where all the needed dependencies will be fetched and combo load automatically for us. We can configure shaker to be able to serve this comboload from CDN (if you have a CDN which support comboLoading), and even prefetch some of the dependencies combining Mojit bundles together.</p>
+<p><strong>NOTE:</strong> If you are running mojito below version 5, Shaker will take care about loading the JS dependencies automatically for you.</p>
+</div>
+<div class="section" id="css-selector-naming-rules">
+<h3>CSS Selector Naming rules<a class="headerlink" href="#css-selector-naming-rules" title="Permalink to this headline">¶</a></h3>
+<p>After reading and understading the previous table, let&#8217;s summarize the rules that Shaker will take into account to deliver the css:</p>
+<ul class="simple">
+<li>Every css file with no selector (foo.css) will be considered &#8220;common&#8221;, therefor will be included in each bundle within the mojit.</li>
+<li>If a file has selector (foo.iphone.css), will be included when the context matches.</li>
+<li>If two file has the same name but different selector (foo.css, foo.iphone.css) the right one will be picked in each case. We call this versioning.</li>
+<li>If a file has a name which matches the name of a view, will be included only when the context and the action executed matches (serve the assets for the right actions).</li>
+</ul>
+</div>
+<div class="section" id="generating-mojit-rollups-shaker-metadata">
+<h3>Generating mojit rollups: Shaker metadata<a class="headerlink" href="#generating-mojit-rollups-shaker-metadata" title="Permalink to this headline">¶</a></h3>
+<p>Assuming that the assets of your mojits have been named correctly (see sections above), Shaker will be ready to analyze your app and bundle them.</p>
+<p>When running Shaker, it will go over all the JS and CSS resources per mojit, checking their dependencies (in the case of YUI modules), and based on the context, the configuration you provided (we will see more about those in the next section), it will construct the list or resources that each bundle will contain.</p>
+<p>This information will be stored in a file called shaker-metadata, which will be used on runtime to know which bundles to serve in each case.</p>
+<p><strong>Metadata generated by Shaker for a mojit with two actions:</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;mojits&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;Main&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;index&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;js&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;/static/autoloadGlobal.js&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/MainBinderIndex.js&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/MainModelFoo.js&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/Main.js&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;css&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;/static/Main/assets/mainBase.css&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/Main/assets/index.css&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;other&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;js&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;/static/MainBinderOther.js&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/MainModelFoo.js&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/Main.js&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;css&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="s2">&quot;/static/Main/assets/mainBase.css&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/static/Main/assets/other.css&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We will see in the next sections how to customize the content of the rollups (minification, deployment to CDN, bootstraping, etc) throught configuration.</p>
+</div>
+</div>
+<div class="section" id="environment-and-context-configuration">
+<span id="env-context"></span><h2>Environment and context configuration<a class="headerlink" href="#environment-and-context-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Shaker allows you to rollup your assets and deploy them in a variety of ways based on the environment context. For example in production you would like to minify your rollups and upload them to cdn, whereas in your devbox you only want to lint them and serve them sepratelly.</p>
+<p>All that is necessary is to provide a shaker config per environment in your <tt class="docutils literal"><span class="pre">application.json</span></tt> file. A shaker config specifies what task to run and any additional settings the task depends on.</p>
+<p><strong>Example:</strong> Sample <tt class="docutils literal"><span class="pre">application.json</span></tt> shaker setup using several environments:</p>
+<div class="highlight-javascript"><pre>[{
+    "settings": ["master"]
+    "shaker: {
+        //default configuration
+    }
+}, {
+    "settings": ["environment:test"],
+    "shaker": {
+        "task": "local"
+        "lint": false,
+        "minify": true,
+        "rollupConfig": {
+            bundleViews: false,
+            bundleController: false
+        }
+    }
+}, {
+    "settings": ["environment:stage"],
+    "shaker": {
+        "task": "s3",
+        "config": {
+            "client": {
+                "key": "&lt;key&gt;",
+                "secret": "&lt;secret&gt;",
+                "bucket": "&lt;bucket&gt;"
+            }
+        }
+    }
+}]</pre>
+</div>
+<p>The previous configuration will give us three different types of execution environments.
+To build a particular environment, run the shaker command like so: <tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:&lt;env&gt;</span></tt>
+After runing Shaker, start your mojito app normally.</p>
+<p>Aligned with the example, this is the detailed</p>
+<div class="section" id="deploying-raw-no-rollups-developer-mode">
+<h3>Deploying raw (no rollups, developer mode)<a class="headerlink" href="#deploying-raw-no-rollups-developer-mode" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span></tt></p>
+</div>
+<div class="section" id="deploying-locally-rollups-test-mode">
+<h3>Deploying locally (rollups, test mode)<a class="headerlink" href="#deploying-locally-rollups-test-mode" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:test</span></tt></p>
+</div>
+<div class="section" id="deploying-to-s3-amazon-cdn-staging">
+<h3>Deploying to  S3 (Amazon CDN, staging)<a class="headerlink" href="#deploying-to-s3-amazon-cdn-staging" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:stage</span></tt></p>
+</div>
+<div class="section" id="shaker-settings">
+<h3>Shaker Settings<a class="headerlink" href="#shaker-settings" title="Permalink to this headline">¶</a></h3>
+<p>As you saw in the code example above, for every environment we can set a different configuration for Shaker:
+These are some of the options we saw in the application.json example:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">task</span></tt> - {string} Name of task to execute (local, s3, raw, ...). Defaults to <tt class="docutils literal"><span class="pre">raw</span></tt> which runs in dev mode.</li>
+<li><tt class="docutils literal"><span class="pre">lint</span></tt> - {boolean} Run lint on app files. Defaults to true.</li>
+<li><tt class="docutils literal"><span class="pre">minify</span></tt> - {boolean} Minify JS and CSS. Defaults to true.</li>
+<li><tt class="docutils literal"><span class="pre">rollupConfig</span></tt> - {Object} It tells shaker which parts to deploy to the client (binders, views, controllers or all ot them).</li>
+</ul>
+<p>To see all the options avaliable in Shaker go to the API section.</p>
+</div>
+</div>
+<div class="section" id="bundling-mojits-together">
+<h2>Bundling Mojits together<a class="headerlink" href="#bundling-mojits-together" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>In the previous sections we cover how Shaker works to create rollups for every Mojit. Which means that on the client we will have to fetch at least one CSS rollup/request per Mojit plus the request necessary for the JS.</div></blockquote>
+<p>When the amount of Mojits to execute is big, we would like to combine all this rollups in one to serve all the styles at ones and remove the overhead of multiple connections.
+In order to address this problem Shaker defines what we call <tt class="docutils literal"><span class="pre">High-coverage</span></tt> mojits and <tt class="docutils literal"><span class="pre">Low-coverage</span></tt> mojits:</p>
+<div class="section" id="high-coverage-mojits">
+<h3>High-coverage Mojits<a class="headerlink" href="#high-coverage-mojits" title="Permalink to this headline">¶</a></h3>
+<p>Definition: Ability to define ahead of time which mojits to bundle together so we just require one request  for the first flush of the page.</p>
+<p>In the section above, we saw that Shaker will build rollups for every single Mojit and for every possible set of configuration our application supports, which will reduce considerably the number of requests. But if we have a lot of mojits to dispatch and flush to the client, we will end up doing a lot of CSS and JS requests anyway.</p>
+<p>In this situation Shaker allow us to define what we call high-coverage mojits.
+For every route defined in our application we can tell Shaker which mojits are most likely to be loaded and then bundle all of those together. The syntax is as follows:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">shaker</span><span class="o">:</span><span class="p">{</span>
+    <span class="s2">&quot;routeBundle&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">//we define for each route which mojits we want to bundle together</span>
+        <span class="s2">&quot;foo&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Main.index&quot;</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;bar&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="s2">&quot;mojitB.index&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mojibC.other&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>At build time Shaker will analyze the routeBundles you want to build and will generate the specific rollups for you. Note that all this rollups will be allways context specific, so it ship only what we need for a given context.</p>
+</div>
+<div class="section" id="low-coverage-mojits">
+<h3>Low-coverage Mojits<a class="headerlink" href="#low-coverage-mojits" title="Permalink to this headline">¶</a></h3>
+<p>Definition: Load at any given time (lazy/dynamic load) a mojit with its own JS and CSS bundle</p>
+<p>Low coverage mojits are all the mojits which are not defined as inthe routeBundle (as HIGH-COVERAGE). Shaker has to provide as well bundles for independent mojits that may be loaded after the page has already rendered, or when the user clicks in a special link which triggers a new mojit dispatch.</p>
+<p>If there is no High-Coverage bundles, the default behaviour is to load the mojits as LOW-Coverage.</p>
+<p>Since the new mojito handles the JS for us using a local combo load, the only problem when not defining the <tt class="docutils literal"><span class="pre">HIGH-COVERAGE</span></tt> is the amount of CSS request made.</p>
+</div>
+<div class="section" id="bundling-parts-of-a-mojit-rollupconfig">
+<h3>Bundling parts of a mojit: rollupConfig<a class="headerlink" href="#bundling-parts-of-a-mojit-rollupconfig" title="Permalink to this headline">¶</a></h3>
+<p>Going back to the bundles, we saw which resources to take into account, how to manage the dependencies and how to pick the right ones regarding the context. We still have to define which parts are going to be included.</p>
+<p>So depending on the application needs, we may want to ship only the minimum amount of JS to the page (the binders and the Mojito client barebones) or we may want to ship absolutely everything (controller, binders, dependencies, views, langs, etc.).</p>
+<p>Shaker has to provide a way to select which components you want to rollup for every mojit. We could define this configuration at the app level, if we want to share all the configuration across mojits, or we can define small configuration files in each mojit for overriding which parts to bundle.
+The configuration API will look something like:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;rollupConfig&quot;</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">&quot;bundleViews&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+          <span class="s2">&quot;bundleController&quot;</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>With that we can customize the parts we will include in the bundles. Note that Shaker should also provide a way to bundle all components together  so offline applications have almost zero configuration.</p>
+</div>
+</div>
+<div class="section" id="inlining-code">
+<h2>Inlining code<a class="headerlink" href="#inlining-code" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes we need to execute JavaScript or load CSS styles as soon as possible to give to our users a good user experience. In Mojito today you can inline code using core API&#8217;s, but you will have to hardcode the code into your controlers, and this is not really a good practice.</p>
+<p>In Shaker we came up with an automated way to do this. You just have to create a file with a special the selector <tt class="docutils literal"><span class="pre">shaker-inline</span></tt> in your mojit, and this file will be inline and served when the mojit is dispatched. Given that a mojit can have different behaviour depending on the action, inlining is also sensible to the action, so if the name of your inline file matches an existing action in your mojit, it will be only inlined when on runtime the action matches.</p>
+<p>Last feaure reagarding inlining is that by default the code is inlined at the bottom of the page, before mojito client gets executed. If you want to inline the code right after the html generated by a particular mojit, you just have to include in your controller a dependencies called <tt class="docutils literal"><span class="pre">shaker-inline</span></tt>. You can find some examples about inlining in the shaker-examples section.</p>
+<p><strong>Summary example:</strong></p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">myInline.shaker-inline.css</span></tt> - Will be inlined for any action within the mojit</li>
+<li><tt class="docutils literal"><span class="pre">mojitAction1.shaker-inline.js</span></tt> - Assuming that there is an action with his correspondent view called mojitAction1, the code will be inlined when on runtime the mojitAction1 gets exexuted.</li>
+<li><tt class="docutils literal"><span class="pre">myInline.iphone.shaker-inline.js</span></tt> - Will be inlined when the context (in this case iphone) on runtime matches.</li>
+</ul>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">YUI</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;MainController&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Y</span><span class="p">,</span> <span class="nx">NAME</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">// My controller code</span>
+<span class="p">},</span> <span class="s1">&#39;0.0.1&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">requires</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;mojito&#39;</span><span class="p">,</span> <span class="s1">&#39;shaker-inline-addon&#39;</span><span class="p">]});</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dynamic-parallel-bootstrap">
+<h2>Dynamic &amp; Parallel bootstrap<a class="headerlink" href="#dynamic-parallel-bootstrap" title="Permalink to this headline">¶</a></h2>
+<p>By default, a &lt;script src=...&gt;&lt;/script&gt; tag is evil! The browser must halt parsing the HTML until the script is downloaded and executed (since the script might call document.write(...) or define global variables that later scripts depend on). This means that any images and stylesheets that are after the script tag don&#8217;t start downloading until after the script has finished downloading and executing. External scripts typically make the Web load much more slowly, which is why NoScript has become so popular.</p>
+<p>W3C introduced defer to solve the problem. If you use &lt;script defer src=...&gt;&lt;/script&gt;, you promise not to call document.write(...). A defer external script will start downloading immediately but won&#8217;t execute until after the page is rendered. The problem with defer is that W3C HTML5 draft has taken away defer on inline script due to execution order guarantee, and also defer is not supported in some browsers.</p>
+<p>The alternative we have is to load scipts dynamically, here is a snippet example:
+&lt;script&gt;
+(function() {</p>
+<blockquote>
+<div>var script = document.createElement(&#8216;script&#8217;);
+script.src = &#8216;...&#8217;;
+var s = document.getElementsByTagName(&#8216;script&#8217;)[0];
+s.parentNode.insertBefore(script, s);</div></blockquote>
+<p>})();
+&lt;/script&gt;</p>
+<p>Shaker implements as a configuration option a mechanism like this to load dynamically the JS bundles. Moreover since we don’t control the order anymore, we implemented a special bootstrap to make sure YUI gets bootstrapped correctly. If you want to use the optimized bootstrap into your mojito application you just need to add the option <tt class="docutils literal"><span class="pre">optimizeBootstrap:</span> <span class="pre">true</span></tt> in your shaker configuration.</p>
+</div>
+<div class="section" id="k-weight-splitting">
+<h2>K-weight splitting<a class="headerlink" href="#k-weight-splitting" title="Permalink to this headline">¶</a></h2>
+<p>We were talking about <tt class="docutils literal"><span class="pre">high-coverage</span></tt> bundles and also about <tt class="docutils literal"><span class="pre">Rollup</span> <span class="pre">configuration</span></tt> in the previous sections. Those goals can lead us to produce gigantic rollups, that will require a significant amount of time to load.</p>
+<p>Since we have dynamic script loading and a mechanism that guarantees the order, one other feature that Shaker provide is the ability to split those bundles into chunks so we can parallelize them. Shaker will provides an API to define the threshold for the size of the chunks. Then, at build time, Shaker will split the rollup so we can optimize the loading time.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// This are the default values:</span>
+    <span class="s2">&quot;ksplit&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;weight&quot;</span><span class="o">:</span> <span class="mi">100</span> <span class="c1">// the kb limit for spliting</span>
+        <span class="s2">&quot;threshold&quot;</span><span class="o">:</span> <span class="mi">20</span> <span class="c1">// the percentage of threshold to split the rollup</span>
+        <span class="s2">&quot;&quot;</span><span class="o">:</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The properties of <tt class="docutils literal"><span class="pre">ksplit</span></tt> means that Shaker will chunk files bigger than 100kb with a margin of 20%, which means that will chunk into pieces rollups with a size beetween 80kb and 120kb. You can set <tt class="docutils literal"><span class="pre">ksplit:true</span></tt> to work with the default values.</p>
+</div>
+</div>
+
+   </div>

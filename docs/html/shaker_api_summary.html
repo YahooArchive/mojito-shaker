@@ -1,0 +1,337 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <title>Shaker configuration API</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: true,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+   </head> 
+
+     <div class="header"><h1 class="heading"><a href="#">
+          <span>Shaker</span></a></h1>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../">Mojito Documentation</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="index.html" title="Shaker">Shaker</a>
+        &#160;&#160;::&#160;&#160;
+        
+           <a href="shaker_usage.html">Usage</a>
+        &#160;&#160;::&#160;&#160;
+        
+        
+           <a href="shaker_examples.html">Shaker App Example</a>
+        
+        </p>
+
+      </div>
+      <div class="content">
+   <div class="section" id="shaker-configuration-api">
+<h1>Shaker configuration API<a class="headerlink" href="#shaker-configuration-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="shaker-configuration-files">
+<h2>Shaker configuration files<a class="headerlink" href="#shaker-configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>In order to define the Shaker configuration, you can either do it directly into <tt class="docutils literal"><span class="pre">application.json</span></tt> or create a separate file called <tt class="docutils literal"><span class="pre">shaker.json</span></tt>
+For simplicity we recommend you to use application.json. If both exists, Shaker will merge them with priority on <tt class="docutils literal"><span class="pre">application.json</span></tt></p>
+</div>
+<div class="section" id="environment-and-dimension-configuration">
+<h2>Environment and dimension configuration<a class="headerlink" href="#environment-and-dimension-configuration" title="Permalink to this headline">¶</a></h2>
+<p>In mojito, most of the json configuration files use <tt class="docutils literal"><span class="pre">ycb</span></tt> (Yahoo! Configuration Bundle <a class="reference external" href="https://github.com/yahoo/ycb">https://github.com/yahoo/ycb</a>), which means that your config will get merged depending on the the context you are in and in the order you set in your dimension.json (for more information look into the mojito documentation <a class="reference external" href="http://developer.yahoo.com/cocktails/mojito/docs/topics/mojito_using_contexts.html">http://developer.yahoo.com/cocktails/mojito/docs/topics/mojito_using_contexts.html</a>)</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+   <span class="p">{</span>
+       <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span> <span class="s2">&quot;master&quot;</span> <span class="p">],</span>
+       <span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="c1">//shaker default config</span>
+       <span class="p">}</span>
+   <span class="p">},</span>
+   <span class="p">{</span>
+       <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span> <span class="s2">&quot;environment:dev&quot;</span> <span class="p">],</span>
+       <span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="c1">//shaker config for dev</span>
+       <span class="p">}</span>
+   <span class="p">},</span>
+        <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;environement: my-syntethic-env&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;shaker&quot;</span><span class="o">:</span><span class="p">{</span>
+                <span class="c1">//other config</span>
+        <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>As we mention on the Usage section shaker and mojito will pick the configuration you pass in throught the context:</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">&quot;environment:dev&quot;</span></tt> Will merge the config of &#8220;settings: master&#8221; with &#8220;settings: environment:dev&#8221;</p>
+</div>
+<div class="section" id="api-table">
+<h2>API Table<a class="headerlink" href="#api-table" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="shaker-configuration">
+<h3>Shaker configuration<a class="headerlink" href="#shaker-configuration" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="9%" />
+<col width="9%" />
+<col width="13%" />
+<col width="22%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Property</th>
+<th class="head">Data Type</th>
+<th class="head">Required?</th>
+<th class="head">Default Value</th>
+<th class="head">Possible Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">task</span></tt></td>
+<td>string</td>
+<td>no</td>
+<td>raw</td>
+<td>raw, local, s3, mobstor, your own
+See <a class="reference internal" href="shaker_usage.html#env-context"><em>Env and context
+configuration</em></a>.</td>
+<td>Defines how the rollups will be deployed</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">module</span></tt></td>
+<td>string</td>
+<td>no</td>
+<td>null</td>
+<td>N/A</td>
+<td>Defines how the rollups will be deployed</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">taskConfig</span></tt></td>
+<td>object</td>
+<td>no</td>
+<td>null</td>
+<td>See:
+<em class="xref std std-ref">taskConfig</em>.</td>
+<td>Defines how the rollups will be deployed</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">minify</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>true</td>
+<td>N/A</td>
+<td>Specifies whether to minify the rollups or not</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">jslint</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>true</td>
+<td>N/A</td>
+<td>Specifies whether to jslint the rollups or not</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">regexp</span></tt></td>
+<td>string</td>
+<td>yes, if
+replace</td>
+<td>null</td>
+<td>Regular expression to match</td>
+<td>Defines a regular expression to match in the
+rollups</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">replace</span></tt></td>
+<td>string</td>
+<td>no</td>
+<td>null</td>
+<td>String to replace with</td>
+<td>Defines a string which be replaced when the
+regexp matches</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">comboCDN</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>N/A</td>
+<td>Specifies to push all the application resources
+to CDN. (YUI and taskConfiguration needed)</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">optimizeBootstrap</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>N/A</td>
+<td>Creates a optimized way to load all bootstrap
+JS files on parallel and without blocking
+the rendering of the page.
+See: <em class="xref std std-ref">usage section</em>.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">rollupConfig</span></tt></td>
+<td>object</td>
+<td>no</td>
+<td>null</td>
+<td>See:
+<em class="xref std std-ref">rollupConfig</em>.</td>
+<td>Specifies which resources to rollup for each
+mojit (views, langs, controller, ...)</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">routeBundle</span></tt></td>
+<td>object</td>
+<td>no</td>
+<td>null</td>
+<td><dl class="first last docutils">
+<dt>See:</dt>
+<dd><em class="xref std std-ref">routeBudnel</em>.</dd>
+</dl>
+</td>
+<td>Specifies which mojits to bundle together for
+each entry point defined in our application.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">appBundle</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>N/A</td>
+<td>Bundle all resources of our application
+together.</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">filterInCore</span></tt></td>
+<td>array</td>
+<td>no</td>
+<td>null</td>
+<td>Mojito core modules</td>
+<td>Filters which mojito core modules we don&#8217;t
+want to ship in the core bundle.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="object-taskconfig">
+<h3>Object taskConfig<a class="headerlink" href="#object-taskconfig" title="Permalink to this headline">¶</a></h3>
+<p>Allows you to configure your task in case you create your own task, or you are using some third party module to push to any given CDN.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="9%" />
+<col width="9%" />
+<col width="13%" />
+<col width="22%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Property</th>
+<th class="head">Data Type</th>
+<th class="head">Required?</th>
+<th class="head">Default Value</th>
+<th class="head">Possible Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">prefix</span></tt></td>
+<td>string</td>
+<td>no</td>
+<td>null</td>
+<td>raw, local, s3, mobstor, your own
+See <a class="reference internal" href="shaker_usage.html#env-context"><em>Env and context
+configuration</em></a>.</td>
+<td>Defines how the rollups will be deployed</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&lt;taskName&gt;</span></tt></td>
+<td>object</td>
+<td>no</td>
+<td>null</td>
+<td>N/A</td>
+<td>Defines the configuration properties for a
+given task (for more info check the faq.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="object-rollupconfig">
+<h3>Object rollupConfig<a class="headerlink" href="#object-rollupconfig" title="Permalink to this headline">¶</a></h3>
+<p>You can define which parts you want to rollup for each mojit. If your app is totally offline, you may want to rollup all the components. If you just want to have the minimum shipped to the client the default bundleBinders is the right choice.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="9%" />
+<col width="9%" />
+<col width="13%" />
+<col width="22%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Property</th>
+<th class="head">Data Type</th>
+<th class="head">Required?</th>
+<th class="head">Default Value</th>
+<th class="head">Possible Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">bundleBinders</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>true</td>
+<td>N/A</td>
+<td>Include binders and it&#8217;s dependencies in the
+rollups</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">bundleViews</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>N/A</td>
+<td>Include and compile (as a JS module) views in
+the rollups</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">bundleController</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>See:
+<em class="xref std std-ref">taskConfig</em>.</td>
+<td>Include controller and it&#8217;s dependencies  and
+the proper langs in the rollups.</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">bundleAll</span></tt></td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>See:
+<em class="xref std std-ref">taskConfig</em>.</td>
+<td>Bundle all possible resources for each mojit</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="object-routebundle">
+<h3>Object routeBundle<a class="headerlink" href="#object-routebundle" title="Permalink to this headline">¶</a></h3>
+<p>Route bundle allow you to precompute and rollup high coverage mojits (see section <em class="xref std std-ref">Bundle Mojits</em> for detailed information) so you can optimize your startup time.
+The keys of the object correspont to <strong>routes</strong> you define in <tt class="docutils literal"><span class="pre">routes.json</span></tt> and the <strong>values</strong> are arrays of Mojits and its actions to bundle together. If you don&#8217;t provide an action, index will be taken as default.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;routeBundle&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;myRoute1&quot;</span><span class="o">:</span> <span class="p">[</span>
+                        <span class="nx">Mojit1</span><span class="p">.</span><span class="nx">index</span><span class="p">,</span>
+                        <span class="nx">Mojit2</span><span class="p">.</span><span class="nx">index</span><span class="p">,</span>
+                        <span class="nx">Mojit3</span><span class="p">.</span><span class="nx">otherAction</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;myRoute2&quot;</span><span class="o">:</span> <span class="p">[</span>
+                        <span class="c1">//mojit and action list</span>
+                <span class="p">]</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+   </div>

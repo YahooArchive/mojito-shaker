@@ -1,0 +1,311 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <title>Usage</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: true,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+   </head> 
+
+     <div class="header"><h1 class="heading"><a href="#">
+          <span>Shaker</span></a></h1>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../">Mojito Documentation</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="index.html" title="Shaker">Shaker</a>
+        &#160;&#160;::&#160;&#160;
+        
+        
+        </p>
+
+      </div>
+      <div class="content">
+   <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The Shaker recipe is one part convention and one part configuration. The convention lies in the structure of a mojit or application&#8217;s <tt class="docutils literal"><span class="pre">assets</span></tt> directory. The configuration lies in a mojit or application&#8217;s <tt class="docutils literal"><span class="pre">shaker.json</span></tt> file, which defines rollups and their contents.</p>
+<div class="section" id="contextualize-context-dimensions">
+<h2><strong>Contextualize:</strong> Context Dimensions<a class="headerlink" href="#contextualize-context-dimensions" title="Permalink to this headline">¶</a></h2>
+<p>Before going any further, it is important to understand the core concept of Shaker rollups: context dimensions.</p>
+<p>Context dimensions are the basic building blocks of Shaker rollups. Shaker supports the following dimensions by default:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">common</span></tt> - Resources not specific to any dimension.</li>
+<li><tt class="docutils literal"><span class="pre">action</span></tt> - Action-specific resources (it matches the controller action).</li>
+<li><tt class="docutils literal"><span class="pre">device</span></tt> - Device-specific resources.</li>
+<li><tt class="docutils literal"><span class="pre">skin</span></tt> - Skin-specific resources.</li>
+<li><tt class="docutils literal"><span class="pre">region</span></tt> - Region-specific resources.</li>
+<li><tt class="docutils literal"><span class="pre">lang</span></tt> - Language-specific resources.</li>
+</ul>
+<p>The default dimensions are listed here in ascending priority order. This means that a dimension that appears later in the list is capable of augmenting previous dimensions. In order to create new dimensions, you will have to define your own <tt class="docutils literal"><span class="pre">dimensions.json</span></tt> file, and at runtime set those dimensions to some value since they are not built into Mojito. See the section about <a class="reference external" href="shaker_usage.html#id3">Advanced Configuration</a></p>
+</div>
+<div class="section" id="convention-assets-directory-structure">
+<h2>Convention: Assets Directory Structure.<a class="headerlink" href="#convention-assets-directory-structure" title="Permalink to this headline">¶</a></h2>
+<p>Shaker prefers a mojit or application&#8217;s <tt class="docutils literal"><span class="pre">assets</span></tt> directory be structured according to the context dimensions it is sensitive to. A directory structure that follows these conventions is called conforming. A directory structure that does not follow these conventions is called non-conforming.</p>
+<p>A conforming directory structure is quite simple to configure (basically, it does not need any configuration at all). A non-conforming directory structure is also supported, but requires a bit more effort to configure. See the section on Advanced Configuration for more information.</p>
+<p><strong>Example:</strong> The basic <tt class="docutils literal"><span class="pre">assets</span></tt> directory structure of a conforming mojit.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span><span class="nx">mojit</span><span class="p">]</span>
+   <span class="o">/</span><span class="nx">assets</span><span class="o">/</span>
+      <span class="p">[</span><span class="nx">dimension</span><span class="p">]</span><span class="o">/</span>
+         <span class="p">[</span><span class="nx">value</span><span class="p">]</span><span class="o">/</span>
+            <span class="p">[</span><span class="nx">file</span><span class="p">]</span>
+            <span class="p">...</span>
+         <span class="p">...</span>
+      <span class="p">...</span>
+</pre></div>
+</div>
+<p><strong>Example:</strong> The <tt class="docutils literal"><span class="pre">assets</span></tt> directory structure of a conforming mojit, <tt class="docutils literal"><span class="pre">FooMojit</span></tt>, that is sensitive to the <tt class="docutils literal"><span class="pre">common</span></tt> and <tt class="docutils literal"><span class="pre">region</span></tt> dimensions.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">FooMojit</span><span class="o">/</span>
+   <span class="nx">assets</span><span class="o">/</span>
+      <span class="nx">common</span><span class="o">/</span>
+         <span class="nx">foo</span><span class="o">-</span><span class="nx">common</span><span class="p">.</span><span class="nx">css</span>
+      <span class="nx">region</span><span class="o">/</span>
+         <span class="nx">US</span><span class="o">/</span>
+            <span class="nx">foo</span><span class="o">-</span><span class="nx">US</span><span class="p">.</span><span class="nx">css</span>
+         <span class="nx">CA</span><span class="o">/</span>
+            <span class="nx">foo</span><span class="o">-</span><span class="nx">CA</span><span class="p">.</span><span class="nx">css</span>
+</pre></div>
+</div>
+<p>In the the above example, <tt class="docutils literal"><span class="pre">FooMojit</span></tt> has <tt class="docutils literal"><span class="pre">common</span></tt> CSS regardless of the value of any other dimension. In addition, it has additional CSS when the <tt class="docutils literal"><span class="pre">region</span></tt> dimension value is <em>US</em> or <em>CA</em>.</p>
+<p><strong>Example</strong> of shaker configuration based on the previous folder structure:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s2">&quot;dimensions&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;common&quot;</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;region&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;US&quot;</span><span class="o">:</span> <span class="p">{},</span>
+      <span class="s2">&quot;CA&quot;</span><span class="o">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;lang&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;en&quot;</span><span class="o">:</span> <span class="p">{}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following table illustrates the content of the rollups for <tt class="docutils literal"><span class="pre">FooMojit</span></tt> for various values of the <tt class="docutils literal"><span class="pre">region</span></tt> dimension.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="38%" />
+<col width="0%" />
+<col width="0%" />
+<col width="0%" />
+<col width="0%" />
+<col width="21%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Region Value</th>
+<th class="head" colspan="6">Data Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">none</span></tt></td>
+<td colspan="6"><ul class="first last simple">
+<li>common/foo-common.css</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">US</span></tt></td>
+<td colspan="6"><ul class="first last simple">
+<li>common/foo-common.css</li>
+<li>region/US/foo-US.css</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">CA</span></tt></td>
+<td colspan="6"><ul class="first last simple">
+<li>common/foo-common.css</li>
+<li>region/CA/foo-CA.css</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In the above example, the <tt class="docutils literal"><span class="pre">region</span></tt> dimension maps directly to a conforming <tt class="docutils literal"><span class="pre">assets</span></tt> directory structure.</p>
+<p>Because each dimension is declared with the empty object ({}), Shaker includes all assets found within the corresponding directories (and subdirectories) when generating the corresponding rollup.</p>
+<p>For more control over what gets included in a rollup, see the Advanced Configuration section.</p>
+</div>
+<div class="section" id="actions-binders">
+<h2>Actions/Binders<a class="headerlink" href="#actions-binders" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">actions</span></tt> section tells Shaker which controller actions (binders) the mojit or application is sensitive to. Shaker also analyzes which dimensions your mojits and actions are sensitive to in order to generate at the necessary rollups.</p>
+<div class="section" id="actions-at-mojit-level">
+<h3>Actions at mojit level<a class="headerlink" href="#actions-at-mojit-level" title="Permalink to this headline">¶</a></h3>
+<p>This is the representation for the default shaker configuration at mojit level:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;*&quot;</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;order&quot;</span><span class="o">:</span> <span class="s2">&quot;common-action-device-skin-region-lang&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you have any binder in your mojit, shaker will analyze it for you, creating some structure like this:</p>
+<p><strong>Example</strong>: A mojit sensitive to the <tt class="docutils literal"><span class="pre">index</span></tt> and <tt class="docutils literal"><span class="pre">show</span></tt> controller actions (binders).</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;*&quot;</span><span class="o">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;index&quot;</span><span class="o">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;show&quot;</span><span class="o">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;order&quot;</span><span class="o">:</span> <span class="s2">&quot;common-action-device-skin-region-lang&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>Note that you don&#8217;t have to write any configuration for any case if you use the default folder structure.</p>
+</div>
+<div class="section" id="actions-at-the-app-level">
+<h3>Actions at the app level<a class="headerlink" href="#actions-at-the-app-level" title="Permalink to this headline">¶</a></h3>
+<p>The configuration at the app level is exactly the same as at the mojit level, with only one difference: you can specify which mojits you want to bundle per action. Bundling a mojit means that these mojits&#8217; assets will be included within the app rollup, avoiding to request additional rollups for those mojits.</p>
+<p><strong>Example</strong>: App shaker configuration bundling different mojits per action:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;*&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;mojits&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mojitA&quot;</span><span class="p">,</span><span class="s2">&quot;mojitB&quot;</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;appAction1&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;mojits&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mojitA&quot;</span><span class="p">,</span><span class="s2">&quot;,mojitB.index&quot;</span><span class="p">,</span><span class="s2">&quot;mojitC&quot;</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;appAction2&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;mojits&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mojitD&quot;</span><span class="p">,</span><span class="s2">&quot;mojitE&quot;</span><span class="p">]</span>
+
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;order&quot;</span><span class="o">:</span> <span class="s2">&quot;common-action-device-skin-region-lang&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="environment-configuration">
+<h2>Environment Configuration<a class="headerlink" href="#environment-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Shaker allows you to rollup your assets and deploy them in a variety of ways based on the environment context.
+All that is necessary is to provide a shaker config per environment in your <tt class="docutils literal"><span class="pre">application.json</span></tt> file. A shaker config specifies what task to run and any additional settings the task depends on.</p>
+<p><strong>Example:</strong> Sample <tt class="docutils literal"><span class="pre">application.json</span></tt> shaker setup using several environments:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[{</span>
+    <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;master&quot;</span><span class="p">]</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;environment:test&quot;</span><span class="p">],</span>
+
+    <span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;task&quot;</span><span class="o">:</span> <span class="s2">&quot;local&quot;</span>
+        <span class="s2">&quot;lint&quot;</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;environment:stage&quot;</span><span class="p">],</span>
+
+    <span class="s2">&quot;shaker&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;task&quot;</span><span class="o">:</span> <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;images&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="s2">&quot;config&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;client&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;key&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;key&gt;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;secret&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;secret&gt;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bucket&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;bucket&gt;&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+<div class="section" id="shaker-settings">
+<h3>Shaker Settings<a class="headerlink" href="#shaker-settings" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">task</span></tt> - {string} Name of task to execute (local, s3). Defaults to null which runs in dev mode.</li>
+<li><tt class="docutils literal"><span class="pre">compiled_dir</span></tt> - {string} Where to output Shaker generated files. Defaults to assets/compiled/.</li>
+<li><tt class="docutils literal"><span class="pre">images</span></tt> - {boolean} Whether to deploy images with rollups. Useful if your CSS contains relative URLs to assets. Defaults to false.</li>
+<li><tt class="docutils literal"><span class="pre">parallel</span></tt> - {integer} How many files to deploy in parallel. Defaults to 20.</li>
+<li><tt class="docutils literal"><span class="pre">delay</span></tt> - {integer} Add network delay for slow hosts. Defaults to 0.</li>
+<li><tt class="docutils literal"><span class="pre">lint</span></tt> - {boolean} Run lint on app files. Defaults to true.</li>
+<li><tt class="docutils literal"><span class="pre">minify</span></tt> - {boolean} Minify JS and CSS. Defaults to true.</li>
+<li><tt class="docutils literal"><span class="pre">config</span></tt> - {object} Object passed through to task.</li>
+</ul>
+<p>To build a particular environment, run the shaker command like so: <tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:&lt;env&gt;</span></tt></p>
+<p>As we saw in the Components section, we have different deployment tasks. Next we will see how to use each based on the example application.json above.</p>
+</div>
+<div class="section" id="deploying-raw-no-rollups-developer-mode">
+<h3>Deploying raw (no rollups, developer mode)<a class="headerlink" href="#deploying-raw-no-rollups-developer-mode" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--run</span></tt></p>
+</div>
+<div class="section" id="deploying-locally-rollups-developer-mode">
+<h3>Deploying locally (rollups, developer mode)<a class="headerlink" href="#deploying-locally-rollups-developer-mode" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:test</span> <span class="pre">--run</span></tt></p>
+</div>
+<div class="section" id="deploying-to-s3-amazon-cdn">
+<h3>Deploying to  S3 (Amazon CDN)<a class="headerlink" href="#deploying-to-s3-amazon-cdn" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">mojito</span> <span class="pre">shake</span> <span class="pre">--context</span> <span class="pre">environment:stage</span> <span class="pre">--run</span></tt></p>
+</div>
+<div class="section" id="deploying-elsewhere">
+<h3>Deploying elsewhere<a class="headerlink" href="#deploying-elsewhere" title="Permalink to this headline">¶</a></h3>
+<p>All tasks are actually Gear.js (<a class="reference external" href="https://github.com/yahoo/gear">https://github.com/yahoo/gear</a>) tasks. It&#8217;s easy to write your own. There are many examples in the Gear source. Simply write your custom task, drop it in the tasks directory, and reference it in the shaker config like any other task. Everything in the tasks directory will be automatically picked up.</p>
+</div>
+<div class="section" id="debugging-shaker">
+<h3>Debugging Shaker<a class="headerlink" href="#debugging-shaker" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>Advanced Configuration<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="include-exclude-replace">
+<h3>Include/Exclude/Replace<a class="headerlink" href="#include-exclude-replace" title="Permalink to this headline">¶</a></h3>
+<p>If the default directory-based rollup behavior is not desirable, or if the assets directory is non-conforming, it&#8217;s still possible to configure rollups using the include, exclude and replace settings.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">include</span></tt> - Include one or more paths or files. (Useful for mojit- and application-level configuration.)</li>
+<li><tt class="docutils literal"><span class="pre">exclude</span></tt> - Exclude one or more paths or files. (Useful for application-level configuration.)</li>
+<li><tt class="docutils literal"><span class="pre">replace</span></tt> - Replace one or more paths or files with new paths or files. (Useful for application-level configuration.)</li>
+</ul>
+<p><strong>Example advanced configuration:</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;dimensions&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;common&quot;</span><span class="o">:</span><span class="p">{</span>
+            <span class="s2">&quot;include&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mycommon/&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;exclude&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;common/common1.css&quot;</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;device&quot;</span><span class="o">:</span><span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;actions&quot;</span><span class="o">:</span><span class="p">{</span>
+        <span class="s2">&quot;index&quot;</span><span class="o">:</span><span class="p">{}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="augmenting-dimensions">
+<h3>Augmenting Dimensions<a class="headerlink" href="#augmenting-dimensions" title="Permalink to this headline">¶</a></h3>
+<p>Shaker allows you to perform surgical manipulation of the rollups using augmentation. This configuration feature allows you to include/exclude files for a particular dimension which matches some criteria. For example, we want to override a special CSS file only when we are in &#8220;region:CA and in lang:en&#8221;. The syntax follows the example below.</p>
+<p><strong>shaker.json example for dimensions augmentation:</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;augments&quot;</span><span class="o">:</span><span class="p">[{</span>
+            <span class="s2">&quot;on&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;region&quot;</span><span class="o">:</span> <span class="s2">&quot;US&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lang&quot;</span><span class="o">:</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;skin&quot;</span><span class="o">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;device&quot;</span><span class="o">:</span> <span class="s2">&quot;smartphone&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;action&quot;</span><span class="o">:</span> <span class="s2">&quot;index&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;include&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;toInclude/otherToInclude.css&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;exclude&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;lang/&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+   </div>
