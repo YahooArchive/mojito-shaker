@@ -11,12 +11,17 @@ Introducing Shaker
 
 	`Image Source <http://www.flickr.com/photos/breatheindigital/4623226056/>`_
 	
+Shaker is an asset rollup management tool for Mojito applications that improves performance
+by reducing the number of HTTP requests. 
 
-Shaker is an asset rollup management tool for Mojito applications which reduces the number of HTTP requests, thus improving performance. 
+A rollup consists of one or more input files that are combined (rolled up) to produce a 
+single output file. Rollups can be as simple as a single file, a single mojit binder and 
+its dependencies, or any combination thereof.
 
-A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof.
-
-Shaker allows you to create rollups using different combination of dimensions. For example, you may want to serve different assets when people are connected from different devices, different countries, etc.
+Shaker allows you to create rollups using different combination of dimensions. A dimension
+can represent a runtime or regional environment. For example, you may want to serve 
+different assets when people are connected from different devices, different countries, 
+etc.
 
 
 Table of Contents

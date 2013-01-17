@@ -1,7 +1,8 @@
 
-========
+=====
 Usage
-========
+=====
+
 The Shaker recipe is one part convention and one part configuration. The convention lies on the name you put to your ``resources`` (assets, binders, controllers, etc). The configuration lies in a mojit or application's ``shaker.json`` file, which defines rollups and their contents.
 
 We will see every feature/use-case Shaker can handle. Also to clarify more all use-cases, you can find a lot of examples here.
