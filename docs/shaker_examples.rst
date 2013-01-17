@@ -6,6 +6,8 @@ Shaker App Example
 To better understand how Shaker works, we are going to create simple application from scratch,
 which will cover the basic features and some advanced configuration as well.
 
+Moreover you can check a really simple app to teach you how to install shaker: https://github.com/dferreiroval/mojito-shaker-demos
+
 Application overview
 #####################
 
@@ -21,7 +23,7 @@ Our application will have three main mojits:
 
 Each mojit will react to a specific set of dimensions:
 
-- ``device``: default, smartphone
+- ``device``: default, iphone
 - ``region``:  default, CA
 - ``skin``: default, gray, blue
 
@@ -82,26 +84,19 @@ As you can see, we are not manually including any CSS and we don't have any logi
     </div>
   </div>
 
-Also ``master`` will react to various dimensions (skin:grey, device:smartphone), so this is how the asset structure looks:
+Also ``master`` will react to various dimensions (skin:grey, device:iphone), so this is how the asset structure looks:
 
 .. code-block:: text
-  :emphasize-lines: 4,7,10,12
 
   master/
      /assets/
-        /common/
-           master.css
-        /device/
-           /smartphone/
-              master-smartphone.css
-        /skin/
-           /grey/
-              master-grey.css
-           /blue/
-              blue.css
+          master.css
+          master.iphone.css
+          myskin.grey.css
+          myskin.blue.css
 
 Note that there is a special dimension called ``common`` which basically acts as a css-base, sharing all its css among all other 
-dimensions. The ``master-smartphone.css`` or ``master-grey.css`` files will have some style overrides to change the baseplate style.
+dimensions. The ``master.iphone.css`` or ``skin.grey.css`` files will have some style overrides to change the baseplate style.
 
 
 primary mojit
@@ -112,20 +107,12 @@ This mojit will be the left part of our application (you can see it in the pictu
 **Assets structure**
 
 .. code-block:: text
-  :emphasize-lines: 4,7,10,12
 
-  primary/
-     /assets/
-        /common/
-           primary.css
-        /region/
-           /CA/
-              primary-CA.css
-        /skin/
-           /grey/
-              primary-grey.css
-           /blue/
-              blue.css
+  primary/assets/
+    primary.css
+    region.ca.css
+    primary-skin.grey.css
+    primary-skin.blue.css
 
 Note: the name of the files doesn't matter. Only the folder structure is important.
 
@@ -154,23 +141,13 @@ secondary mojit
 This mojit will be the right part of our application. This mojit reacts to all the previous dimensions:
 
 .. code-block:: text
-  :emphasize-lines: 4,7,10,13,15
 
-  secondary/
-     /assets/
-        /common/
-           secondary.css
-        /device/
-           /smartphone/
-              secondary-smartphone.css
-        /region/
-           /CA/
-             secondary-CA.css
-        /skin/
-           /grey/
-              secondary-grey.css
-           /blue/
-              some-blue.css
+  secondary/assets/
+    secondary.css
+    secondary.iphone.css
+    secondary-region.ca.css
+    secondary-skin.grey.css
+    secondary-skin.blue.css
 
 Note: the name of the files doesn't matter. Only the folder structure is important.
 
@@ -242,6 +219,22 @@ We need to tell shaker how we want to do the rollups. In order to do that we hav
       }
   },
   {
+      "settings": ["device:iphone"],
+      "selector": "iphone"
+  },
+  {
+      "settings": ["region:CA"],
+      "selector": "ca"
+  },
+  {
+      "settings": ["skin:blue"],
+      "selector": "blue"
+  },
+  {
+      "settings": ["skin:grey"],
+      "selector": "grey"
+  },
+  {
       "settings": ["environment:stage"],
 
       "shaker": {
@@ -288,7 +281,7 @@ Let's assume that we run ``mojito shake --context "environment:test" --run``. Th
 
 Everything spin around this metadata file. Let's see how this file looks like for our app:
 
-**Example: shaker-meta.common.js**
+**Example: shaker-meta.js**
 
 .. code-block:: js
   :emphasize-lines: 3,6-7,20-21,45
@@ -300,48 +293,22 @@ Everything spin around this metadata file. Let's see how this file looks like fo
     "mojits": {
       "master": {
         "*": {
-          "shaken": {
-            "common": ["/static/demo/assets/compiled/master_default_c75fe0cbaaf623aea7be93e50b7f3c7f.css"],
-            "common-*-smartphone-grey": ["/static/demo/assets/compiled/master_default_c7073a85504c3e292c97c059222cc051.css"],
-            "common-*-device-grey-region-lang": ["/static/demo/assets/compiled/master_default_b347e1cf67ee4b5520442825ce61f26c.css"],
-            ...
-          },
-          "client": ["/static/demo/assets/compiled/master_89d0110765d6c92d517b3bab39407c9a.client.js"],
-          "meta": {
-            ...
-          }
-        }
-      },
-      "primary": {
-        "index": {
-          "shaken": {
-            "common": ["/static/demo/assets/compiled/primary_index_9eee7d6bfbc2d41a0d57ae90ff40f61a.css"],
-            "common-index-device-grey-CA-lang": ["/static/demo/assets/compiled/primary_index_e1100f2ae51bde147e1dad91b3be2b70.css"],
-            "common-index-device-grey-region-lang": ["/static/demo/assets/compiled/primary_index_1566cfc15fd5fc2b6add48f6d33291db.css"],
-            "common-index-device-skin-CA-lang": ["/static/demo/assets/compiled/primary_index_04cb930f6f9e7f1af6879d96dd2f82ee.css"],
-          },
-          "client": [
-            "/static/demo/assets/compiled/primary_d3d36e4c5173cb91aae507cf5ecb2ef8.client.js"
-          ],
-          "meta": {
-            "client": {
-              "models": [],
-              "controllers": ["/path/to/app/demo/mojits/primary/controller.common.js"],
-              "binders": ["/path/to/app/demo/mojits/primary/binders/index.js"],
-              "views": [
-                "/path/to/app/demo/mojits/primary/views/dynamic.mu.html",
-                "/path/to/app/demo/mojits/primary/views/index.mu.html"
-              ],
-              "dependencies": []
+          "index": {
+              "css": ["/static/demo/assets/compiled/master_default_c75fe0cbaaf623aea7be93e50b7f3c7f.css"],
+              "js": ["/static/demo/assets/compiled/master_89d0110765d6c92d517b3bab39407c9a.client.js"],
             }
           }
         }
       },
-      "secondary": {
+      "primary": {
         "*": {
-          "shaken": {
-            "common": ["/static/demo/assets/compiled/secondary_default_d139d9b8eb6d55219f3ee0f9fdabd7e2.css"
-            ...
+          "index": {
+            "css": ["/static/demo/assets/compiled/primary_index_9eee7d6bfbc2d41a0d57ae90ff40f61a.css"],
+            "js": ["/static/demo/assets/compiled/primary_d3d36e4c5173cb91aae507cf5ecb2ef8.client.js"],
+          }
+        }
+      },
+      ...
     "core": [
       "/static/demo/assets/compiled/core_54287af0374120fd75a3d7251d66eb90.common.js"
     ],
@@ -357,132 +324,14 @@ As you can see for each mojit and for each possible combination, Shaker generate
 
 During development, you may want to know what exactly gets included in every rollup. To do that, just run shaker in dev mode: ``mojit shake``
 
-**Developer context shaker-meta.common.js**
-
-.. code-block:: js
-
-    YUI.add("shaker/metaMojits", function(Y, NAME) {
-    YUI.namespace("_mojito._cache.shaker");
-    YUI._mojito._cache.shaker.meta =
-    {
-        "mojits": {
-            "master": {
-                "*": {
-                    "shaken": {
-                        "common": [
-                            "/static/master/assets/common/master.css"
-                        ],
-                        "common-*-smartphone": [
-                            "/static/master/assets/common/master.css",
-                            "/static/master/assets/device/smartphone/master-smartphone.css"
-                        "common-*-smartphone-grey": [
-                            "/static/master/assets/common/master.css",
-                            "/static/master/assets/device/smartphone/master-smartphone.css",
-                            "/static/master/assets/skin/grey/master-grey.css"
-                        ],
-                        "common-*-smartphone-skin": [
-                            "/static/master/assets/common/master.css",
-                            "/static/master/assets/device/smartphone/master-smartphone.css"
-                        ],
-                        "common-*-smartphone-grey-region-lang": [
-                            "/static/master/assets/common/master.css",
-                            "/static/master/assets/device/smartphone/master-smartphone.css",
-                            "/static/master/assets/skin/grey/master-grey.css"
-                        ],
-                        ...
-                    },
-                    "client": [
-                        "/path/to/app/demo/mojits/master/controller.common.js",
-                        "/path/to/app/demo/mojits/master/views/index.mu.html"
-                    ],
-                    "meta": {
-                       ...
-                    }
-                }
-            },
-            "primary": {
-                "index": {
-                    "shaken": {
-                        "common": [
-                            "/static/primary/assets/common/primary.css"
-                        ],
-                        ...
-                        "common-index-device-grey-CA": [
-                            "/static/primary/assets/common/primary.css",
-                            "/static/primary/assets/skin/grey/primary-grey.css",
-                            "/static/primary/assets/region/CA/primary-CA.css"
-                        ],
-
-                        "common-index-device-skin-CA-lang": [
-                            "/static/primary/assets/common/primary.css",
-                            "/static/primary/assets/region/CA/primary-CA.css"
-                        ],
-                        ...
-                    },
-                    "client": [
-                        "/path/to/app/demo/mojits/primary/controller.common.js",
-                        "/path/to/app/demo/mojits/primary/binders/index.js",
-                        "/path/to/app/demo/mojits/primary/views/dynamic.mu.html",
-                        "/path/to/app/demo/mojits/primary/views/index.mu.html"
-                    ],
-                    "meta": {
-                    }
-                }
-            },
-            "secondary": {
-                "index": {
-                    "shaken": {
-                        "common": [
-                            "/static/secondary/assets/common/secondary.css"
-                        ],
-                        ...
-                        "common-index-smartphone-grey-region": [
-                            "/static/secondary/assets/common/secondary.css",
-                            "/static/secondary/assets/device/smartphone/secondary-smartphone.css",
-                            "/static/secondary/assets/skin/grey/secondary-grey.css"
-                       ],
-                       ...
-                        "common-index-device-skin-CA-lang": [
-                            "/static/secondary/assets/common/secondary.css",
-                            "/static/secondary/assets/region/CA/secondary-CA.css"
-                        ],
-                        "common-index-device-skin-region-lang": [
-                            "/static/secondary/assets/common/secondary.css"
-                        ]
-                    },
-                    "client": [
-                        "/path/to/app/demo/mojits/secondary/controller.common.js",
-                        "/path/to/app/demo/mojits/secondary/binders/index.js",
-                        "/path/to/app/demo/mojits/secondary/views/index.mu.html"
-                    ],
-                    "meta": {
-                       ...
-                    }
-                }
-            },
-        "core": [
-            "/Users/diegof/node_modules/mojito/lib/app/addons/ac/analytics.common.js",
-            "/Users/diegof/node_modules/mojito/lib/app/addons/ac/assets.common.js",
-            ...
-            "/Users/diegof/node_modules/mojito/lib/app/autoload/view-renderer.common.js"
-        ],
-        "images": [
-            "/path/to/app/demo/assets/favicon.ico",
-            ...
-        ],
-        "config": {
-            ...
-        }
-    }});
-
 You can see which files will be picked up for each dimension combination, and also which files will be picked up on the client side.
 
-.. note:: By default, every mojit will require two requests, one for the CSS rollup, and another for all the JS. You could improve the number of requests by bundling mojits together. It's what we call "High coverage mojits". In order to do that, you will have to create a ``shaker.json`` configuration file at the application level. For more information, read the Advanced Configuration.
+.. note:: By default, every mojit will require two requests, one for the CSS rollup, and another for all the JS. You could improve the number of requests by bundling mojits together. It's what we call "High coverage mojits". For more information, read the Usage section.
 
 
 Runtime
 ----------
-At runtime, the normal workflow happens in mojito until the execution reach the ShakerHTMLFrame. THen our Shaker addon gets executed, looks at the context, determines which dimensions match the request, and serves the most appropriate rollup to the client. So if the context of a request is set to ``region:CA`` and ``device:smartphone``, Shaker will pick the rollup for those dimensions and attach it to the page.
+At runtime, the normal workflow happens in mojito until the execution reach the ShakerHTMLFrame. THen our Shaker addon gets executed, looks at the context, determines which dimensions match the request, and serves the most appropriate rollup to the client. So if the context of a request is set to ``region:CA`` and ``device:iphone``, Shaker will pick the rollup for those dimensions and attach it to the page.
 
 .. note:: To create custom dimensions (not built in mojit) you will have to set the value of that dimension at runtime. In this example, "skin" is picked from the url and passed to the context so Shaker can know which value to pick up.
 
