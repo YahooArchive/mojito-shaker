@@ -35,6 +35,7 @@ YUI.add('shaker-inline-addon', function(Y, NAME) {
 
         _init: function (ac, adapter) {
             this._hookDoneMethod(ac, adapter);
+            this._inlineShared = [];
         },
         _hookDoneMethod: function (ac, adapter) {
             var self = this,
@@ -58,11 +59,13 @@ YUI.add('shaker-inline-addon', function(Y, NAME) {
             if (!inlineShaker.blob) {
                 inlineShaker.blob = [];
             }
+            //add the gathered inlineShared
+            inlineShaker.blob = inlineShaker.blob.concat(this._inlineShared);
             
             if (typeof data === 'string') {
-                    data += inlineShaker.blob.join('');
+                data += inlineShaker.blob.join('');
             } else if (data instanceof Array) {
-                    data.concat(inlineShaker.blob);
+                data.concat(inlineShaker.blob);
             }
 
             // Remove the inlineAssets from meta, since we just added to the view
@@ -72,6 +75,22 @@ YUI.add('shaker-inline-addon', function(Y, NAME) {
             // Restore the original arguments and call the real ac.done with the modified data.
             args = [].slice.apply(arguments).slice(2);
             done.apply(selfContext, args);
+        },
+        /*
+        */
+        inlineFile: function (name) {
+            var store = this.getStore(),
+                ac = this._ac,
+                shakerRS = store.shaker,
+                shakerMeta = shakerRS.meta,
+                context = ac.context,
+                strContext = store.selector.getPOSLFromContext(ac.context).join('-'),
+                inlineShared = (shakerMeta && shakerMeta.app[strContext].inlineShared) || {};
+
+            if (inlineShared[name]) {
+                this._inlineShared.push(inlineShared[name]);
+                return true;
+            }
         }
     };
     //we just add it to ac in case at some point we will have an API

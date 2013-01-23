@@ -15,7 +15,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
         BOOTSTRAP_DIR = '../../lib/bootstrap/',
         BOOTSTRAP_YUI_OVERRIDE = 'yui-override',
         BOOTSTRAP_FAKE_YUI = 'yui-fake-inline-min',
-        //inline
+        //inline (defined in core as well)
         INLINE_SELECTOR ='shaker-inline';
 
     function RSAddonShaker() {
