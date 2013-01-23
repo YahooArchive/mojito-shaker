@@ -104,10 +104,10 @@ Features
 |                    | own JavaScript and CSS bundle.                                       |
 +--------------------+----------------------------------------------------------------------+
 | ``MOJIT-BUNDLE``   | Define (through configuration) which resources of a mojit to include |
-|                    | in a given bundle (views, binders, controllers, langs,...).          |
+|                    | in a given bundle (views, binders, controllers, langs...).           |
 +--------------------+----------------------------------------------------------------------+
 | ``K-WEIGHT``       | Split JavaScript bundles in small chunks so multiple requests can    |
-|                    | be made in parallel.                                                 | 
+|                    | be made in parellel.                                                 | 
 +--------------------+----------------------------------------------------------------------+
 
 .. _overview-benefits:

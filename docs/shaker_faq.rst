@@ -16,7 +16,7 @@ Contact Info
 
 These are the most common questions we have had to answer while working with different 
 Shaker users. If you have other questions, doubts, issues, don't hesitate to contact us 
-through the forum, GitHub, or by sending questions directly to the developpers.
+through the forum, GitHub, or by sending questions directly to the developers.
 
 	- `GitHub Issues <https://github.com/yahoo/mojito-shaker/issues?page=1&state=open>`_
 	- `YDN Forum: <http://developer.yahoo.com/forum/Yahoo-Mojito>`_
