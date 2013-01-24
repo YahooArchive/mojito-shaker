@@ -32,19 +32,18 @@ Examples
 This is how you dynamically add your assets in Mojito, based on some
 dimension (in this case, the device):
 
-.. code-block: javascript
+.. code-block:: javascript
 
-	// controller logic
-	var device = ac.context.device,
-        css = '/static/device/assets/simple';
+   // Controller logic
+   var device = ac.context.device,
+       css = '/static/device/assets/simple';
 
-	if (device === 'iphone') {
-		css += '.' + device;
-	}
+   if (device === 'iphone') {
+     css += '.' + device;
+   }
 
-	css += '.css';
-
-	ac.assets.addCss(css, 'top');
+   css += '.css';
+   ac.assets.addCss(css, 'top');
 
 This is how you dynamically add your assets with **Shaker:**
 
