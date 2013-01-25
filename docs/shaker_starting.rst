@@ -1,85 +1,95 @@
 
-========
-Getting started
-========
+===============
+Getting Started
+===============
+
+.. _gs-prereqs:
 
 Prerequisites
-###############
+#############
 
-Mojito npm package v0.3.2 or higher. (See compatibility table below.)
+- `Node.js (>= 0.6.0 < 0.8) <http://nodejs.org/>`_, `npm (> 1.0.0) <https://npmjs.org/>`_
+- `Mojito v0.5.x <https://npmjs.org/package/mojito>`_
+
+.. note:: To use Shaker with other versions of Mojito, 
+          see :ref:`Compatibility Table <gs-compatibility>`.
+
+
+.. _gs-install:
 
 Installation Steps
 ##################
 
-#. Install ``npm``.
-
-   ``$ curl http://npmjs.org/install.sh | sh``
-
-   If npm fails to install, try running the above command with ``sudo``:
-
-   ``$ curl http://npmjs.org/install.sh | sudo sh``
-
-#. Go to your app directory
+#. Go to your Mojito application directory:
 
    ``$ cd myApp``
 
-#. Get Shaker from the npm registry and install it under your Mojito application (or globally using ``-g`` option) so that it can be run from the command line.
+#. Get Shaker from the npm registry and install it under your Mojito application 
+   (or globally using ``-g`` option) so that it can be run from the command line.
 
    ``$ npm install mojito-shaker [-g]``
 
-#. Confirm that Shaker has been installed correctly by running the shaker command:
+#. Confirm that Shaker has been installed correctly by running the ``shaker`` command:
 
    ``$ mojito-shake``
 
-#. If you got some error, check if you have correctly configured the `Node environment <http://nodejs.org/api/modules.html#modules>`_. You can try to set the right $NODE_PATH to the modules using:
+#. If you get an error, check if you have correctly configured the 
+   `Node environment <http://nodejs.org/api/modules.html#modules>`_. Also, try setting the 
+   right ``$NODE_PATH`` to the modules using the following:
 
-	``$ export NODE_PATH=:$NODE_PATH:\`npm root -g\```
+   ``$ export NODE_PATH=:$NODE_PATH:\`npm root -g\```
 
+.. _gs-running:
 
 Running Shaker
-###############
+##############
 
 Within a Mojito application root folder:
 
-* Edit application.json to configure and use the ShakerHTMLFrame. It looks like:
+#. Edit the ``application.json`` file to configure and use the ``ShakerHTMLFrame``. 
+   It should look like the following:
 
-::
+   .. code-block:: javascript
 
-    [
+      [
         {
-            "settings": [ "master" ],
-            "specs": {
-                "htmlframe": {
-                    "type": "ShakerHTMLFrame"
-                }
+          "settings": [ "master" ],
+          "specs": {
+            "htmlframe": {
+              "type": "ShakerHTMLFrame"
             }
+          }
         }
-    ]
+      ]
 
 
-* Execute Shaker and Start the server:
+#. Execute Shaker and start the server:
 
-    ``$ mojito-shake [--context "environment:{value}"] [--run]``
+   ``$ mojito-shake [--context "environment:{value}"] [--run]``
 
-The option ``--run`` will make the server start automatically.
+   The option ``--run`` will make the server start automatically.
 
-* Go to URL:
-	``http://localhost:8666``
+#. Go to following URL: http://localhost:8666
 
-For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
+For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. 
+To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
+
+.. _gs-compatibility:
 
 Compatibility Table
 ###################
 
-Since mojito 3.x.x, many api's have changed, a lot of new features were introduced, etc. Which means that shaker had to adapt to this evolution as well. That's why you may encounter some incompatibilities depending the version of Mojito you're using.
+Since Mojito 3.x.x, many API's have changed, and a lot of new features were introduced, 
+so Shaker has had to adapt to be compatible with Mojito. Thus, you may 
+encounter some incompatibilities depending upon the version of Mojito you're using.
 
-**Note:** This documentation is updated and ment to be used with ``Shaker 3`` and ``Mojito 0.5.x``.
 
-Nontherless here a table where you can find the most stable version of ``Shaker`` for each mojito mayor version:
+To avoid compatibility issues, refer to the table below to use the most stable 
+version of ``Shaker`` for each Mojito minor version:
 
 
 +-----------------+---------------------------------+
-| Mojito version  | Shaker most stable version      |
+| Mojito Version  | Shaker Most Stable Version      |
 +=================+=================================+
 | 0.3.x           | 0.8.x                           |
 +-----------------+---------------------------------+
