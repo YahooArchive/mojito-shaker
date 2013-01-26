@@ -39,7 +39,7 @@ context you can define a selector. This is what it looks like in your ``applicat
    }
 
 Creating a resource sensitive to that selector is as simple as adding the selector to the 
-file name:
+filename:
 
 - ``controller.iphone.common.js`` - ``iphone`` is the selector
 - ``myview.bucket4.client.js``    - ``bucket4`` is the selector
@@ -171,7 +171,7 @@ at runtime to know which bundles to serve.
     }
 
 We will see in the next sections how to customize the content of the rollups (minification, 
-deployment to CDN, bootstrapping, etc.) through configuration.
+deployment to CDN, bootstraping, etc.) through configuration.
 
 
 .. _env-context:
@@ -265,7 +265,7 @@ configuration for Shaker. These are some of the options we saw in the
 - ``rollupConfig`` - {Object} It tells Shaker which parts to deploy to the client 
   (binders, views, controllers, or all of them).
 
-For all the options available in Shaker, see `Shaker Configuration API <./shaker_api_summary.html>`_.
+For all the options avaliable in Shaker, see `Shaker Configuration API <./shaker_api_summary.html>`_.
 
 .. _usage-bundling:
 
@@ -331,7 +331,7 @@ Shaker has to provide as well as bundle independent mojits that may
 be loaded after the page has already been rendered or when the user clicks a link 
 that triggers the dispatch of a new mojit.
 
-If there are no high-coverage bundles, the default behavior is to load the mojits as 
+If there are no high-coverage bundles, the default behaviour is to load the mojits as 
 **low coverage**. 
 
 Because the Mojito v0.5.x handles the JavaScript with a local combo load, the only 
@@ -378,11 +378,11 @@ Inlining Code
 
 Sometimes we need to execute JavaScript or load CSS styles as quickly as possible to give 
 our users a good user experience. In Mojito v0.5.x, you can inline code using the core APIs, 
-but you will have to hard-code the code into your controllers, and this is not really ideal.
+but you will have to hardcode the code into your controllers, and this is not really ideal.
 
 In Shaker, we came up with an automated way to do this. You just have to create a file with 
 a special the selector ``shaker-inline`` in your mojit, and this file will be inline and 
-served when the mojit is dispatched. Given that a mojit can have different behavior 
+served when the mojit is dispatched. Given that a mojit can have different behaviour 
 depending on the action, inlining is also sensible to the action, so if the name of your 
 inline file matches an existing action in your mojit, it will be only inlined when the
 action matches at runtime. 
@@ -398,7 +398,7 @@ dependency called ``shaker-inline``. See examples about inlining in the
 - ``myInline.shaker-inline.css`` - this will be inlined for any action within the mojit.
 - ``mojitAction1.shaker-inline.js`` - Assuming that there is an action with his 
   corresponding view called ``mojitAction1``, the code will be inlined at runtime when 
-  ``mojitAction1`` is executed.
+  ``mojitAction1`` is exexuted.
 - ``myInline.iphone.shaker-inline.js`` - this will be inlined when the context (in this 
   case ``iphone``) matches at runtime.
 
@@ -416,7 +416,7 @@ Dynamic & Parallel Bootstrap
 By default, the ``<script src=...></script>`` tag is evil! The browser must halt parsing 
 the HTML until the script is downloaded and executed (since the script might call 
 ``document.write()`` or define global variables that the scripts depend on). Images and 
-style sheets that come after the ``script`` tag don't start downloading 
+stylesheets that come after the ``script`` tag don't start downloading 
 until after the script has finished downloading and executing. External scripts typically 
 make the page load much more slowly, which is why NoScript has become so popular.
 
@@ -427,7 +427,7 @@ the page is rendered. The problem with ``defer`` is that the W3C HTML5 draft has
 ``defer`` from inlined scripts due to execution order guarantee, and also ``defer`` is not 
 supported in some browsers.
     
-The alternative we suggest is to dynamically load scripts. Here is a snippet illustrating
+The alternative we suggest is to dynamically load scipts. Here is a snippet illustrating
 how to dynamically load scripts:
 
 .. code-block:: html
@@ -467,7 +467,7 @@ time.
     "shaker": {
         // This are the default values:
         "ksplit": {
-            "weight": 100 // the kb limit for splitting
+            "weight": 100 // the kb limit for spliting
             "threshold": 20 // the percentage of threshold to split the rollup
             "":
         }
