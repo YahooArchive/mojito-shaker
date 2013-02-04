@@ -4,15 +4,18 @@
  * See the accompanying LICENSE file for terms.
  */
 
-YUI.add('mojito-shaker-addon', function(Y, NAME) {
+/*jslint nomen: true */
 
-    FakeAssetsAddon = function () {
-        this.assets = {js: [], css:[], blob:[]};
-    };
+YUI.add('mojito-shaker-addon', function (Y, NAME) {
+    'use strict';
+
+    function FakeAssetsAddon() {
+        this.assets = {js: [], css: [], blob: []};
+    }
 
     FakeAssetsAddon.prototype = {
         getAssets: function () {
-                return this.assets;
+            return this.assets;
         },
         addAsset: function (type, location, url) {
             this.assets[type].push(url);
@@ -27,18 +30,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
     }
 
     ShakerAddon.prototype = {
+
         namespace: 'shaker',
-        /*
-        * This is a magic method that mojito will invoke for me to populate the store,
-        * if not we provide the dirty fallback version.
-        */
+
         setStore: function (rs) {
             this.rs = rs;
         },
-        /*
-        * getter for abstract the access of the store, since the accesors to the store may change
-        * in the next version of Mojito...
-        */
+
         getStore: function () {
             if (this.rs) {
                 return this.rs;
@@ -48,35 +46,38 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 return this.rs;
             }
         },
+
         _getFakeYUIBootstrap: function () {
             var store = this.getStore(),
                 shakerRS = store.shaker,
                 fakeBS = shakerRS.fakeYUIBootstrap;
 
             if (fakeBS) {
-                return '<script>' + fakeBS +'</script>';
+                return '<script>' + fakeBS + '</script>';
             } else {
                 Y.log('[SHAKER] Error getting the Fake YUI BootStrap', 'error');
             }
         },
+
         createOptimizedBootstrapBlob: function (jsList) {
             var urls,
                 tmpl;
 
             if (jsList && jsList.length) {
                 urls = jsList.join('","');
-                tmpl = '<script>YUI.SimpleLoader.js("'+ urls +'");</script>';
+                tmpl = '<script>YUI.SimpleLoader.js("' + urls + '");</script>';
                 return tmpl;
             }
         },
-        _init:function (ac, adapter) {
+        _init: function (ac, adapter) {
             // initialize will return the shaker metadata
             if (this._initializeShaker()) {
                 this._augmentAppAssets(ac);
             } else {
-                Y.log('[SHAKER] Metadata not found. Application running without Shaker...','error');
+                Y.log('[SHAKER] Metadata not found. Application running without Shaker...', 'error');
             }
         },
+
         _initializeShaker: function () {
             var store = this.getStore(),
                 shakerRS = store.shaker,
@@ -90,8 +91,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
             return shakerMeta;
         },
-        // Add here the assets at the app level
-        // They have to be the first on the assets queue to preserve the order.
+
         _augmentAppAssets: function (ac) {
             var instance = ac.command.instance,
                 action = instance.action || ac.command.action || 'index',
@@ -101,6 +101,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
             ac.assets.addAssets(actionAssets);
             delete viewObj.assets;
         },
+
         checkRouteBundling: function () {
             var ac = this._ac,
                 adapter = this._adapter,
@@ -117,11 +118,11 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 //check if we have a bundle for that route
                 shakerApp = this._meta.app[strContext],
                 shakerBundle = shakerApp.routesBundle[route.name];
-                
+
             if (shakerBundle) {
-                Y.log('Bundling entry point!','shaker');
+                Y.log('Bundling entry point!', 'shaker');
                 // If is empty for some reason...
-                assets.topShaker = assets.topShaker || {js: [], css: [], blob:[]};
+                assets.topShaker = assets.topShaker || {js: [], css: [], blob: []};
                 assets.bottomShaker = assets.bottomShaker || {js: [], css: [], blob: []};
 
                 // Attach the assets we collect during dispatching...
@@ -130,6 +131,7 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 return true;
             }
         },
+
         clientDeployment: function (meta) {
             var ac = this._ac,
                 assets = ac.assets,
@@ -137,10 +139,10 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 shakerConfig = this.shakerConfig || {},
                 //collect assets
                 mAssets = assets.getAssets(),
-                collectedJSAssets = mAssets.bottomShaker && mAssets.bottomShaker.js || [],
+                collectedJSAssets = (mAssets.bottomShaker && mAssets.bottomShaker.js) || [],
                 // if we have the optimizeBootstrap enabled
                 // create a fake asset addon to collect the Mojito original generated deployment assets
-                assetsAddon = shakerConfig.optimizeBootstrap ? new FakeAssetsAddon(): assets,
+                assetsAddon = shakerConfig.optimizeBootstrap ? new FakeAssetsAddon() : assets,
                 binders = meta.binders,
                 inlineDynamicaLoader,
                 deployedFake;
@@ -157,16 +159,13 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
                 inlineDynamicaLoader  = this.createOptimizedBootstrapBlob(collectedJSAssets);
                 delete mAssets.bottomShaker;
 
-                assets.addAsset('blob','bottomShaker', this._getFakeYUIBootstrap());
-                assets.addAsset('blob','bottomShaker', inlineDynamicaLoader);
-                assets.addAsset('blob','bottomShaker', deployedFake.blob);
-                
+                assets.addAsset('blob', 'bottomShaker', this._getFakeYUIBootstrap());
+                assets.addAsset('blob', 'bottomShaker', inlineDynamicaLoader);
+                assets.addAsset('blob', 'bottomShaker', deployedFake.blob);
+
             }
         },
-        /*
-        * @run Method
-        * Main function to execute in the ShakerHTMLFrameController
-        */
+
         run: function (meta) {
             var routeFound;
             if (this._meta.app) {
@@ -178,4 +177,9 @@ YUI.add('mojito-shaker-addon', function(Y, NAME) {
 
     Y.mojito.addons.ac.shaker = ShakerAddon;
 
-}, '0.0.1', {requires: ['mojito', 'mojito-config-addon']});
+}, '0.0.1', {
+    requires: [
+        'mojito',
+        'mojito-config-addon'
+    ]
+});
