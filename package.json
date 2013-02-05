@@ -1,6 +1,6 @@
 {
   "name": "mojito-shaker",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com",
   "contributors": [
