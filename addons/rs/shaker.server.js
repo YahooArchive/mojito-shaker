@@ -128,8 +128,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 res.source.pkg = store.getAppPkgMeta();
                 res.source.fs = store.makeResourceFSMeta(__dirname, 'app', '../../lib/bootstrap/', item + '.js', true);
 
-                // adding synthetic resources to the store and tho the yuiRS since it will cache them.
-                yuiRS.appModulesRess[item] = res;
                 yuiRS.resContents[item] = content;
                 store.addResourceVersion(res);
 
