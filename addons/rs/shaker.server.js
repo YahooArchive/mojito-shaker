@@ -7,16 +7,16 @@
 /*jslint anon:true, sloppy:true, nomen:true*/
 /*global YUI*/
 
-YUI.add('addon-rs-shaker', function(Y, NAME) {
+YUI.add('addon-rs-shaker', function (Y, NAME) {
 
     var libpath = require('path'),
         libfs = require('fs'),
         //bootstrap
         BOOTSTRAP_DIR = '../../lib/bootstrap/',
-        BOOTSTRAP_YUI_OVERRIDE = 'yui-override',
-        BOOTSTRAP_FAKE_YUI = 'yui-fake-inline-min',
+        BOOTSTRAP_YUI_OVERRIDE = 'yui-bootstrap-override',
+        BOOTSTRAP_YUI_INLINE = 'yui-bootstrap-inline-min',
         //inline (defined in core as well)
-        INLINE_SELECTOR ='shaker-inline';
+        INLINE_SELECTOR = 'shaker-inline';
 
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
@@ -24,8 +24,6 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
     RSAddonShaker.NS = 'shaker';
     RSAddonShaker.ATTRS = {};
-
-    ShakerNS = Y.namespace('mojito.shaker');
 
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
@@ -46,10 +44,10 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, 'shaker-meta.json'));
 
                 if (this.meta && !Y.Object.isEmpty(this.meta)) {
-                    Y.log('Metadata loaded correctly.','info','Shaker');
-                    Y.log('Preloading store', 'info','mojito-store');
+                    Y.log('Metadata loaded correctly.', 'info', 'Shaker');
+                    Y.log('Preloading store', 'info', 'mojito-store');
                 } else {
-                    Y.log('Metadata not found.','warn','Shaker');
+                    Y.log('Metadata not found.', 'warn', 'Shaker');
                 }
             }
 
@@ -85,18 +83,21 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 this.onHostEvent('resolveMojitDetails', this.resolveMojitDetails, this);
             }
         },
-        destructor: function() {
+
+        destructor: function () {
             // TODO:  needed to break cycle so we don't leak memory?
             this.rs = null;
         },
+
         /*
         * We need to add the synthetic bootstrap items
         */
         makeResourceVersions: function () {
-            var store = this.rs;
+            var store = this.rs,
                 yuiRS = store.yui;
             this.addOptimizedBootstrap(store, yuiRS);
         },
+
         /*
         * Add the synthetic resources for the optimized bootstrap
         * On runtime we can access the new synthethic files
@@ -105,23 +106,23 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             var relativePath = libpath.join(__dirname, BOOTSTRAP_DIR),
                 bootstrapResources = [
                     BOOTSTRAP_YUI_OVERRIDE,
-                    BOOTSTRAP_FAKE_YUI
+                    BOOTSTRAP_YUI_INLINE
                 ];
 
             Y.Array.each(bootstrapResources, function (item) {
                 var content = libfs.readFileSync(relativePath + item + '.js', 'utf8'),
                     res = {
-                    source: {},
-                    mojit: 'shared',
-                    type: 'yui-module',
-                    subtype: 'synthetic',
-                    name: item,
-                    affinity: 'client',
-                    selector: '*',
-                    yui: {
-                        name: item
-                    }
-                };
+                        source: {},
+                        mojit: 'shared',
+                        type: 'yui-module',
+                        subtype: 'synthetic',
+                        name: item,
+                        affinity: 'client',
+                        selector: '*',
+                        yui: {
+                            name: item
+                        }
+                    };
 
                 // this is how mojito creates synthetic resources when the server start, so wejust replicate it.
                 res.id = [res.type, res.subtype, res.name].join('-');
@@ -133,7 +134,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
                 // We save in the shaker addon the content of the hook
                 // because on runtime we want to pick it syncronously
-                if (item === BOOTSTRAP_FAKE_YUI) {
+                if (item === BOOTSTRAP_YUI_INLINE) {
                     this.fakeYUIBootstrap = content;
                 }
 
@@ -149,17 +150,17 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
             for (i = 0; i < seed.length; i += 1) {
                 if (yuiRS.yuiModulesRess.hasOwnProperty(seed[i])) {
-                        seed[i] = yuiRS.yuiModulesRess[seed[i]].url;
+                    seed[i] = yuiRS.yuiModulesRess[seed[i]].url;
                 } else if (yuiRS.appModulesRess.hasOwnProperty(seed[i])) {
-                        seed[i] = yuiRS.appModulesRess[seed[i]].url;
+                    seed[i] = yuiRS.appModulesRess[seed[i]].url;
                 } else {
                     Y.log('Couldnt find module for seed. Optmized bootstrap may fail', 'warn', 'Shaker');
                 }
             }
 
             return seed;
-
         },
+
         /*
         * When comboLoad is active we need to change the seed to point to the CDN...
         * We rely on the mapping we have on the Shaker metadata.
@@ -179,8 +180,8 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 currentSeed = Y.Do.currentRetVal;
 
             if (shakerConfig.optimizeBootstrap) {
-                
-                resources = this._resolveSeedResourceURL(['yui-override']);
+
+                resources = this._resolveSeedResourceURL([BOOTSTRAP_YUI_OVERRIDE]);
                 //the first element has to be the yui-override
                 currentSeed.unshift(resources[0]);
             }
@@ -188,14 +189,16 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             // We need to change the url to point to the generated in CDN...
             if (shakerConfig.comboCDN && cdnUrls) {
                 for (i in currentSeed) {
-                    newUrl = cdnUrls[currentSeed[i]];
-                    if (newUrl) {
-                        currentSeed[i] = newUrl;
+                    if (currentSeed.hasOwnProperty(i)) {
+                        newUrl = cdnUrls[currentSeed[i]];
+                        if (newUrl) {
+                            currentSeed[i] = newUrl;
+                        }
                     }
                 }
             }
-            
         },
+
         /*
         * Change the URL's of the Store so we get the comboLoad from CDN.
         */
@@ -212,7 +215,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             //get the CDN URL mapping
             cdnUrls = cdnUrls || this.meta.cdnModules;
 
-            if(!cdnUrls) {
+            if (!cdnUrls) {
                 return;
             }
 
@@ -232,6 +235,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 }
             }
         },
+
         /*
         * Converting inlines files to be readable by the store.
         * parseResourceVersion:
@@ -246,7 +250,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 basename = source.fs.basename.split('.');
                 inline = basename.pop();
 
-                if (inline === INLINE_SELECTOR ) {
+                if (inline === INLINE_SELECTOR) {
                     // Add the inline property to source, since we don't have access to the resource itself yet.
                     source.inline = true;
                     // put back the basename without the INLINE_SELECTOR so mojito doesnt skip the file.
@@ -255,6 +259,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 }
             }
         },
+
         /*
         * Augment the view spec with the Shaker computed assets.
         * Will be merged on the action-context module (either on the client or in the server).
@@ -272,8 +277,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 frameActionMeta,
                 actionMeta,
                 css,
-                resource;
-                
+                resource,
+                i;
+
             if (Y.Object.isEmpty(this.meta)) {
                 return;
             }
@@ -293,7 +299,7 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
             }
 
             Y.Object.each(details.views, function(view, name) {
-                actionMeta = (isFrame ? frameActionMeta : shakerBase && shakerBase[name]) || {css:[], blob:[]};
+                actionMeta = (isFrame ? frameActionMeta : shakerBase && shakerBase[name]) || {css: [], blob: []};
                 view.assets = {
                     topShaker: {
                         css: actionMeta.css
@@ -304,9 +310,15 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 };
             });
         }
-       
     });
-    Y.namespace('mojito.addons.rs');
-    Y.mojito.addons.rs.shaker = RSAddonShaker;
 
-}, '0.0.1', { requires: ['plugin', 'oop','addon-rs-url','addon-rs-yui']});
+    Y.namespace('mojito.addons.rs').shaker = RSAddonShaker;
+
+}, '0.0.1', {
+    requires: [
+        'plugin',
+        'oop',
+        'addon-rs-url',
+        'addon-rs-yui'
+    ]
+});
