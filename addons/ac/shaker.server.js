@@ -180,6 +180,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 }, '0.0.1', {
     requires: [
         'mojito',
-        'mojito-config-addon'
+        'mojito-assets-addon',
+        'mojito-config-addon',
+        'mojito-deploy-addon',
+        'mojito-url-addon'
     ]
 });
