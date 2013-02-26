@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Yahoo! Inc.  All rights reserved.
+ * Copyright (c) 2012-2013, Yahoo! Inc.  All rights reserved.
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
@@ -80,7 +80,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppGroupConfig', this);
 
                 // Augments the view with assets
-                this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+                this.onHostEvent('resolveMojitDetails', this.resolveMojitDetails, this);
             }
         },
 
@@ -129,8 +129,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 res.source.pkg = store.getAppPkgMeta();
                 res.source.fs = store.makeResourceFSMeta(__dirname, 'app', '../../lib/bootstrap/', item + '.js', true);
 
-                // adding synthetic resources to the store and tho the yuiRS since it will cache them.
-                yuiRS.appModulesRess[item] = res;
                 yuiRS.resContents[item] = content;
                 store.addResourceVersion(res);
 
@@ -266,11 +264,12 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
         * Augment the view spec with the Shaker computed assets.
         * Will be merged on the action-context module (either on the client or in the server).
         */
-        mojitResourcesResolved: function (e) {
-            var env = e.env,
-                posl = e.posl,
-                mojitName = e.mojit,
-                ress = e.ress,
+        resolveMojitDetails: function (e) {
+            var env = e.args.env,
+                posl = e.args.posl,
+                mojitName = e.args.type,
+                ress = e.args.ress,
+                details = e.mojitDetails,
                 strContext = posl.join('-'),
                 isFrame = mojitName.indexOf('ShakerHTMLFrameMojit') !== -1,
                 shakerMeta = this.meta,
@@ -299,23 +298,17 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 shakerBase = shakerBase && shakerBase.mojits[mojitName];
             }
 
-            for (i in ress) {
-                if (ress.hasOwnProperty(i)) {
-                    resource = ress[i];
-                    // we got a view, let's attach the proper assets if some
-                    if (resource.type === 'view') {
-                        actionMeta =  (isFrame ? frameActionMeta : shakerBase && shakerBase[resource.name]) || {css: [], blob: []};
-                        ress[i].view.assets = {
-                            topShaker: {
-                                css: actionMeta.css
-                            },
-                            inlineShaker: {
-                                blob: actionMeta.blob
-                            }
-                        };
+            Y.Object.each(details.views, function(view, name) {
+                actionMeta = (isFrame ? frameActionMeta : shakerBase && shakerBase[name]) || {css: [], blob: []};
+                view.assets = {
+                    topShaker: {
+                        css: actionMeta.css
+                    },
+                    inlineShaker: {
+                        blob: actionMeta.blob
                     }
-                }
-            }
+                };
+            });
         }
     });
 
