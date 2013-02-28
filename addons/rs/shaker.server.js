@@ -152,7 +152,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 if (yuiRS.yuiModulesDetails.hasOwnProperty(seed[i])) {
                     seed[i] = yuiRS.yuiModulesDetails[seed[i]].url;
                 } else if (yuiRS.appModulesDetails.hasOwnProperty(seed[i])) {
-                    seed[i] = yuiRS.appModulesRess[seed[i]].url;
+                    seed[i] = yuiRS.appModulesDetails[seed[i]].url;
                 } else {
                     Y.log('Couldnt find module for seed. Optmized bootstrap may fail', 'warn', 'Shaker');
                 }
