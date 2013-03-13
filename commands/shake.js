@@ -4,8 +4,10 @@
  * See the accompanying LICENSE file for terms.
  */
 
-start = require('mojito/lib/app/commands/start');
-Shaker = require('mojito-shaker/lib/shaker').Shaker;
+var utils = require('mojito/lib/management/utils'),
+    mojitoStart = require('mojito/lib/app/commands/start'),
+    ShakerCompiler = require('../lib/compiler').ShakerCompiler;
+
 /**
  * Convert a CSV string into a context object.
  * @param {string} s A string of the form: 'key1:value1,key2:value2'.
@@ -35,10 +37,9 @@ function contextCsvToObject(s) {
  * Standard usage string export.
  */
 exports.usage = '\nShaker Options:\n' +
-    '\t--context  A comma-separated list of key:value pairs that define the' +
-    ' base\n' +
-    '\t           context used to read configuration files\n' +
-    '\t--run      Run Mojito Server after running Shaker\n';
+    '  --context  A comma-separated list of key:value pairs that define the base\n' +
+    '             context used to read configuration files (e.g. "environment:dev")\n' +
+    '  --run      Run the Mojito server after running the Shaker compiler\n';
 
 /**
  * Standard options list export.
@@ -73,7 +74,7 @@ exports.options = [
  * @param {object} opts Options/flags for the command.
  * @param {function} callback An optional callback to invoke on completion.
  */
-exports.run = function(params, options, callback) {
+exports.run = function(params, options) {
     options = options || {};
     var context = {},
         debug = options.debug || 0;
@@ -86,15 +87,26 @@ exports.run = function(params, options, callback) {
         console.log(this.usage);
         return;
     }
-    
-    var shaker = new Shaker({context: context, debugLevel: debug});
-    shaker.run(function (err, data) {
-        if (options.run) {
-            delete options.run;
-            start.run(params, options, callback);
+
+    // shaker compiler
+    process.shakerCompiler = true;
+
+    var compiler = new ShakerCompiler(context);
+    compiler.compile(function (err) {
+        if (err) {
+            utils.error(err);
         } else {
-            callback(err, data);
+            utils.success('Shaker done.');
+            if (options.run) {
+                delete options.run;
+                mojitoStart.run(params, options, function (err) {
+                    if (err) {
+                        utils.error(err);
+                    } else {
+                        utils.success('Mojito done.');
+                    }
+                });
+            }
         }
     });
-    //if we do async stuff move callback
 };

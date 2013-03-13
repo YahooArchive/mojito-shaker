@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2012, Yahoo! Inc.  All rights reserved.
+ * Copyright (c) 2011-2013, Yahoo! Inc.  All rights reserved.
  * Copyrights licensed under the New BSD License.
  * See the accompanying LICENSE file for terms.
  */
@@ -9,17 +9,74 @@
 /*global YUI*/
 
 
-YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
+YUI.add('HTMLFrameMojit', function (Y, NAME) {
 
+    'use strict';
 
     Y.namespace('mojito.controllers')[NAME] = {
 
-        index: function(ac) {
+        index: function (ac) {
             this.__call(ac);
         },
 
-        __call: function(ac) {
+        __call: function (ac) {
 
+            this._renderChild(ac, function (data, meta) {
+
+                ac.shaker.run(meta.assets);
+
+                // meta.assets from child should be piped into
+                // the frame's assets before doing anything else.
+                ac.assets.addAssets(meta.assets);
+
+                if (ac.config.get('deploy') === true) {
+                    ac.deploy.constructMojitoClientRuntime(ac.assets,
+                        meta.binders);
+                }
+
+                // we don't care much about the views specified in childs
+                // and for the parent, we have a fixed one.
+
+                meta.view = meta.view || {};
+
+                meta.view.name = 'index';
+
+                // 1. mixing bottom and top fragments from assets into
+                //    the template data, along with title and mojito version.
+                // 2. mixing meta with child metas, along with some extra
+                //    headers.
+
+                ac.done(
+                    Y.merge(data, ac.assets.renderLocations(), {
+
+                        title: ac.shaker.title || ac.config.get('title') || 'Powered by Mojito',
+                        mojito_version: Y.mojito.version
+
+                    }),
+                    Y.mojito.util.metaMerge(meta, {
+
+                        http: {
+                            headers: {
+                                'content-type': 'text/html; charset="utf-8"'
+                            }
+                        }
+
+                    }, true)
+                );
+
+            });
+
+        },
+
+        /**
+         * Renders a child mojit based on a config called "child" and
+         * the "assets" collection specified in the specs.
+         * @method _renderChild
+         * @protected
+         * @param {Object} ac Action Context Object.
+         * @param {Function} callback The callback.
+         */
+        _renderChild: function (ac, callback) {
             // Grab the "child" from the config an add it as the
             // only item in the "children" map.
             var child = ac.config.get('child'),
@@ -37,55 +94,19 @@ YUI.add('ShakerHTMLFrameMojit', function(Y, NAME) {
                 assets: ac.config.get('assets')
             };
 
-            Y.log('executing ShakerHTMLFrameMojit child', 'mojito', 'qeperf');
 
             // Now execute the child as a composite
-            ac.composite.execute(cfg, function(data, meta) {
-
-                // Make sure we have meta
-                meta.http = meta.http || {};
-                meta.http.headers = meta.http.headers || {};
-
-                // Make sure our Content-type is HTML
-                meta.http.headers['content-type'] =
-                    'text/html; charset="utf-8"';
-
-                // Set the default data
-                data.title = ac.config.get('title') ||
-                    'Powered by Mojito ' + Y.mojito.version;
-                data.mojito_version = Y.mojito.version;
-
-                data.enableDynamicTitle = ac.config.get('enableDynamicTitle');
-
-                // Add all the assets we have been given to our local store
-                ac.assets.addAssets(meta.assets);
-
-                // SHAKER RUNTIME!
-                // NOTE: We move the deployment of the client to within Shaker addon...
-                ac.shaker.run(meta);
-
-                // Attach assets found in the "meta" to the page
-                Y.Object.each(ac.assets.getAssets(), function(types, location) {
-                    if (!data[location]) {
-                        data[location] = '';
-                    }
-                    Y.Object.each(types, function(assets, type) {
-                        data[location] += ac.shaker.renderListAsHtmlAssets(assets, type);
-                    });
-                });
-
-                meta.view = {name: 'index'};
-
-                Y.log('ShakerHTMLFrameMojit done()', 'mojito', 'qeperf');
-
-                ac.done(data, meta);
-            });
+            ac.composite.execute(cfg, callback);
         }
+
     };
 
 }, '0.1.0', {requires: [
-    'mojito-composite-addon',
+    'mojito',
+    'mojito-util',
     'mojito-assets-addon',
+    'mojito-deploy-addon',
     'mojito-config-addon',
+    'mojito-composite-addon',
     'mojito-shaker-addon'
 ]});

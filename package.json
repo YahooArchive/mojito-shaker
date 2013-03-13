@@ -1,14 +1,14 @@
 {
   "name": "mojito-shaker",
-  "version": "3.1.3",
+  "version": "4.0.0",
   "description": "Compiles and deploys asset rollups for Mojito applications.",
   "author": "shaker-users@yahoo-inc.com",
   "contributors": [
+    "Albert Jimenez <jimenez@yahoo-inc.com>",
     "Diego Ferreiro <elfogris@gmail.com>",
-    "Stephen Murphy <murphys@yahoo-inc.com>",
-    "Brett Stimmerman <brettstimmerman@gmail.com>",
     "Julien Lecomte <jlecomte@yahoo-inc.com>",
-    "Albert Jimenez <jimenez@yahoo-inc.com>"
+    "Stephen Murphy <murphys@yahoo-inc.com>",
+    "Brett Stimmerman <brettstimmerman@gmail.com>"
   ],
   "dependencies": {
     "async": "0.1.x",
