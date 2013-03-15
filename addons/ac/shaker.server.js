@@ -9,9 +9,10 @@
 YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
     var self,
-        pagePositions = ['top', 'shakerTop', 'bottom', 'shakerBottom', 'shakerInlineCss', 'shakerInlineJs'];
+        PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom', 'shakerBottom'];
 
     function ShakerAddon(command, adapter, ac) {
+        this.pagePositions = PAGE_POSITIONS;
         this.ac = ac;
         this.context = ac.context;
         this.route = ac.url.find(adapter.req.url, adapter.req.method);
@@ -30,25 +31,38 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             this.settings = this.meta.settings;
             this.posl = rs.selector.getPOSLFromContext(this.context);
             this.poslStr = this.posl.join("-")
-            this.appResources = this.meta.app[this.poslStr].app.assets;
+            this.appResources = this.meta.app && this.meta.app[this.poslStr].app.assets;
             this.currentLocation = this.meta.currentLocation;
-            this.rollups = this.currentLocation && this.route ? this.meta.app[this.poslStr].rollups[this.route.name] : null;
+            this.rollups = this.route ? this.meta.app[this.posl].rollups && this.meta.app[this.poslStr].rollups[this.route.name] : null;
             this.inline = this.settings.inline ? this.meta.inline : null;
         },
 
-        run: function (assets) {
+        run: function (assets, binders) {
             var start = new Date().getTime();
             this.isHTMLFrame = true;
             this._getTitle(assets);
             this._initializeAssets(assets);
+            this._addYUILoader(assets, binders);
             this._addAppResources(assets);
             this._addRouteRollups(assets);
             this._filterAndUpdate(assets);
-            console.log("time: " + ((new Date().getTime()) - start));
+            //console.log("time: " + ((new Date().getTime()) - start));
+        },
+
+        _addYUILoader: function (assets, binders) {
+            if (this.ac.instance.config.deploy === true && binders) {
+                self.ac.assets.assets = assets;
+                self.ac.deploy.constructMojitoClientRuntime(self.ac.assets, binders);
+            }
+            // move js assets to the bottom if specified by settings
+            if (self.settings.serveJs.position === "bottom") {
+                Array.prototype.unshift.apply(assets.bottom.js, assets.top.js);
+                assets.top.js = [];
+            }
         },
 
         setTitle: function (title) {
-            this.ac.assets.addBlob(title, 'shakerTitle');
+            self.ac.assets.addBlob(title, 'shakerTitle');
         },
 
         _getTitle: function (assets) {
@@ -59,7 +73,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         },
 
         _initializeAssets: function (assets) {
-            Y.Array.each(pagePositions, function (pagePosition) {
+            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
                 assets[pagePosition] = assets[pagePosition] || {};
                 assets[pagePosition].css = assets[pagePosition].css || [];
                 assets[pagePosition].js = assets[pagePosition].js || [];
@@ -68,9 +82,12 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         },
 
         _addAppResources: function (assets) {
-            Y.Array.each(pagePositions, function (pagePosition) {
+            if (!self.appResources) {
+                return;
+            }
+            Y.Array.each(self.pagePositions, function (pagePosition) {
                 Y.Object.each(self.appResources[pagePosition], function (typeResources, type) {
-                    [].push.apply(assets[pagePosition][type], typeResources || []);
+                    Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
             });
         },
@@ -81,9 +98,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             if (!self.rollups) {
                 return;
             }
-            Y.Array.each(pagePositions, function (pagePosition) {
+            Y.Array.each(self.pagePositions, function (pagePosition) {
                 Y.Object.each(self.rollups.assets[pagePosition], function (typeResources, type) {
-                    [].push.apply(assets[pagePosition][type], typeResources || []);
+                    Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
             });
         },
@@ -170,8 +187,26 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             return resourcesArray.length === 1 ? resourcesArray[0] : comboBase + resourcesArray.join(comboSep);
         },
 
+        /*_mergeAssets: function (assets) {
+            // place shakerInlineCss above 'top'
+            Array.prototype.unshift.apply(assets.top.blob, assets.shakerInlineCss.blob || []);
+            // place shakerTop below 'top'
+            Y.Object.each(assets.shakerInlineCss, function (typeResource, type) {
+                Array.prototype.push.apply(assets.top[type], assets.shakerTop[type] || []);
+            });
+            // place shakerInlineJs above 'bottom'
+            Array.prototype.unshift.apply(assets.bottom.blob, assets.shakerInlineJs.blob || []);
+            // place shakerBottom below 'bottom'
+            Y.Object.each(assets.shakerBottom, function (typeResource, type) {
+                Array.prototype.push.apply(assets.bottom[type], assets.shakerBottom[type] || []);
+            });
+            delete assets.shakerInlineCss;
+            delete assets.shakerTop;
+            delete assets.shakerInlineJs;
+            delete assets.shakerBottom;
+        },*/
+
         _hookDone: function (ac, adapter) {
-            console.log("hook done");
             var self = this,
                 originalDone = adapter.done;
 
@@ -196,7 +231,11 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         inlineElement = "",
                         type = position === "shakerInlineCss" ? "css" : "js";
 
-                    Y.Array.each(positionResources && positionResources.blob, function (resource) {
+                    if (!positionResources) {
+                        return;
+                    }
+
+                    Y.Array.each(positionResources.blob, function (resource) {
                         // do not add inline asset if already in rollup
                         if (self.rollups && self.rollups[type] && self.rollups[type].resources[resource]) {
                             return;
@@ -208,7 +247,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
                     if (type === "css" && inlineElement) {
                         inlineElement = "<style>" + inlineElement + "</style>";
-                        //console.log(inlineElement);
                         if (typeof data === 'string') {
                             data = inlineElement + data;
                         } else if (data instanceof Array) {
@@ -216,7 +254,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         }
                     } else if (type === "js" && inlineElement) {
                         inlineElement = "<script>" + inlineElement + "</script>";
-                        //console.log(inlineElement);
                         if (typeof data === 'string') {
                             data += inlineElement;
                         } else if (data instanceof Array) {

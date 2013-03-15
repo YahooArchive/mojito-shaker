@@ -32,45 +32,61 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                     //first read the shaker metadata
                     this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, 'shaker-meta.json'));
 
+                    // TODO: handle no shaker-meta.json
                     if (this.meta && !Y.Object.isEmpty(this.meta)) {
                         Y.log('Metadata loaded correctly.', 'info', 'Shaker');
                         Y.log('Preloading store', 'info', 'mojito-store');
                     } else {
+                        this.meta = {};
                         Y.log('Metadata not found.', 'warn', 'Shaker');
                     }
                 }
 
                 // get settings
                 // TODO: validate settings
-                this.meta.settings = this.appConfig.shaker && this.appConfig.shaker.settings;
+                // TODO: remove default settings
+                this.meta.settings = this.appConfig.shaker && this.appConfig.shaker.settings || {
+                    "serveLocation": "default",
+                    "inline": false,
+                    "serveJs": {
+                        "combo": false,
+                        "position": "bottom"
+                    },
+                    "serveCss": {
+                        "position": "top",
+                        "combo": false
+                    }
+                };
                 // get location
-                this.meta.currentLocation = this.meta.locations[this.meta.settings.serveLocation];
+                this.meta.currentLocation = this.meta.locations && this.meta.locations[this.meta.settings.serveLocation];
 
                 // if the current location is set to something other than default
                 // hook into getAppConfig in order to set custom yui configuration
+
                 if (this.meta.currentLocation) {
                     this.rs._appConfigCache = {};
                     this.beforeHostMethod('getAppConfig', this.getAppConfig, this);
                 }
 
                 // populate meta data with app and rollup resources for each posl
-                var routes = Y.Object.keys(self.meta.app["*"].rollups);debugger;
-                Y.Object.each(self.meta.app, function (poslResources, poslStr) {
-                    var posl = poslStr.split("-");
-                    poslResources.app = poslResources.app || {};
-                    poslResources.app.assets = self._positionResources(self.getAppResources(self.meta, posl));
-                    Y.Array.each(routes, function (route) {
-                        poslResources.rollups = poslResources.rollups || {};
-                        poslResources.rollups[route] = self.getRollupResources(self.meta, posl, route);
-                        var typeResources = {};
-                        typeResources.js = poslResources.rollups[route].js && poslResources.rollups[route].js.rollups || [];
-                        typeResources.css = poslResources.rollups[route].css && poslResources.rollups[route].css.rollups || [];
-                        poslResources.rollups[route].assets = self._positionResources(typeResources);
+                if (self.meta.app) {
+                    var routes = self.meta.app["*"].rollups ? Y.Object.keys(self.meta.app["*"].rollups) : [];
+                    Y.Object.each(self.meta.app, function (poslResources, poslStr) {
+                        var posl = poslStr.split("-");
+                        poslResources.app = poslResources.app || {};
+                        poslResources.app.assets = self._positionResources(self.getAppResources(self.meta, posl));
+                        Y.Array.each(routes, function (route) {
+                            poslResources.rollups = poslResources.rollups || {};
+                            poslResources.rollups[route] = self.getRollupResources(self.meta, posl, route);
+                            var typeResources = {};
+                            typeResources.js = poslResources.rollups[route].js && poslResources.rollups[route].js.rollups || [];
+                            typeResources.css = poslResources.rollups[route].css && poslResources.rollups[route].css.rollups || [];
+                            poslResources.rollups[route].assets = self._positionResources(typeResources);
+                        });
                     });
-                });
 
-
-                this.onHostEvent('resolveMojitDetails', this.resolveMojitDetails, this);
+                    this.onHostEvent('resolveMojitDetails', this.resolveMojitDetails, this);
+                }
             }
             this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
 
@@ -141,7 +157,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             }
 
             ycb = this.rs._appConfigYCB.read(ctx);
-
+debugger;
             appConfig = Y.mojito.util.blend(this.rs._fwConfig.appConfigBase, this.rs._config.appConfig);
             appConfig = Y.mojito.util.blend(appConfig, ycb);
 

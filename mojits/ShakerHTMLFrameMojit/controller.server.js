@@ -23,16 +23,12 @@ YUI.add('HTMLFrameMojit', function (Y, NAME) {
 
             this._renderChild(ac, function (data, meta) {
 
-                ac.shaker.run(meta.assets);
-
                 // meta.assets from child should be piped into
                 // the frame's assets before doing anything else.
                 ac.assets.addAssets(meta.assets);
-
-                if (ac.config.get('deploy') === true) {
-                    ac.deploy.constructMojitoClientRuntime(ac.assets,
-                        meta.binders);
-                }
+var a = ac.config.get('deploy');
+console.log(a)
+                ac.shaker.run(ac.assets.assets, meta.binders);
 
                 // we don't care much about the views specified in childs
                 // and for the parent, we have a fixed one.
