@@ -33,7 +33,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             this.poslStr = this.posl.join("-")
             this.appResources = this.meta.app && this.meta.app[this.poslStr].app.assets;
             this.currentLocation = this.meta.currentLocation;
-            this.rollups = this.route ? this.meta.app[this.posl].rollups && this.meta.app[this.poslStr].rollups[this.route.name] : null;
+            this.rollups = this.route ? this.meta.app[this.poslStr].rollups && this.meta.app[this.poslStr].rollups[this.route.name] : null;
             this.inline = this.settings.inline ? this.meta.inline : null;
         },
 
