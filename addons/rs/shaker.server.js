@@ -232,6 +232,8 @@ debugger;
                     break;
                 }
                 // remove the minor selector from the posl and search within more general posl
+                // first clone posl since the resource store may use it
+                posl = Y.clone(posl);
                 posl.splice(posl.length-2, 1);
                 poslStr = posl.join('-');
             }
