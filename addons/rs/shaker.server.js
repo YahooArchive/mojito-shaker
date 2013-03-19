@@ -129,6 +129,10 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 resource,
                 self = this;
 
+            if (!resources) {
+                return positionedResources;
+            }
+
             // separate inline resources
             // dont separate inline resources if no inline resources or no current location
             // allow inline if default location with inline specified
@@ -239,7 +243,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                             // type resource not found so must continue searching for it
                             if (!resources[type]) {
                                 continueSearching = true;
-                                return;
+                                break;
                             }
                         }
                     }
@@ -263,6 +267,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                     }
                 }
             }
+
             return resources;
         },
 
