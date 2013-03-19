@@ -4,76 +4,90 @@
  * See the accompanying LICENSE file for terms.
  */
 
-/*jslint nomen: true */
+/*jslint nomen: true, plusplus: true */
 
 YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
-    var self,
-        PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom', 'shakerBottom'];
+    var PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'];
+
 
     function ShakerAddon(command, adapter, ac) {
-        this.pagePositions = PAGE_POSITIONS;
+        this.pagePositions = PAGE_POSITIONS; // this.pagePositions may be modified to narrow Shaker's focus
         this.ac = ac;
         this.context = ac.context;
         this.route = ac.url.find(adapter.req.url, adapter.req.method);
         this._hookDone(ac, adapter);
-        self = this;
+
+        // initialize shaker global data
+        this.shakerGlobal = ac.globals.get(NAME) || {};
+        if (!this.shakerGlobal) {
+            ac.globals.set(NAME, this.shakerGlobal);
+        }
     }
 
     ShakerAddon.prototype = {
 
         namespace: 'shaker',
 
+        /**
+         * This is automatically called after this is constructed. This gives access to the
+         * resources store object, which is used to retrieve the shaker meta data.
+         * @param {object} rs The resource store object.
+         */
         setStore: function (rs) {
             this.rs = rs;
             this.title = rs.shaker.title;
             this.meta = rs.shaker.meta;
             this.settings = this.meta.settings;
             this.posl = rs.selector.getPOSLFromContext(this.context);
-            this.poslStr = this.posl.join("-")
+            this.poslStr = this.posl.join("-");
             this.appResources = this.meta.app && this.meta.app[this.poslStr].app.assets;
             this.currentLocation = this.meta.currentLocation;
-            this.rollups = this.route ? this.meta.app[this.poslStr].rollups && this.meta.app[this.poslStr].rollups[this.route.name] : null;
             this.inline = this.settings.inline ? this.meta.inline : null;
+            this.rollups = this.route ? this.meta.app[this.poslStr].rollups &&
+                this.meta.app[this.poslStr].rollups[this.route.name] : null;
         },
 
+        /**
+         * Updates the assets by adding app resources, rollups, and updating location.
+         * Updates the title and creates the mojito client runtime.
+         * @param {object} assets The assets to be updated by shaker.
+         * @param {object} binders The binders to be used to create the mojito client runtime
+         */
         run: function (assets, binders) {
-            var start = new Date().getTime();
-            this.isHTMLFrame = true;
-            this._getTitle(assets);
+            this.isHTMLFrame = true; // this is necessary such that _shakerDone does not do anything for the htmlframe
+            this._updateTitle();
             this._initializeAssets(assets);
             this._addYUILoader(assets, binders);
             this._addAppResources(assets);
             this._addRouteRollups(assets);
             this._filterAndUpdate(assets);
-            //console.log("time: " + ((new Date().getTime()) - start));
         },
 
-        _addYUILoader: function (assets, binders) {
-            if (this.ac.instance.config.deploy === true && binders) {
-                self.ac.assets.assets = assets;
-                self.ac.deploy.constructMojitoClientRuntime(self.ac.assets, binders);
-            }
-            // move js assets to the bottom if specified by settings
-            if (self.settings.serveJs.position === "bottom") {
-                Array.prototype.unshift.apply(assets.bottom.js, assets.top.js);
-                assets.top.js = [];
-            }
-        },
-
+        /**
+         * Sets the page's title. The title is stored in the shaker global object, such
+         * that it can be modified by any code using the shaker addon for this request.
+         * @param {string} title The updated page title.
+         */
         setTitle: function (title) {
-            self.ac.assets.addBlob(title, 'shakerTitle');
+            this.shakerGlobal.title = title;
         },
 
-        _getTitle: function (assets) {
-            // if the title was set, choose the last title that was set
-            if (assets.shakerTitle && assets.shakerTitle.blob) {
-                this.ac.instance.config.title = assets.shakerTitle.blob[assets.shakerTitle.blob.length - 1];
-            }
+        /**
+         * Updates the page's title that was set by calling this.setTitle
+         * @param {string} title The updated page title.
+         */
+        _updateTitle: function () {
+            // update title if this.setTitle was called
+            this.ac.instance.config.title = this.shakerGlobal.title || this.ac.instance.config.title;
         },
 
+        /**
+         * Initializes the assets such that all asset types in all asset positions are defined
+         * @param {object}
+         */
         _initializeAssets: function (assets) {
-            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
+            Y.Array.each(this.pagePositions, function (pagePosition) {
                 assets[pagePosition] = assets[pagePosition] || {};
                 assets[pagePosition].css = assets[pagePosition].css || [];
                 assets[pagePosition].js = assets[pagePosition].js || [];
@@ -81,10 +95,33 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             });
         },
 
+        /**
+         * Adds YUI script and the loader.
+         * @param {object} assets The assets to be updated.
+         * @param {object} binders The binders to be used to create the mojito client runtime
+         */
+        _addYUILoader: function (assets, binders) {
+            if (this.ac.instance.config.deploy === true && binders) {
+                this.ac.assets.assets = assets;
+                this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
+            }
+            // move js assets to the bottom if specified by settings
+            if (this.settings.serveJs.position === "bottom") {
+                Array.prototype.unshift.apply(assets.bottom.js, assets.top.js);
+                assets.top.js = [];
+            }
+        },
+
+        /**
+         * Adds app level resources.
+         * @param {object} assets The assets to be updated.
+         */
         _addAppResources: function (assets) {
+            var self = this;
             if (!self.appResources) {
                 return;
             }
+            // TODO: only focus on page positions where app assets may appear
             Y.Array.each(self.pagePositions, function (pagePosition) {
                 Y.Object.each(self.appResources[pagePosition], function (typeResources, type) {
                     Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
@@ -92,12 +129,16 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             });
         },
 
+        /**
+         * Adds route rollups.
+         * @param {object} assets The assets to be updated.
+         */
         _addRouteRollups: function (assets) {
-            // add route rollups
-            // do not add rollups is current location is default
+            var self = this;
             if (!self.rollups) {
                 return;
             }
+            // TODO: only focus on page positions where rollups may appear
             Y.Array.each(self.pagePositions, function (pagePosition) {
                 Y.Object.each(self.rollups.assets[pagePosition], function (typeResources, type) {
                     Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
@@ -105,7 +146,13 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             });
         },
 
+        /**
+         * Updates the location of each resource, filters out resources already in rollup.
+         * Handles comboloading.
+         * @param {object} assets The assets to be updated.
+         */
         _filterAndUpdate: function (assets) {
+            var self = this;
             Y.Object.each(assets, function (positionResources, position) {
                 Y.Object.each(positionResources, function (typeResources, type) {
                     var i = 0,
@@ -133,7 +180,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                             typeResources.splice(i, 1);
                         } else {
                             // replace asset with new location if available
-                            newLocation = self.currentLocation && self.currentLocation && self.currentLocation.resources[typeResources[i]];
+                            newLocation = self.currentLocation && self.currentLocation.resources[typeResources[i]];
                             isRollup = self.rollups && self.rollups[type] && self.rollups[type].rollups.indexOf(typeResources[i]) !== -1;
 
                             // don't combo load rollups
@@ -158,7 +205,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     if (position === "shakerInlineCss" && inlineElement) {
                         typeResources.push("<style>" + inlineElement + "</style>");
                         return;
-                    } else if (position === "shakerInlineJs" && inlineElement) {
+                    }
+                    if (position === "shakerInlineJs" && inlineElement) {
                         typeResources.push("<script>" + inlineElement + "</script>");
                         return;
                     }
@@ -174,38 +222,28 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             });
         },
 
+        /**
+         * Updates the location of each resource, filters out resources already in rollup.
+         * Handles comboloading.
+         * @param {object} assets The assets to be updated.
+         */
         _comboload: function (resourcesArray, isLocal) {
-            var comboSep = "~",
-                comboBase = "/combo~",
-                locationComboConfig = self.currentLocation && self.currentLocation.yuiConfig && self.currentLocation.yuiConfig.groups &&
-                           self.currentLocation.yuiConfig.app;
+            var comboSep = "~", // default comboSep
+                comboBase = "/combo~", // default comboBase
+                locationComboConfig = this.currentLocation && this.currentLocation.yuiConfig && this.currentLocation.yuiConfig.groups &&
+                           this.currentLocation.yuiConfig.app;
+            // if location is not local, then update comboBase and comboSep as specified in location's config
             if (!isLocal) {
-                comboBase = locationComboConfig && locationComboConfig.comboBase || comboBase;
-                comboSep = locationComboConfig && locationComboConfig.comboSep || comboSep;
+                comboBase = (locationComboConfig && locationComboConfig.comboBase) || comboBase;
+                comboSep = (locationComboConfig && locationComboConfig.comboSep) || comboSep;
             }
             // if just one resource return it, otherwise return combo url
             return resourcesArray.length === 1 ? resourcesArray[0] : comboBase + resourcesArray.join(comboSep);
         },
 
-        /*_mergeAssets: function (assets) {
-            // place shakerInlineCss above 'top'
-            Array.prototype.unshift.apply(assets.top.blob, assets.shakerInlineCss.blob || []);
-            // place shakerTop below 'top'
-            Y.Object.each(assets.shakerInlineCss, function (typeResource, type) {
-                Array.prototype.push.apply(assets.top[type], assets.shakerTop[type] || []);
-            });
-            // place shakerInlineJs above 'bottom'
-            Array.prototype.unshift.apply(assets.bottom.blob, assets.shakerInlineJs.blob || []);
-            // place shakerBottom below 'bottom'
-            Y.Object.each(assets.shakerBottom, function (typeResource, type) {
-                Array.prototype.push.apply(assets.bottom[type], assets.shakerBottom[type] || []);
-            });
-            delete assets.shakerInlineCss;
-            delete assets.shakerTop;
-            delete assets.shakerInlineJs;
-            delete assets.shakerBottom;
-        },*/
-
+        /**
+         * Hook into ac.adapter.done in order to use @_shakerDone to modify html with inline js or css
+         */
         _hookDone: function (ac, adapter) {
             var self = this,
                 originalDone = adapter.done;
@@ -217,14 +255,15 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             };
         },
         /*
-        * The first two arguments are the real context and method of Mojito, that we pass artificially on @_hookDoneMethod
-        * The rest are the original arguments that are being passed by Mojito.
-        * We have to do like this since we need to modify the arguments but we don't know how many we got.
-        */
+         * The first two arguments are the real context and method of Mojito, which we pass through @_hookDone
+         * The rest are the original arguments that are passed by Mojito.
+         * This is necessary since we need to modify the arguments but we don't know how many we may get.
+         */
         _shakerDone: function (selfContext, done, data, meta) {
             var self = this,
                 args;
 
+            // only execute if this is not the html frame and there is inline data
             if (!self.isHTMLFrame && self.inline) {
                 Y.Array.each(["shakerInlineCss", "shakerInlineJs"], function (position) {
                     var positionResources = meta.assets[position],
@@ -246,6 +285,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     });
 
                     if (type === "css" && inlineElement) {
+                        // add inline css to the top of the html
                         inlineElement = "<style>" + inlineElement + "</style>";
                         if (typeof data === 'string') {
                             data = inlineElement + data;
@@ -253,6 +293,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                             data.splice(0, 0, inlineElement);
                         }
                     } else if (type === "js" && inlineElement) {
+                        // add inline js to the bottom of the html
                         inlineElement = "<script>" + inlineElement + "</script>";
                         if (typeof data === 'string') {
                             data += inlineElement;
@@ -266,8 +307,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 });
             }
 
-
-            // Restore the original arguments and call the real ac.done with the modified data.
+            // restore the original arguments and call the real adapter.done with the modified data.
             args = [].slice.apply(arguments).slice(2);
             args[0] = data;
             done.apply(selfContext, args);
@@ -282,6 +322,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         'mojito-assets-addon',
         'mojito-config-addon',
         'mojito-deploy-addon',
-        'mojito-url-addon'
+        'mojito-url-addon',
+        'yahoo.addons.globals'
     ]
 });
