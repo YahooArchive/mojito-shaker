@@ -10,9 +10,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
     var PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'];
 
-
     function ShakerAddon(command, adapter, ac) {
-        this.pagePositions = PAGE_POSITIONS; // this.pagePositions may be modified to narrow Shaker's focus
         this.ac = ac;
         this.context = ac.context;
         this.route = ac.url.find(adapter.req.url, adapter.req.method);
@@ -87,7 +85,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object}
          */
         _initializeAssets: function (assets) {
-            Y.Array.each(this.pagePositions, function (pagePosition) {
+            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
                 assets[pagePosition] = assets[pagePosition] || {};
                 assets[pagePosition].css = assets[pagePosition].css || [];
                 assets[pagePosition].js = assets[pagePosition].js || [];
@@ -122,7 +120,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 return;
             }
             // TODO: only focus on page positions where app assets may appear
-            Y.Array.each(self.pagePositions, function (pagePosition) {
+            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
                 Y.Object.each(self.appResources[pagePosition], function (typeResources, type) {
                     Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
@@ -139,7 +137,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 return;
             }
             // TODO: only focus on page positions where rollups may appear
-            Y.Array.each(self.pagePositions, function (pagePosition) {
+            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
                 Y.Object.each(self.rollups.assets[pagePosition], function (typeResources, type) {
                     Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
@@ -158,6 +156,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     var i = 0,
                         newLocation,
                         isRollup = false,
+                        isExternalLink = false,
                         inlineElement = "",
                         comboLocalTypeResources = [],
                         comboLocationTypeResources = [],
@@ -182,9 +181,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                             // replace asset with new location if available
                             newLocation = self.currentLocation && self.currentLocation.resources[typeResources[i]];
                             isRollup = self.rollups && self.rollups[type] && self.rollups[type].rollups.indexOf(typeResources[i]) !== -1;
-
-                            // don't combo load rollups
-                            if (comboLoad && !isRollup) {
+                            isExternalLink = typeResources[i].indexOf("http") === 0;
+                            // don't combo load rollups, or external links
+                            if (comboLoad && !isRollup && !isExternalLink) {
                                 // get local resource to comboload
                                 if (self.settings.serveLocation === "local" || !newLocation) {
                                     comboLocalTypeResources.push(newLocation || typeResources[i]);
