@@ -1,1 +1,1 @@
-module.exports = require('./lib/shaker');
+module.exports = require('./lib/compiler');

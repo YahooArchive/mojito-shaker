@@ -1,22 +1,21 @@
-/*
- * Copyright (c) 2012, Yahoo! Inc.  All rights reserved.
- * Copyrights licensed under the New BSD License.
- * See the accompanying LICENSE file for terms.
- */
+/*jslint nomen: true */
+YUI.add('addon-rs-shaker', function (Y, NAME) {
+    'use strict';
 
-/*jslint anon:true, sloppy:true, nomen:true*/
-/*global YUI*/
-
-YUI.add('addon-rs-shaker', function(Y, NAME) {
-
-    var libpath = require('path'),
-        libfs = require('fs'),
-        //bootstrap
-        BOOTSTRAP_DIR = '../../lib/bootstrap/',
-        BOOTSTRAP_YUI_OVERRIDE = 'yui-override',
-        BOOTSTRAP_FAKE_YUI = 'yui-fake-inline-min',
-        //inline (defined in core as well)
-        INLINE_SELECTOR ='shaker-inline';
+    var METADATA_FILENAME = 'shaker-meta.json',
+        DEFAULT_SETTINGS = {
+            serveLocation: 'default',
+            serveJs: {
+                combo: false,
+                position: 'bottom'
+            },
+            serveCss: {
+                combo: false,
+                position: 'top'
+            },
+            optimizeBootstrap: true
+        },
+        libpath = require('path');
 
     function RSAddonShaker() {
         RSAddonShaker.superclass.constructor.apply(this, arguments);
@@ -25,183 +24,291 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
     RSAddonShaker.NS = 'shaker';
     RSAddonShaker.ATTRS = {};
 
-    ShakerNS = Y.namespace('mojito.shaker');
-
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function (config) {
             this.rs = config.host;
-            this._poslCache = {};   // context: POSL
             this.appRoot = config.appRoot;
-            this.mojitoRoot = config.mojitoRoot;
             this.appConfig = config.host.getStaticAppConfig() || {};
-            this.shakerConfig = this.appConfig.shaker || {};
 
-            var yuiRS = this.rs.yui,
-                store = this.rs,
-                shakerConfig = this.shakerConfig;
-
-            if (!this.initilized) {
-                //first read the shaker metadata
-                this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, 'shaker-meta.json'));
-
-                if (this.meta && !Y.Object.isEmpty(this.meta)) {
-                    Y.log('Metadata loaded correctly.','info','Shaker');
-                    Y.log('Preloading store', 'info','mojito-store');
-                } else {
-                    Y.log('Metadata not found.','warn','Shaker');
-                }
+            // run time specific code
+            // initialize metadata
+            // populate app and mojit level resources
+            if (!process.shakerCompiler) {
+                this._initializeMetadata();
+                this._populateAppResources();
             }
 
-            /*
-            * AOP HOOKS:
-            * We need to hook some events on the store,
-            * but we will have to do different hooks depending if we are on build time or in runtime
-            * The reason is that there are some hook that are not needeed on runtime or viceversa
-            */
+            // run time and compile time
+            // change the location of the resources to their cdn location
+            this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+        },
 
-            if (shakerConfig.optimizeBootstrap) {
-                this.beforeHostMethod('makeResourceVersions', this.makeResourceVersions, this);
+        /**
+         * Reads the metadata file and sets the settings and current location.
+         */
+        _initializeMetadata: function () {
+            // TODO is this necessary?
+            if (this.initilized) {
+                return;
             }
 
-            //on build time we need this to reconfigure the url of where the assets come from...
-            if (shakerConfig.comboCDN) {
-                this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+            // read shaker metadata
+            this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, METADATA_FILENAME));
+
+            if (this.meta && !Y.Object.isEmpty(this.meta)) {
+                Y.log('Metadata loaded correctly.', 'info', 'Shaker');
+                Y.log('Preloading store', 'info', 'mojito-store');
+            } else {
+                this.meta = {};
+                Y.log('Metadata not found.', 'warn', 'Shaker');
             }
 
-            this.beforeHostMethod('parseResourceVersion', this.parseResourceVersion, this);
+            // initialize settings
+            this.meta.settings = (this.appConfig.shaker && this.appConfig.shaker.settings) || {};
+            // fill in missing settings with default
+            this.meta.settings.serveJs = this.meta.settings.serveJs === null || this.meta.settings.serveJs === true ?
+                    {} : this.meta.settings.serveJs;
+            this.meta.settings.serveCss = this.meta.settings.serveCss === null || this.meta.settings.serveCss === true ?
+                    {} : this.meta.settings.serveCss;
+            Y.mix(this.meta.settings, DEFAULT_SETTINGS, false, null, 0, true);
 
-            // This hooks are for runtime
-            if (!process.shakerCompile) {
+            // set current location
+            this.meta.currentLocation = this.meta.locations && this.meta.locations[this.meta.settings.serveLocation];
 
-                //alter the url for the seeds or augment it if necesary...
-                if (shakerConfig.comboCDN || shakerConfig.optimizeBootstrap) {
-                    Y.Do.after(this.alterAppSeedFiles, yuiRS, 'getAppSeedFiles', this);
-                }
-                //alter bootstrap config
-                //Y.Do.after(function (){console.log(Y.Do.currentRetVal);}, yuiRS, 'getAppGroupConfig', this);
-
-                // Augments the view with assets
-                this.onHostEvent('mojitResourcesResolved', this.mojitResourcesResolved, this);
+            // if the current location is set to something other than default
+            // hook into getAppConfig in order to set custom yui configuration
+            if (this.meta.currentLocation) {
+                this.rs._appConfigCache = {};
+                this.beforeHostMethod('getAppConfig', this.getAppConfig, this);
             }
         },
-        destructor: function() {
-            // TODO:  needed to break cycle so we don't leak memory?
-            this.rs = null;
-        },
-        /*
-        * We need to add the synthetic bootstrap items
-        */
-        makeResourceVersions: function () {
-            var store = this.rs;
-                yuiRS = store.yui;
-            this.addOptimizedBootstrap(store, yuiRS);
-        },
-        /*
-        * Add the synthetic resources for the optimized bootstrap
-        * On runtime we can access the new synthethic files
-        */
-        addOptimizedBootstrap: function (store, yuiRS) {
-            var relativePath = libpath.join(__dirname, BOOTSTRAP_DIR),
-                bootstrapResources = [
-                    BOOTSTRAP_YUI_OVERRIDE,
-                    BOOTSTRAP_FAKE_YUI
-                ];
 
-            Y.Array.each(bootstrapResources, function (item) {
-                var content = libfs.readFileSync(relativePath + item + '.js', 'utf8'),
-                    res = {
-                    source: {},
-                    mojit: 'shared',
-                    type: 'yui-module',
-                    subtype: 'synthetic',
-                    name: item,
-                    affinity: 'client',
-                    selector: '*',
-                    yui: {
-                        name: item
+        /**
+         * Reads the metadata file and sets the settings and current location.
+         */
+        _populateAppResources: function () {
+            var routes,
+                self = this;
+            // the shaker meta data file is compressed such that resources are not duplicated
+            // across posls. So all the posl need to be populated with their rollups and app level resources
+            // mojit level resources are not populated since they are retrieved through @resolveMojitDetails
+            if (self.meta.app) {
+                routes = self.meta.app['*'].rollups ? Y.Object.keys(self.meta.app['*'].rollups) : [];
+                Y.Object.each(self.meta.app, function (poslResources, poslStr) {
+                    var posl = poslStr.split('-');
+                    poslResources.app = poslResources.app || {};
+                    poslResources.app.assets = self._positionResources(self._getAppResources(self.meta, posl));
+                    Y.Array.each(routes, function (route) {
+                        var typeResources = {};
+                        poslResources.rollups = poslResources.rollups || {};
+                        poslResources.rollups[route] = self._getRollupResources(self.meta, posl, route);
+                        typeResources.js = (poslResources.rollups[route].js && poslResources.rollups[route].js.rollups) || [];
+                        typeResources.css = (poslResources.rollups[route].css && poslResources.rollups[route].css.rollups) || [];
+                        poslResources.rollups[route].assets = self._positionResources(typeResources);
+                    });
+                });
+
+                this.onHostEvent('resolveMojitDetails', this.resolveMojitDetails, this);
+            }
+        },
+
+        /**
+         * Positions resources in their proper page position based on the settings
+         * @param {object} resources Object containing resources group in arrays and organized
+         * by type
+         */
+        _positionResources: function (resources) {
+            var positionedResources = {
+                    top: {},
+                    shakerTop: {},
+                    bottom: {}
+                },
+                shakerResources = {},
+                shakerInline = {},
+                resource,
+                self = this;
+
+            if (!resources) {
+                return positionedResources;
+            }
+
+            // separate inline resources
+            // dont separate inline resources if no inline resources or no current location
+            // allow inline if default location with inline specified
+            if (!Y.Object.isEmpty(self.meta.inline) && self.meta.settings.inline) {
+                Y.Object.each(resources, function (typeResources, type) {
+                    shakerResources[type] = [];
+
+                    if ((!self.meta.settings.serveCss && type === 'css') ||
+                            (!self.meta.settings.serveJs && type === 'js')) {
+                        return;
                     }
-                };
 
-                // this is how mojito creates synthetic resources when the server start, so wejust replicate it.
-                res.id = [res.type, res.subtype, res.name].join('-');
-                res.source.pkg = store.getAppPkgMeta();
-                res.source.fs = store.makeResourceFSMeta(__dirname, 'app', '../../lib/bootstrap/', item + '.js', true);
-
-                // adding synthetic resources to the store and tho the yuiRS since it will cache them.
-                yuiRS.appModulesRess[item] = res;
-                yuiRS.resContents[item] = content;
-                store.addResourceVersion(res);
-
-                // We save in the shaker addon the content of the hook
-                // because on runtime we want to pick it syncronously
-                if (item === BOOTSTRAP_FAKE_YUI) {
-                    this.fakeYUIBootstrap = content;
-                }
-
-            }, this);
-        },
-
-        _resolveSeedResourceURL: function (moduleList) {
-            var store = this.rs,
-                yuiRS = store.yui,
-                seed = moduleList,
-                files,
-                i;
-
-            for (i = 0; i < seed.length; i += 1) {
-                if (yuiRS.yuiModulesRess.hasOwnProperty(seed[i])) {
-                        seed[i] = yuiRS.yuiModulesRess[seed[i]].url;
-                } else if (yuiRS.appModulesRess.hasOwnProperty(seed[i])) {
-                        seed[i] = yuiRS.appModulesRess[seed[i]].url;
-                } else {
-                    Y.log('Couldnt find module for seed. Optmized bootstrap may fail', 'warn', 'Shaker');
-                }
+                    shakerInline[type] = {
+                        blob: []
+                    };
+                    Y.Array.each(typeResources, function (resource) {
+                        if (self.meta.inline[resource] !== undefined) {
+                            shakerInline[type].blob.push(resource);
+                        } else {
+                            shakerResources[type].push(resource);
+                        }
+                    });
+                });
+                positionedResources.shakerInlineCss = shakerInline.css;
+                positionedResources.shakerInlineJs = shakerInline.js;
+            } else {
+                shakerResources = resources;
             }
 
-            return seed;
-
-        },
-        /*
-        * When comboLoad is active we need to change the seed to point to the CDN...
-        * We rely on the mapping we have on the Shaker metadata.
-        * Also if optimizeBootstrap is set to true we need to augment the seed files to create our own seed.
-        *
-        * NOTE:
-        *   I have to implement _resolveSeedResourceURL, because the original method @getAppSeedFiles
-        *   pulls the seed directly from configuration or it creates it's own,
-        *   so we cannot hook directly those files.
-        */
-        alterAppSeedFiles: function () {
-            var i,
-                newUrl,
-                resources,
-                shakerConfig = this.shakerConfig,
-                cdnUrls = this.meta && this.meta.cdnModules,
-                currentSeed = Y.Do.currentRetVal;
-
-            if (shakerConfig.optimizeBootstrap) {
-                
-                resources = this._resolveSeedResourceURL(['yui-override']);
-                //the first element has to be the yui-override
-                currentSeed.unshift(resources[0]);
+            // add css assets to proper position
+            if (self.meta.settings.serveCss) {
+                positionedResources[self.meta.settings.serveCss.position].css = shakerResources.css || [];
             }
 
-            // We need to change the url to point to the generated in CDN...
-            if (shakerConfig.comboCDN && cdnUrls) {
-                for (i in currentSeed) {
-                    newUrl = cdnUrls[currentSeed[i]];
-                    if (newUrl) {
-                        currentSeed[i] = newUrl;
+            // add js assets to proper position
+            if (self.meta.settings.serveJs) {
+                positionedResources[self.meta.settings.serveJs.position].js = shakerResources.js || [];
+            }
+            return positionedResources;
+        },
+
+        /**
+         * Gets a mojit's resources for a specific posl and action
+         */
+        _getMojitResources: function (meta, posl, mojit, action) {
+            return this._getResources(posl, function (poslStr) {
+                return meta.app[poslStr].mojits && meta.app[poslStr].mojits[mojit] && meta.app[poslStr].mojits[mojit][action];
+            });
+        },
+
+        /**
+         * Gets app resources for a specific posl
+         */
+        _getAppResources: function (meta, posl) {
+            return this._getResources(posl, function (poslStr) {
+                return meta.app[poslStr].app;
+            });
+        },
+
+        /**
+         * Gets rollup resources for a specific posl and route
+         */
+        _getRollupResources: function (meta, posl, route) {
+            return this._getResources(posl, function (poslStr) {
+                return meta.app[poslStr].rollups && meta.app[poslStr].rollups[route];
+            });
+        },
+
+        /**
+         * Base function used to retrieve app, rollups, and mojit resources.
+         * This function begins searching in the specified posl; if the resources is not found
+         * in this posl, it continues searching by going in the less general posl. This less
+         * general posl is determined by removing the minor selector form the posl array. The minor
+         * selector is the least significant selector (the second to last since '*' is always last). If
+         * the resource set is still not found, it continues until it reaches the base posl ('*').
+         * @param {array} posl The priority ordered selector list array.
+         * @param {function} getMetaResources the function that retrieves a specific type of resource set.
+         */
+        _getResources: function (posl, getMetaResources) {
+            // TODO remove resources type based on config/shaker runtime settings
+            var poslStr = posl.join('-'),
+                resources = {
+                    css: null,
+                    js: null
+                },
+                continueSearching = true,
+                metaResources,
+                type,
+                typeResources;
+
+            // if posl does not exist in meta then use default
+            // posl should always exist in meta to ensure a more general posl is used instead of just jumping to '*'
+            poslStr = this.meta.app[poslStr] ? poslStr : '*';
+
+            while (continueSearching) {
+                // get app or mojit resources for the posl inside the metadata
+                metaResources = getMetaResources(poslStr);
+                if (metaResources) {
+                    // assume metaResources contains all the type resources required
+                    continueSearching = false;
+                    for (type in resources) {
+                        if (resources.hasOwnProperty(type)) {
+                            typeResources = resources[type];
+                            // this resource has not been found
+                            if (!typeResources) {
+                                resources[type] = metaResources[type];
+                            }
+                            // type resource not found so must continue searching for it
+                            if (!resources[type]) {
+                                continueSearching = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (posl.length === 1) {
+                    break;
+                }
+                // remove the minor selector from the posl and search within more general posl
+                // first clone posl since the resource store may use it
+                posl = Y.clone(posl);
+                posl.splice(posl.length - 2, 1);
+                poslStr = posl.join('-');
+            }
+            // remove type resources if empty
+            for (type in resources) {
+                if (resources.hasOwnProperty(type)) {
+                    typeResources = resources[type];
+                    if (!typeResources) {
+                        //delete resources[type];
+                        resources[type] = [];
                     }
                 }
             }
-            
+
+            return resources;
         },
-        /*
-        * Change the URL's of the Store so we get the comboLoad from CDN.
-        */
-        resolveResourceVersions: function (cdnUrls) {
+
+        /**
+         * Hook into the store's getAppConfig function.
+         * Gets the application configuration. This was copied from the resource store in order to
+         * modify the yui config with the yui config of the cdn location
+         */
+        getAppConfig: function (ctx) {
+            var appConfig,
+                key,
+                ycb;
+
+            ctx = this.rs.blendStaticContext(ctx);
+            key = JSON.stringify(ctx || {});
+
+            if (this.rs._appConfigCache[key]) {
+                return JSON.parse(this.rs._appConfigCache[key]);
+            }
+
+            ycb = this.rs._appConfigYCB.read(ctx);
+
+            appConfig = Y.mojito.util.blend(this.rs._fwConfig.appConfigBase, this.rs._config.appConfig);
+            appConfig = Y.mojito.util.blend(appConfig, ycb);
+
+            // merge the application's yui config with the location's yui config, with precedence on the location's config
+            Y.mix(appConfig.yui.config, this.meta.currentLocation.yuiConfig, true, null, 0, true);
+
+            this.rs._appConfigCache[key] = JSON.stringify(appConfig);
+
+            return appConfig;
+        },
+
+        /**
+         * Hook into the store's resolveResourceVersions.
+         * Update the store with the CDN url's.
+         * During compile time, the urlMap is passed to update the store. This is required
+         * in order for the loader to have the correct CDN urls.
+         * During runtime, the urlMap is obtained from the metadata.
+         */
+        resolveResourceVersions: function (urlMap) {
             var r,
                 res,
                 ress,
@@ -211,10 +318,9 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
                 meta,
                 urls = {};
 
-            //get the CDN URL mapping
-            cdnUrls = cdnUrls || this.meta.cdnModules;
+            urlMap = urlMap || (this.meta && this.meta.currentLocation && this.meta.currentLocation.resources);
 
-            if(!cdnUrls) {
+            if (!urlMap) {
                 return;
             }
 
@@ -224,94 +330,48 @@ YUI.add('addon-rs-shaker', function(Y, NAME) {
 
             for (m = 0; m < mojits.length; m += 1) {
                 mojit = mojits[m];
+
                 ress = this.rs.getResourceVersions({mojit: mojit});
                 for (r = 0; r < ress.length; r += 1) {
                     res = ress[r];
-                    //Change the url
-                    if (res.yui && cdnUrls[res.url]) {
-                        res.url = cdnUrls[res.url];
+                    // change the url
+                    if (res.yui && urlMap[res.url]) {
+                        res.url = urlMap[res.url];
                     }
                 }
             }
         },
-        /*
-        * Converting inlines files to be readable by the store.
-        * parseResourceVersion:
-        * AOP hook!
-        */
-        parseResourceVersion: function (source, type, subtype) {
-            var basename,
-                tmpBasename,
-                inline;
 
-            if (type === 'asset') {
-                basename = source.fs.basename.split('.');
-                inline = basename.pop();
+        /**
+         * Hook into the store's resolveMojitDetails.
+         * During server start time, mojito expands each mojit for each posl.
+         * This function is used to set the mojit assets determined during compile time.
+         */
+        resolveMojitDetails: function (e) {
+            var mojit = e.args.type,
+                views = e.mojitDetails.views,
+                posl = e.args.posl,
+                self = this;
 
-                if (inline === INLINE_SELECTOR ) {
-                    // Add the inline property to source, since we don't have access to the resource itself yet.
-                    source.inline = true;
-                    // put back the basename without the INLINE_SELECTOR so mojito doesnt skip the file.
-                    basename[0] = basename[0] + '-' + INLINE_SELECTOR;
-                    source.fs.basename = basename.join('.');
-                }
-            }
-        },
-        /*
-        * Augment the view spec with the Shaker computed assets.
-        * Will be merged on the action-context module (either on the client or in the server).
-        */
-        mojitResourcesResolved: function (e) {
-            var env = e.env,
-                posl = e.posl,
-                mojitName = e.mojit,
-                ress = e.ress,
-                strContext = posl.join('-'),
-                isFrame = mojitName.indexOf('ShakerHTMLFrameMojit') !== -1,
-                shakerMeta = this.meta,
-                shakerBase,
-                frameActionMeta,
-                actionMeta,
-                css,
-                resource;
-                
-            if (Y.Object.isEmpty(this.meta)) {
+            // skip mojits not in metadata
+            if (!this.meta.app['*'].mojits[mojit]) {
                 return;
             }
 
-            // If the mojit is the ShakerHTMLFrame, we are going to put the common assets there.
-            if (isFrame) {
-                shakerBase = shakerMeta.app[strContext];
-                shakerBase = shakerBase && shakerBase.app;
-                frameActionMeta = {
-                    css: shakerBase
-                };
-
-            } else {
-                // Check if on the nested meta we have all the info we need...
-                shakerBase = shakerMeta.app[strContext];
-                shakerBase = shakerBase && shakerBase.mojits[mojitName];
-            }
-
-            for (var i in ress) {
-                resource = ress[i];
-                // we got a view, let's attach the proper assets if some
-                if (resource.type === 'view') {
-                     actionMeta =  (isFrame ? frameActionMeta : shakerBase && shakerBase[resource.name]) || {css:[], blob:[]};
-                     ress[i].view.assets = {
-                        topShaker: {
-                            css: actionMeta.css
-                        },
-                        inlineShaker: {
-                            blob: actionMeta.blob
-                        }
-                    };
-                }
-            }
+            Y.Object.each(views, function (view, action) {
+                var resources = self._getMojitResources(self.meta, posl, mojit, action);
+                view.assets = self._positionResources(resources);
+            });
         }
-       
     });
-    Y.namespace('mojito.addons.rs');
-    Y.mojito.addons.rs.shaker = RSAddonShaker;
 
-}, '0.0.1', { requires: ['plugin', 'oop','addon-rs-url','addon-rs-yui']});
+    Y.namespace('mojito.addons.rs').shaker = RSAddonShaker;
+
+}, '0.0.1', {
+    requires: [
+        'plugin',
+        'oop',
+        'addon-rs-url',
+        'addon-rs-yui'
+    ]
+});
