@@ -66,7 +66,7 @@ The option ``--run`` will make the server start automatically.
 * Go to URL:
 	``http://localhost:8666``
 
-For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
+For a more in-depth tutorial, please see `Shaker: Example <shaker_examples.html>`_. To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
 
 Compatibility Table
 ###################
