@@ -71,7 +71,7 @@ Within a Mojito application root folder:
 
 #. Go to following URL: http://localhost:8666
 
-For a more in-depth tutorial, please see `Shaker: Example <shaker_example.html>`_. 
+For a more in-depth tutorial, please see `Shaker: Example <shaker_examples.html>`_. 
 To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
 
 .. _gs-compatibility:
