@@ -168,7 +168,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     }
 
                     comboLoad = (type === "js" && self.settings.serveJs.combo)
-                                 || (type === "css" && self.settings.serveCss.combo);
+                        || (type === "css" && self.settings.serveCss.combo);
 
                     while (i < typeResources.length) {
                         // remove resource if found in rollup
