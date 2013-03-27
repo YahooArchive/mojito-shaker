@@ -14,6 +14,7 @@ var utils = require('mojito/lib/management/utils'),
  * @return {Object} The context object after conversion.
  */
 function contextCsvToObject(s) {
+    'use strict';
     var ctx = {},
         pairs = s.split(','),
         pair,
@@ -53,12 +54,12 @@ exports.options = [
     {
         longName: 'run',
         shortName: null,
-        hasValue:false
+        hasValue: false
     },
     {
         longName: 'help',
         shortName: null,
-        hasValue:false
+        hasValue: false
     },
     {
         longName: 'debug',
@@ -74,9 +75,11 @@ exports.options = [
  * @param {object} opts Options/flags for the command.
  * @param {function} callback An optional callback to invoke on completion.
  */
-exports.run = function(params, options) {
+exports.run = function (params, options) {
+    'use strict';
     options = options || {};
     var context = {},
+        compiler,
         debug = options.debug || 0;
 
     if (options.context) {
@@ -91,12 +94,14 @@ exports.run = function(params, options) {
     // shaker compiler
     process.shakerCompiler = true;
 
-    var compiler = new ShakerCompiler(context);
+    compiler = new ShakerCompiler(context);
     compiler.compile(function (err) {
         if (err) {
-            utils.error(err);
+            // disable logger to prevent further messages after a failure
+            compiler.logger.log = function () {};
+            utils.error('Shaker compilation failed: ' + err);
         } else {
-            utils.success('Shaker done.');
+            utils.success('Shaker compilation done.');
             if (options.run) {
                 delete options.run;
                 mojitoStart.run(params, options, function (err) {

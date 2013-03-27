@@ -17,9 +17,10 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         this._hookDone(ac, adapter);
 
         // initialize shaker global data
-        this.shakerGlobal = ac.globals.get(NAME) || {};
+        this.shakerGlobal = adapter.req.shakerGlobal;
         if (!this.shakerGlobal) {
-            ac.globals.set(NAME, this.shakerGlobal);
+            this.shakerGlobal = {};
+            adapter.req.shakerGlobal = this.shakerGlobal;
         }
     }
 
@@ -42,7 +43,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             this.appResources = this.meta.app && this.meta.app[this.poslStr].app.assets;
             this.currentLocation = this.meta.currentLocation;
             this.inline = this.settings.inline ? this.meta.inline : null;
-            this.rollups = this.route ? this.meta.app[this.poslStr].rollups &&
+            this.rollups = this.route && this.currentLocation ? this.meta.app[this.poslStr].rollups &&
                 this.meta.app[this.poslStr].rollups[this.route.name] : null;
         },
 
@@ -321,7 +322,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         'mojito-assets-addon',
         'mojito-config-addon',
         'mojito-deploy-addon',
-        'mojito-url-addon',
-        'yahoo.addons.globals'
+        'mojito-url-addon'
     ]
 });

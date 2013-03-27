@@ -9,7 +9,7 @@
 /*global YUI*/
 
 
-YUI.add('HTMLFrameMojit', function (Y, NAME) {
+YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
 
     'use strict';
 
@@ -26,8 +26,7 @@ YUI.add('HTMLFrameMojit', function (Y, NAME) {
                 // meta.assets from child should be piped into
                 // the frame's assets before doing anything else.
                 ac.assets.addAssets(meta.assets);
-var a = ac.config.get('deploy');
-console.log(a)
+
                 ac.shaker.run(ac.assets.assets, meta.binders);
 
                 // we don't care much about the views specified in childs

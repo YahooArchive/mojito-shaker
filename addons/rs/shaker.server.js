@@ -67,9 +67,9 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             // initialize settings
             this.meta.settings = (this.appConfig.shaker && this.appConfig.shaker.settings) || {};
             // fill in missing settings with default
-            this.meta.settings.serveJs = this.meta.settings.serveJs === null || this.meta.settings.serveJs === true ?
+            this.meta.settings.serveJs = this.meta.settings.serveJs === undefined || this.meta.settings.serveJs === null || this.meta.settings.serveJs === true ?
                     {} : this.meta.settings.serveJs;
-            this.meta.settings.serveCss = this.meta.settings.serveCss === null || this.meta.settings.serveCss === true ?
+            this.meta.settings.serveCss = this.meta.settings.serveCss === undefined || this.meta.settings.serveCss === null || this.meta.settings.serveCss === true ?
                     {} : this.meta.settings.serveCss;
             Y.mix(this.meta.settings, DEFAULT_SETTINGS, false, null, 0, true);
 
@@ -354,7 +354,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 self = this;
 
             // skip mojits not in metadata
-            if (!this.meta.app['*'].mojits[mojit]) {
+            if (!this.meta.app['*'] || !this.meta.app['*'].mojits || !this.meta.app['*'].mojits[mojit]) {
                 return;
             }
 
