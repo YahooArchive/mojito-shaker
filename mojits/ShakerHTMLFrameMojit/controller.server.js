@@ -22,6 +22,9 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
         __call: function (ac) {
 
             this._renderChild(ac, function (data, meta) {
+                var htmlData = ac.shaker.data.htmlData;
+                htmlData.title =  htmlData.title || 'Powered by Mojito';
+                htmlData.mojito_version = Y.mojito.version;
 
                 // meta.assets from child should be piped into
                 // the frame's assets before doing anything else.
@@ -37,17 +40,14 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
                 meta.view.name = 'index';
 
                 // 1. mixing bottom and top fragments from assets into
-                //    the template data, along with title and mojito version.
+                //    the template data, along with title and mojito version
+                //    and any other html data added through shaker
                 // 2. mixing meta with child metas, along with some extra
                 //    headers.
 
+
                 ac.done(
-                    Y.merge(data, ac.assets.renderLocations(), {
-
-                        title: ac.shaker.title || ac.config.get('title') || 'Powered by Mojito',
-                        mojito_version: Y.mojito.version
-
-                    }),
+                    Y.merge(data, ac.assets.renderLocations(), htmlData),
                     Y.mojito.util.metaMerge(meta, {
 
                         http: {
