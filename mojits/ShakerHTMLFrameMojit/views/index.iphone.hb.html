@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html class="{{html_class}}" {{html_attributes}}>
 <head>
 <script type="text/javascript">var MOJITO_INIT=new Date().getTime();</script>
 {{#meta}}
@@ -9,16 +9,23 @@
 <meta name="creator" content="Yahoo! Mojito {{mojito_version}}">
 {{/meta}}
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+{{{prefetch}}}
+
 <title>{{title}}</title>
 
+{{{shakerInlineCss}}}
 {{{top}}}
+{{{shakerTop}}}
 
 </head>
 <body>
 
 {{{child}}}
 
+{{{shakerInlineJs}}}
 {{{bottom}}}
 
+{{{postfetch}}}
 </body>
 </html>
