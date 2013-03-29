@@ -128,10 +128,13 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             if (!this.data.settings.serveJs) {
                 return;
             }
+            assets.bottom = assets.bottom || {};
+            assets.bottom.js = assets.bottom.js || [];
             if (this.ac.instance.config.deploy === true && binders) {
                 this.ac.assets.assets = assets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
             }
+
             // move js assets to the bottom if specified by settings
             if (this.data.settings.serveJs.position === "bottom") {
                 Array.prototype.unshift.apply(assets.bottom.js, assets.top.js);

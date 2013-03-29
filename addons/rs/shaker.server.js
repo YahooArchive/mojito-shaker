@@ -7,7 +7,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             serveLocation: 'default',
             serveJs: {
                 combo: false,
-                position: 'bottom'
+                position: 'top'
             },
             serveCss: {
                 combo: false,
