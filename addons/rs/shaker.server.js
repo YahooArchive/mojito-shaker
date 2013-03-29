@@ -171,6 +171,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             if (self.meta.settings.serveJs) {
                 positionedResources[self.meta.settings.serveJs.position].js = shakerResources.js || [];
             }
+
             return positionedResources;
         },
 

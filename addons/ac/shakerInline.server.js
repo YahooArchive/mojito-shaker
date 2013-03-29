@@ -27,8 +27,8 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 resourcesArray,
                 inlineFile;
 
-            // ignore if no inline files
-            if (!data.meta.inline) {
+            // ignore if no inline files or type is not to be served
+            if (!data.meta.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
                 return;
             }
 
@@ -48,7 +48,11 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                     // remove inline file from appResources
                     // TODO: must clone appResources to prevent interference with different requests
                     // investigate if this is a performance issue
-                    data.appResources = Y.clone(data.appResources);
+                    if (!data.appResourcesCloned) {
+                        data.appResources = Y.clone(data.appResources);
+                        data.appResourcesCloned = true;
+                    }
+
                     data.appResources[inlineLocation].blob.splice(i, 1);
                     return true;
                 }
@@ -87,11 +91,19 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
          */
         _shakerDone: function (selfContext, done, mojitData, meta) {
             var data = this.data,
-                args;
+                args,
+                inlinePositions = [];
+
+            if (data.settings.serveJs) {
+                inlinePositions.push('shakerInlineJs');
+            }
+            if (data.settings.serveCss) {
+                inlinePositions.push('shakerInlineCss');
+            }
 
             // only execute if there is inline data
             if (data.inline) {
-                Y.Array.each(["shakerInlineCss", "shakerInlineJs"], function (position) {
+                Y.Array.each(inlinePositions, function (position) {
                     var positionResources = meta.assets[position],
                         inlineElement = "",
                         type = position === "shakerInlineCss" ? "css" : "js";

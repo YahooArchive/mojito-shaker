@@ -4,7 +4,7 @@
  * See the accompanying LICENSE file for terms.
  */
 
-/*jslint nomen: true, plusplus: true */
+/*jslint nomen: true, plusplus: true, regexp: true */
 
 YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
@@ -66,19 +66,17 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} binders The binders to be used to create the mojito client runtime
          */
         run: function (assets, binders) {
-            this._updateTitle();
-            this._initializeAssets(assets);
             this._addYUILoader(assets, binders);
             this._addAppResources(assets);
             this._addRouteRollups(assets);
             this._filterAndUpdate(assets);
         },
 
-        // TODO Shaker api
         /**
-         * Sets the page's title. The title is stored in the shaker global object, such
-         * that it can be modified by any code using the shaker addon for this request.
-         * @param {string} title The updated page title.
+         * Sets html data such as title, html_class, html_attributes
+         * or settings like serveJs, serveCss, inline
+         * @param {string} name The name of the property to set
+         * @param {value} value The value to set the property
          */
         set: function (name, value) {
             var data = this.data,
@@ -86,6 +84,11 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     name === "serveLocation" || name === "optimizeBootstrap";
 
             if (isSetting) {
+                // must clone settings to prevent interference between requests
+                if (!data.settingCloned) {
+                    data.settings = Y.clone(data.settings);
+                    data.settingsCloned = true;
+                }
                 // merge setting with value object
                 if (Y.Lang.isObject(value)) {
                     Y.mix(data.settings[name], value, true, null, 0, true);
@@ -99,6 +102,11 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             return value;
         },
 
+        /**
+         * Gets html data such as title, html_class, html_attributes
+         * or settings like serveJs, serveCss, inline
+         * @param {string} name The name of the property to get
+         */
         get: function (name) {
             var data = this.data,
                 isSetting = name === "serveJs" || name === "serveCss" || name === "inline" ||
@@ -112,34 +120,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         },
 
         /**
-         * Updates the page's title that was set by calling this.setTitle
-         * @param {string} title The updated page title.
-         */
-        _updateTitle: function () {
-            // update title if this.setTitle was called
-            // TODO shaker api
-            //this.ac.instance.config.title = this.shakerGlobal.title || this.ac.instance.config.title;
-        },
-
-        /**
-         * Initializes the assets such that all asset types in all asset positions are defined
-         * @param {object}
-         */
-        _initializeAssets: function (assets) {
-            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
-                assets[pagePosition] = assets[pagePosition] || {};
-                assets[pagePosition].css = assets[pagePosition].css || [];
-                assets[pagePosition].js = assets[pagePosition].js || [];
-                assets[pagePosition].blob = assets[pagePosition].blob || [];
-            });
-        },
-
-        /**
          * Adds YUI script and the loader.
          * @param {object} assets The assets to be updated.
          * @param {object} binders The binders to be used to create the mojito client runtime
          */
         _addYUILoader: function (assets, binders) {
+            if (!this.data.settings.serveJs) {
+                return;
+            }
             if (this.ac.instance.config.deploy === true && binders) {
                 this.ac.assets.assets = assets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
@@ -160,9 +148,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             if (!data.appResources) {
                 return;
             }
-            // TODO: only focus on page positions where app assets may appear
-            Y.Array.each(this.pagePositions, function (pagePosition) {
+            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
                 Y.Object.each(data.appResources[pagePosition], function (typeResources, type) {
+                    if ((!data.settings.serveJs && type === "js") ||
+                            (!data.settings.serveCss && type === "css")) {
+                        return;
+                    }
+                    assets[pagePosition] = assets[pagePosition] || {};
+                    assets[pagePosition][type] = assets[pagePosition][type] || [];
                     Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
             });
@@ -177,10 +170,15 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             if (!data.rollups) {
                 return;
             }
-            // TODO: only focus on page positions where rollups may appear
-            Y.Array.each(this.pagePositions, function (pagePosition) {
+            Y.Array.each(['top', 'shakerTop', 'bottom'], function (pagePosition) {
                 Y.Object.each(data.rollups.assets[pagePosition], function (typeResources, type) {
-                    Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
+                    if ((!data.settings.serveJs && type === "js") ||
+                            (!data.settings.serveCss && type === "css")) {
+                        return;
+                    }
+                    assets[pagePosition] = assets[pagePosition] || {};
+                    assets[pagePosition][type] = assets[pagePosition][type] || [];
+                    Array.prototype.push.apply((assets[pagePosition] || {})[type], typeResources || []);
                 });
             });
         },
@@ -191,7 +189,11 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} assets The assets to be updated.
          */
         _filterAndUpdate: function (assets) {
-            var data = this.data;
+            var self = this,
+                data = this.data;
+
+            self._removeTypeAssets(assets);
+
             Y.Object.each(assets, function (positionResources, position) {
                 Y.Object.each(positionResources, function (typeResources, type) {
                     var i = 0,
@@ -230,6 +232,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                                     comboLocalTypeResources.push(newLocation || typeResources[i]);
                                 } else {
                                     // get location resources to comboload
+                                    // just use the path of the url
+                                    newLocation = newLocation.replace(/https?:\/\/[^\/]+/, '');
                                     comboLocationTypeResources.push(newLocation);
                                 }
                                 // remove resource since it will appear comboloaded
@@ -253,15 +257,44 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
                     // add comboload resources
                     if (comboLoad && comboLocalTypeResources.length !== 0) {
-                        typeResources.push(data._comboload(comboLocalTypeResources, true));
+                        typeResources.push(self._comboload(comboLocalTypeResources, true));
                     }
                     if (comboLoad && comboLocationTypeResources.length !== 0) {
-                        typeResources.push(data._comboload(comboLocationTypeResources, false));
+                        typeResources.push(self._comboload(comboLocationTypeResources, false));
                     }
                 });
             });
         },
 
+        /**
+         * Remove any type assets as specified in the config
+         * @param {object} assets The assets to be filtered.
+         */
+        _removeTypeAssets: function (assets) {
+            var data = this.data;
+
+            // if serving both js and css then return
+            if (data.settings.serveJs && data.settings.serveCss) {
+                return;
+            }
+
+            Y.Array.each(Y.Object.keys(assets), function (pagePosition) {
+                if (!data.settings.serveCss) {
+                    if (pagePosition === "shakerInlineCss") {
+                        delete assets[pagePosition];
+                    } else {
+                        delete assets[pagePosition].css;
+                    }
+                }
+                if (!data.settings.serveJs) {
+                    if (pagePosition === "shakerInlineJs") {
+                        delete assets[pagePosition];
+                    } else {
+                        delete assets[pagePosition].js;
+                    }
+                }
+            });
+        },
 
         /**
          * Updates the location of each resource, filters out resources already in rollup.
@@ -269,10 +302,12 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} assets The assets to be updated.
          */
         _comboload: function (resourcesArray, isLocal) {
-            var comboSep = "~", // default comboSep
+            var data = this.data,
+                comboSep = "~", // default comboSep
                 comboBase = "/combo~", // default comboBase
-                locationComboConfig = this.currentLocation && this.currentLocation.yuiConfig && this.currentLocation.yuiConfig.groups &&
-                           this.currentLocation.yuiConfig.app;
+                locationComboConfig = data.currentLocation && data.currentLocation.yuiConfig && data.currentLocation.yuiConfig.groups &&
+                           data.currentLocation.yuiConfig.groups.app;
+
             // if location is not local, then update comboBase and comboSep as specified in location's config
             if (!isLocal) {
                 comboBase = (locationComboConfig && locationComboConfig.comboBase) || comboBase;
