@@ -1,18 +1,14 @@
 # Shaker
 
-![Shake it!](/yahoo/mojito-shaker/blob/master/docs/images/shaker.jpg?raw=true)
+![Shake it!](https://github.com/yahoo/mojito-shaker)
 
-Shaker is a static asset rollup manager for Mojito applications.
+Shaker is a powerful static asset manager for [Mojito](https://github.com/yahoo/mojito) applications. It gives users absolute control in transforming, validating, uploading, organizing, and combining resources in order to maximize performance and build dynamic applications.
 
-A rollup consists of one or more input files that are combined (rolled up) to produce a single output file. Rollups can be as simple as a single file, a single mojit binder and its dependencies, or any combination thereof. Rollups are used to reduce the number of HTTP requests, which helps improve the performance of web sites and web applications.
-
-Shaker allows you to create rollups regarding different combination of dimensions, for example you may wanna serve different assets when people are connected from different devices, different countries, etc.
-
-For more information, please see the online documentation.
+For more information, please see the [online documentation](http://developer.yahoo.com/cocktails/shaker).
 
 ## Installation
 
-Shaker can be installed either locally or globally (using -g option), but we encourage you to install it locally, 
+Shaker can be installed either locally or globally (using -g option), but we encourage you to install it locally,
 since the reference to the inner mojits will be relative to the app.
 
 1. Get the mojito-shaker npm package and install it:
@@ -22,7 +18,7 @@ since the reference to the inner mojits will be relative to the app.
 
 2. If you installed it locally you will have to link it:
 
-        $ cd ./node_modules/mojito-shaker/ && sudo npm link 
+        $ cd ./node_modules/mojito-shaker/ && sudo npm link
 
 3. Confirm that Shaker has been installed correctly by running:
 
@@ -54,8 +50,8 @@ Note: If you installed `mojito-shaker` globally you will have to point to the ab
 
 Execute Shaker and Start the server:
 
-    $ mojito-shake [--context "environment:{value}"] [--run]
-    $ mojito-start [--context "environment:{value}"]
+    $ mojito-shake [--context "dimension1:{value1}[,dimension2:{value2}]"] [--run]
+    $ mojito start [--context "dimension1:{value1}[,dimension2:{value2}]"]
 
 Go to URL:
 
