@@ -8,12 +8,11 @@ Getting Started
 Prerequisites
 #############
 
-- `Node.js (>= 0.6.0 < 0.8) <http://nodejs.org/>`_, `npm (> 1.0.0) <https://npmjs.org/>`_
+- `Node.js (>= 0.6.0) <http://nodejs.org/>`_, `npm (> 1.0.0) <https://npmjs.org/>`_
 - `Mojito v0.5.x <https://npmjs.org/package/mojito>`_
 
-.. note:: To use Shaker with other versions of Mojito, 
+.. note:: To use Shaker with other versions of Mojito,
           see :ref:`Compatibility Table <gs-compatibility>`.
-
 
 .. _gs-install:
 
@@ -24,7 +23,7 @@ Installation Steps
 
    ``$ cd myApp``
 
-#. Get Shaker from the npm registry and install it under your Mojito application 
+#. Get Shaker from the npm registry and install it under your Mojito application
    (or globally using ``-g`` option) so that it can be run from the command line.
 
    ``$ npm install mojito-shaker [-g]``
@@ -33,8 +32,8 @@ Installation Steps
 
    ``$ mojito-shake``
 
-#. If you get an error, check if you have correctly configured the 
-   `Node environment <http://nodejs.org/api/modules.html#modules>`_. Also, try setting the 
+#. If you get an error, check if you have correctly configured the
+   `Node environment <http://nodejs.org/api/modules.html#modules>`_. Also, try setting the
    right ``$NODE_PATH`` to the modules using the following:
 
    ``$ export NODE_PATH=:$NODE_PATH:\`npm root -g\```
@@ -46,7 +45,7 @@ Running Shaker
 
 Within a Mojito application root folder:
 
-#. Edit the ``application.json`` file to configure and use the ``ShakerHTMLFrame``. 
+#. Edit the ``application.json`` file to configure and use the ``ShakerHTMLFrame``.
    It should look like the following:
 
    .. code-block:: javascript
@@ -63,28 +62,36 @@ Within a Mojito application root folder:
       ]
 
 
-#. Execute Shaker and start the server:
+#. Execute the Shaker compiler and start the application:
 
-   ``$ mojito-shake [--context "environment:{value}"] [--run]``
+   ``$ mojito-shake [--context "{key1}:{value1}[,{key2}:{value2}]"] [--run]``
 
-   The option ``--run`` will make the server start automatically.
+   The option ``--run`` will make the application start automatically.
 
 #. Go to following URL: http://localhost:8666
 
-For a more in-depth tutorial, please see `Shaker: Example <shaker_examples.html>`_. 
-To learn more about Shaker, see the `Shaker Documentation <index.html>`_.
+.. _gs-when:
+
+When to Run Shaker Compiler
+###########################
+
+The Shaker compiler does not need to be ran every time the application starts. If the "locations" option is not being used, then
+the compiler only needs to be ran if an asset is renamed or added after an intial compilation. If the "locations" option is used, then the compiler must be
+ran whenever there is a change in a resource that is to be stored in a location, otherwise the stored resource would be out of date.
+Also, changing a runtime setting, does not require re-compilation unless a serve location, that was not used during compilation, is specified.
+
 
 .. _gs-compatibility:
 
 Compatibility Table
 ###################
 
-Since Mojito 3.x.x, many API's have changed, and a lot of new features were introduced, 
-so Shaker has had to adapt to be compatible with Mojito. Thus, you may 
+Since Mojito 3.x.x, many API's have changed, and a lot of new features were introduced,
+so Shaker has had to adapt to be compatible with Mojito. Thus, you may
 encounter some incompatibilities depending upon the version of Mojito you're using.
 
 
-To avoid compatibility issues, refer to the table below to use the most stable 
+To avoid compatibility issues, refer to the table below to use the most stable
 version of ``Shaker`` for each Mojito minor version:
 
 
@@ -95,7 +102,7 @@ version of ``Shaker`` for each Mojito minor version:
 +-----------------+---------------------------------+
 | 0.4.x           | 2.0.32                          |
 +-----------------+---------------------------------+
-| 0.5.x           | 3.0.x                           |
+| 0.5.x           | 4.0.x                           |
 +-----------------+---------------------------------+
 
 
