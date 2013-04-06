@@ -133,6 +133,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             if (this.ac.instance.config.deploy === true && binders) {
                 this.ac.assets.assets = assets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
+            } else {
+                return;
             }
 
             // move js assets to the bottom if specified by settings
@@ -219,7 +221,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         // remove resource if found in rollup
                         if (data.rollups && data.rollups[type] && data.rollups[type].resources[typeResources[i]]) {
                             typeResources.splice(i, 1);
-                        } else if (data.inline && data.inline[typeResources[i]] !== undefined) {
+                        } else if (data.inline && data.inline[typeResources[i]] !== undefined &&
+                                (position === "shakerInlineCss" || position === "shakerInlineJs")) {
                             // resource is to be inlined
                             inlineElement += data.inline[typeResources[i]].trim();
                             typeResources.splice(i, 1);
