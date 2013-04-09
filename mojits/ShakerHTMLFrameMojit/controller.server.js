@@ -23,8 +23,6 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
 
             this._renderChild(ac, function (data, meta) {
                 var htmlData = ac.shaker.data.htmlData;
-                htmlData.title =  htmlData.title || 'Powered by Mojito';
-                htmlData.mojito_version = Y.mojito.version;
 
                 // meta.assets from child should be piped into
                 // the frame's assets before doing anything else.

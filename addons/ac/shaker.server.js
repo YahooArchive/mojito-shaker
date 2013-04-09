@@ -20,7 +20,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         if (!this.data) {
             data = this.data = {
                 htmlData: {
-                    title: ac.instance.config.title
+                    title: ac.instance.config.title || 'Powered by Mojito',
+                    mojito_version: Y.mojito.version
                 }
             };
             adapter.req.shakerGlobal = data;
@@ -161,7 +162,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     }
                     assets[pagePosition] = assets[pagePosition] || {};
                     assets[pagePosition][type] = assets[pagePosition][type] || [];
-                    Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
+                    Array.prototype.unshift.apply(assets[pagePosition][type], typeResources || []);
                 });
             });
         },
