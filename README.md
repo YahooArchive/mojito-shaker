@@ -1,6 +1,6 @@
 # Shaker
 
-![Shake it!](https://github.com/yahoo/mojito-shaker)
+[Shake it!](https://github.com/yahoo/mojito-shaker)
 
 Shaker is a powerful static asset manager for [Mojito](https://github.com/yahoo/mojito) applications. It gives users absolute control in transforming, validating, uploading, organizing, and combining resources in order to maximize performance and build dynamic applications.
 
@@ -50,8 +50,8 @@ Note: If you installed `mojito-shaker` globally you will have to point to the ab
 
 Execute Shaker and Start the server:
 
-    $ mojito-shake [--context "dimension1:{value1}[,dimension2:{value2}]"] [--run]
-    $ mojito start [--context "dimension1:{value1}[,dimension2:{value2}]"]
+    $ mojito-shake [--context "{key1}:{value1}[,{key2}:{value2}]"] [--run]
+    $ mojito start [--context "{key1}:{value1}[,{key2}:{value2}]"]
 
 Go to URL:
 

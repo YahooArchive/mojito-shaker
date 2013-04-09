@@ -23,9 +23,11 @@ function contextCsvToObject(s) {
     for (i = 0; i < pairs.length; i += 1) {
         pair = pairs[i].split(':');
         if (pair[0]) {
+            pair[0] = pair[0].trim();
             if (!pair[1]) {
                 utils.warn('Missing value for context key: ' + pair[0]);
             } else {
+                pair[1] = pair[1].trim();
                 ctx[pair[0]] = pair[1];
             }
         }
