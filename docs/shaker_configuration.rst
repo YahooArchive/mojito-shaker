@@ -1,4 +1,5 @@
 .. _configuration:
+
 =====================
 Configuration and API
 =====================
@@ -191,13 +192,7 @@ Predefined Task Modules
 |                           |                  |   - yuicompress (boolean)                                        |
 +---------------------------+------------------+------------------------------------------------------------------+
 
-Critical Tasks
-##############
-
-By default each task is considered non-critical. This means that if a particular task fails, there will be a warning but
-compilation will continue. However there might be tasks that are critical and compilation would not make sense if they fail.
-To mark a task as critical, specify the option 'critical' as true under the task's configuration. If this task fails, then
-the whole compilation will halt and the error will be reported.
+See :ref:`Error Handling <configuration-errors>` for error handling configuration.
 
 .. note:: If any task transform resources, then at least one location should be defined under "locations", otherwise transformed
           resources would not be stored. See :ref:`Locations <configuration-locations>`.
@@ -282,6 +277,7 @@ Predefined Location Module: 'local'
 | ``local``                 | boolean          | Stores processed resources and rollups under "<app_dir>/assets/compiled".            |
 +---------------------------+------------------+--------------------------------------------------------------------------------------+
 
+See :ref:`Error Handling <configuration-errors>` for error handling configuration.
 
 Example
 #######
@@ -296,6 +292,16 @@ Example
     }
 
 See :ref:`Creating Custom Locations <custom-locations>` to learn how to create custom tasks modules.
+
+.. _configuration-errors:
+
+Errors Handling
+---------------
+
+By default each task or location is considered non-critical, which means that if a particular task or location fails, there will be
+a warning but compilation will continue. However there might be tasks or locations that are critical and compilation would not make sense if they fail.
+To make sure compilation stops due to an error, specify the option 'errorStop' as true under the task's or location's configuration.
+'errorStop' can also be an integer value, specifying how many errors can occur before compilation is forced to stop.
 
 Runtime Settings and API
 ========================
@@ -335,7 +341,7 @@ ServeJs and ServeCss Configuration
 +===========================+==================+===============+===================+========================================================+
 | ``position``              | string           | "top"         | "top", "bottom"   | Where on the page to position the type of asset.       |
 +---------------------------+------------------+---------------+-------------------+--------------------------------------------------------+
-| ``combo``                 | boolean          | true          | boolean           | Whether to combo-load the type of asset.               |
+| ``combo``                 | boolean          | false         | boolean           | Whether to combo-load the type of asset.               |
 |                           |                  |               |                   | Note: rollups are not comob-loaded since               |
 |                           |                  |               |                   | they should be cached separately for performance.      |
 +---------------------------+------------------+---------------+-------------------+--------------------------------------------------------+
