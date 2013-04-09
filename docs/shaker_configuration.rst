@@ -295,7 +295,7 @@ See :ref:`Creating Custom Locations <custom-locations>` to learn how to create c
 
 .. _configuration-errors:
 
-Errors Handling
+Error Handling
 ---------------
 
 By default each task or location is considered non-critical, which means that if a particular task or location fails, there will be
