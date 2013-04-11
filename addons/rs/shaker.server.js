@@ -27,19 +27,20 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function (config) {
+            // do not use Shaker RS addon when running Shaker compiler
+            if (process.shakerCompiler) {
+                return;
+            }
+
             this.rs = config.host;
             this.appRoot = config.appRoot;
             this.appConfig = config.host.getStaticAppConfig() || {};
 
-            // run time specific code
             // initialize metadata
             // populate app and mojit level resources
-            if (!process.shakerCompiler) {
-                this._initializeMetadata();
-                this._populateAppResources();
-            }
+            this._initializeMetadata();
+            this._populateAppResources();
 
-            // run time and compile time
             // change the location of the resources to their cdn location
             this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
         },

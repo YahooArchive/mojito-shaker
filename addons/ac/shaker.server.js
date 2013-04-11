@@ -67,9 +67,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} binders The binders to be used to create the mojito client runtime
          */
         run: function (assets, binders) {
+            this._addRouteRollups(assets);
             this._addYUILoader(assets, binders);
             this._addAppResources(assets);
-            this._addRouteRollups(assets);
             this._filterAndUpdate(assets);
         },
 
@@ -126,23 +126,39 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} binders The binders to be used to create the mojito client runtime
          */
         _addYUILoader: function (assets, binders) {
-            if (!this.data.settings.serveJs) {
+            var data = this.data,
+                yuiMojitoAssets = {},
+                jsPosition = data.settings.serveJs.position;
+            if (!data.settings.serveJs) {
                 return;
             }
-            assets.bottom = assets.bottom || {};
-            assets.bottom.js = assets.bottom.js || [];
+
             if (this.ac.instance.config.deploy === true && binders) {
-                this.ac.assets.assets = assets;
+                this.ac.assets.assets = yuiMojitoAssets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
             } else {
                 return;
             }
 
-            // move js assets to the bottom if specified by settings
-            if (this.data.settings.serveJs.position === "bottom") {
-                Array.prototype.unshift.apply(assets.bottom.js, assets.top.js);
-                assets.top.js = [];
+            // add yui, loader, and mojito client to assets
+            assets[jsPosition] = assets[jsPosition] || {};
+            assets[jsPosition].js = assets[jsPosition].js || [];
+            // if rollup contains yui then only add loader config
+            if (data.rollups && data.rollups.js &&
+                    (data.rollups.js.resources["yui-module--yui-base"] &&
+                    data.rollups.js.resources["yui-module--loader-base"] &&
+                    data.rollups.js.resources["yui-module--loader-yui3"])) {
+                yuiMojitoAssets.top.js.splice(0, 1);
+                Array.prototype.push.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
+            } else {
+                // add yui and loader before rollup or any other js assets
+                Array.prototype.unshift.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
             }
+            // add mojito client
+            assets.bottom = assets.bottom || {};
+            assets.bottom.blob = assets.bottom.blob || [];
+            Array.prototype.push.apply(assets.bottom.blob, yuiMojitoAssets.bottom.blob);
+            this.ac.assets.assets = assets;
         },
 
         /**
