@@ -77,7 +77,7 @@ When to Run Shaker Compiler
 
 The Shaker compiler does not need to be ran every time the application starts. If the "locations" option is not being used, then
 the compiler only needs to be ran if an asset is renamed or added after an intial compilation. If the "locations" option is used, then the compiler must be
-ran whenever there is a change in a resource that is to be stored in a location, otherwise the stored resource would be out of date.
+ran whenever there is a change in a resource that is stored in a location, otherwise the stored resource would be out of date (note that resources with server affinity are never processed by Shaker).
 Also, changing a runtime setting, does not require re-compilation unless a serve location, that was not used during compilation, is specified.
 
 
