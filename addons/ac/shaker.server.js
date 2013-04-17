@@ -13,7 +13,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
     function ShakerAddon(command, adapter, ac) {
         var data;
         this.ac = ac;
-        this.pagePositions = PAGE_POSITIONS;
 
         // initialize shaker global data
         this.data = adapter.req.shakerGlobal;
@@ -53,7 +52,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.poslStr = data.posl.join("-");
             data.appResources = data.meta.app && data.meta.app[data.poslStr].app.assets;
             data.currentLocation = data.meta.currentLocation;
-            data.inline = data.settings.inline ? data.meta.inline : null;
+            data.inline = data.meta.inline;
             data.rollups = data.route && data.currentLocation ? data.meta.app[data.poslStr].rollups &&
                 data.meta.app[data.poslStr].rollups[data.route.name] : null;
 
@@ -71,6 +70,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             this._addYUILoader(assets, binders);
             this._addAppResources(assets);
             this._filterAndUpdate(assets);
+            this._addBootstrap(assets);
         },
 
         /**
@@ -161,6 +161,37 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             this.ac.assets.assets = assets;
         },
 
+        _addBootstrap: function (assets) {
+            var data = this.data,
+                // inline bootstrap contains SimpleLoader definition and a call to SimpleLoader
+                simpleLoaderDefinition = data.inline && data.inline["yui-bootstrap--yui-bootstrap-inline"],
+                inlineBootstrap,
+                simpleLoaderUse,
+                jsUrls = [];
+
+            // add bootstrap if js rollup contains bootstrap files
+            if (data.rollups && data.rollups.js &&
+                    data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"]) {
+
+                // determine all the js scripts in assets
+                Y.Object.each(assets, function (positionResources, position) {
+                    Array.prototype.push.apply(jsUrls, positionResources.js || []);
+                    // empty list so that scripts dont appear on page
+                    positionResources.js = [];
+                });
+
+                // construct bootstrap inline script
+                inlineBootstrap = "<script>" + simpleLoaderDefinition;
+                if (jsUrls.length > 0) {
+                    // construct list of js urls and append to SimpleLoader call
+                    inlineBootstrap += "YUI.SimpleLoader.js('" + jsUrls.join("', '") + "');";
+                }
+                inlineBootstrap += "</script>";
+                // add inline bootstrap before mojito-client inline script
+                assets.bottom.blob.unshift(inlineBootstrap);
+            }
+        },
+
         /**
          * Adds app level resources.
          * @param {object} assets The assets to be updated.
@@ -238,7 +269,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         // remove resource if found in rollup
                         if (data.rollups && data.rollups[type] && data.rollups[type].resources[typeResources[i]]) {
                             typeResources.splice(i, 1);
-                        } else if (data.inline && data.inline[typeResources[i]] !== undefined &&
+                        } else if (data.settings.inline && data.inline && data.inline[typeResources[i]] !== undefined &&
                                 (position === "shakerInlineCss" || position === "shakerInlineJs")) {
                             // resource is to be inlined
                             inlineElement += data.inline[typeResources[i]].trim();

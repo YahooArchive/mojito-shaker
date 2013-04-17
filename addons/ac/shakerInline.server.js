@@ -28,7 +28,7 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 inlineFile;
 
             // ignore if no inline files or type is not to be served
-            if (!data.meta.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
+            if (!data.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
                 return;
             }
 

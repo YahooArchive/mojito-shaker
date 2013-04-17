@@ -80,8 +80,9 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             // if the current location is set to something other than default
             // hook into getAppConfig in order to set custom yui configuration
             if (this.meta.currentLocation) {
-                this.rs._appConfigCache = {};
-                this.beforeHostMethod('getAppConfig', this.getAppConfig, this);
+                // use own version of appConfigCache in order to modify appConfig only once per context
+                this._appConfigCache = {};
+                this.afterHostMethod('getAppConfig', this.getAppConfig, this);
             }
         },
 
@@ -279,28 +280,24 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          * modify the yui config with the yui config of the cdn location
          */
         getAppConfig: function (ctx) {
-            var appConfig,
-                key,
-                ycb;
+            var key,
+                modifiedAppConfig;
 
             ctx = this.rs.blendStaticContext(ctx);
             key = JSON.stringify(ctx || {});
 
-            if (this.rs._appConfigCache[key]) {
-                return JSON.parse(this.rs._appConfigCache[key]);
+            if (this._appConfigCache[key]) {
+                return;
             }
 
-            ycb = this.rs._appConfigYCB.read(ctx);
-
-            appConfig = Y.mojito.util.blend(this.rs._fwConfig.appConfigBase, this.rs._config.appConfig);
-            appConfig = Y.mojito.util.blend(appConfig, ycb);
-
+            modifiedAppConfig = Y.Do.originalRetVal;
             // merge the application's yui config with the location's yui config, with precedence on the location's config
-            Y.mix(appConfig.yui.config, this.meta.currentLocation.yuiConfig, true, null, 0, true);
+            Y.mix(modifiedAppConfig.yui.config, this.meta.currentLocation.yuiConfig, true, null, 0, true);
 
-            this.rs._appConfigCache[key] = JSON.stringify(appConfig);
+            this.rs._appConfigCache[key] = JSON.stringify(modifiedAppConfig);
+            this._appConfigCache[key] = true;
+            return Y.Do.AlterReturn(null, modifiedAppConfig);
 
-            return appConfig;
         },
 
         /**
