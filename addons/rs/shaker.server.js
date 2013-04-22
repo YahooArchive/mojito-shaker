@@ -1,4 +1,4 @@
-/*jslint nomen: true */
+/*jslint nomen: true, regexp: true, plusplus: true */
 YUI.add('addon-rs-shaker', function (Y, NAME) {
     'use strict';
 
@@ -15,6 +15,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             },
             optimizeBootstrap: true
         },
+        HTTP_URL_REGEX = /https?:\/\/[^\/]+/,
         libpath = require('path');
 
     function RSAddonShaker() {
@@ -42,18 +43,14 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             this._populateAppResources();
 
             // change the location of the resources to their cdn location
-            this.beforeHostMethod('resolveResourceVersions', this.resolveResourceVersions, this);
+
+            this.afterHostMethod('resolveResourceVersions', this._populateLoaders, this);
         },
 
         /**
          * Reads the metadata file and sets the settings and current location.
          */
         _initializeMetadata: function () {
-            // TODO is this necessary?
-            if (this.initilized) {
-                return;
-            }
-
             // read shaker metadata
             this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, METADATA_FILENAME));
 
@@ -76,6 +73,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
             // set current location
             this.meta.currentLocation = this.meta.locations && this.meta.locations[this.meta.settings.serveLocation];
+            this.meta.currentLocationName = this.meta.currentLocation ? this.meta.settings.serveLocation : 'default';
 
             // if the current location is set to something other than default
             // hook into getAppConfig in order to set custom yui configuration
@@ -84,6 +82,81 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 this._appConfigCache = {};
                 this.afterHostMethod('getAppConfig', this.getAppConfig, this);
             }
+        },
+
+        /**
+         * Updates the location of each resource, filters out resources already in rollup.
+         * Handles comboloading.
+         * @param {object} assets The assets to be updated.
+         */
+        _comboload: function (resourcesArray, currentLocation) {
+            var comboSep = "~", // default comboSep
+                comboBase = "/combo~", // default comboBase
+                locationComboConfig = currentLocation && currentLocation.yuiConfig && currentLocation.yuiConfig.groups &&
+                           currentLocation.yuiConfig.groups.app;
+
+            // if location is not local, then update comboBase and comboSep as specified in location's config
+            if (locationComboConfig) {
+                comboBase = (locationComboConfig && locationComboConfig.comboBase) || comboBase;
+                comboSep = (locationComboConfig && locationComboConfig.comboSep) || comboSep;
+                // remove base
+                if (resourcesArray.length > 1) {
+                    Y.Array.each(resourcesArray, function (resource, i) {
+                        resourcesArray[i] = resource.replace(HTTP_URL_REGEX, '');
+                    });
+                }
+            }
+            // if just one resource return it, otherwise return combo url
+            return resourcesArray.length === 1 ? resourcesArray[0] : comboBase + resourcesArray.join(comboSep);
+        },
+
+        _populateLoaders: function () {
+            // set default location
+            this.meta.locations = this.meta.locations || {};
+            this.meta.locations['default'] = {};
+
+            var self = this,
+                seed = Y.clone(self.rs.yui.yuiConfig.seed),
+                i = 0,
+                loaders = {},
+                prefix = '/' + self.rs.url.config.prefix + '/';
+
+
+            // remove yui seeds
+            while (i < seed.length) {
+                if (seed[i] === 'yui-base' || seed[i] === 'loader-base' || seed[i] === 'loader-yui3') {
+                    seed.splice(i, 1);
+                } else {
+                    i++;
+                }
+            }
+            this.meta.loaders = loaders;
+
+            Y.Object.each(self.meta.locations, function (location, locationName) {
+                var locationMap = location.resources || {};
+
+                loaders[locationName] = {};
+                Y.Object.each(self.rs.yui.langs, function (langObj, lang) {
+                    var localUrls = [],
+                        locationUrls = [];
+                    loaders[locationName][lang] = [];
+                    Y.Array.each(seed, function (loader) {
+                        var url = prefix + loader + '.js';
+                        url = url.replace('{langPath}', lang ? ("_" + lang) : '');
+                        if (locationMap[url]) {
+                            locationUrls.push(locationMap[url]);
+                        } else {
+                            localUrls.push(url);
+                        }
+                    });
+                    if (localUrls.length > 0) {
+                        loaders[locationName][lang].push(self._comboload(localUrls, null));
+                    }
+                    if (locationUrls.length > 0) {
+                        loaders[locationName][lang].push(self._comboload(locationUrls, location));
+                    }
+                });
+            });
         },
 
         /**
@@ -298,47 +371,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             this._appConfigCache[key] = true;
             return Y.Do.AlterReturn(null, modifiedAppConfig);
 
-        },
-
-        /**
-         * Hook into the store's resolveResourceVersions.
-         * Update the store with the CDN url's.
-         * During compile time, the urlMap is passed to update the store. This is required
-         * in order for the loader to have the correct CDN urls.
-         * During runtime, the urlMap is obtained from the metadata.
-         */
-        resolveResourceVersions: function (urlMap) {
-            var r,
-                res,
-                ress,
-                m,
-                mojit,
-                mojits,
-                meta,
-                urls = {};
-
-            urlMap = urlMap || (this.meta && this.meta.currentLocation && this.meta.currentLocation.resources);
-
-            if (!urlMap) {
-                return;
-            }
-
-            //Iterate over all the resources
-            mojits = this.rs.listAllMojits();
-            mojits.push('shared');
-
-            for (m = 0; m < mojits.length; m += 1) {
-                mojit = mojits[m];
-
-                ress = this.rs.getResourceVersions({mojit: mojit});
-                for (r = 0; r < ress.length; r += 1) {
-                    res = ress[r];
-                    // change the url
-                    if (res.yui && urlMap[res.url]) {
-                        res.url = urlMap[res.url];
-                    }
-                }
-            }
         },
 
         /**
