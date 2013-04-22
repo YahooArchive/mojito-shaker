@@ -28,7 +28,7 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 inlineFile;
 
             // ignore if no inline files or type is not to be served
-            if (!data.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
+            if (!data.settings.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
                 return;
             }
 
@@ -101,8 +101,8 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 inlinePositions.push('shakerInlineCss');
             }
 
-            // only execute if there is inline data
-            if (data.inline) {
+            // only execute if inline is on
+            if (data.settings.inline) {
                 Y.Array.each(inlinePositions, function (position) {
                     var positionResources = meta.assets[position],
                         inlineElement = "",

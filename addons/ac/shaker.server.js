@@ -8,7 +8,8 @@
 
 YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
-    var PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'];
+    var PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'],
+        SCRIPT_TAGS_REGEX = /<\/?script[^>]*>/g;
 
     function ShakerAddon(command, adapter, ac) {
         var data;
@@ -52,9 +53,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.poslStr = data.posl.join("-");
             data.appResources = data.meta.app && data.meta.app[data.poslStr].app.assets;
             data.currentLocation = data.meta.currentLocation;
-            data.inline = data.meta.inline;
+            data.currentLocationName = data.meta.currentLocationName;
+            data.locationMap = (data.currentLocation && data.currentLocation.resources) || {};
+            data.inline = data.meta.inline || {};
+            data.loaders = data.meta.loaders;
             data.rollups = data.route && data.currentLocation ? data.meta.app[data.poslStr].rollups &&
                 data.meta.app[data.poslStr].rollups[data.route.name] : null;
+            data.bootstrapEnabled = data.rollups && data.rollups.js &&
+                data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"];
 
             data.initialized = true;
         },
@@ -68,9 +74,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         run: function (assets, binders) {
             this._addRouteRollups(assets);
             this._addYUILoader(assets, binders);
+            this._addBootstrap(assets);
             this._addAppResources(assets);
             this._filterAndUpdate(assets);
-            this._addBootstrap(assets);
         },
 
         /**
@@ -128,17 +134,29 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         _addYUILoader: function (assets, binders) {
             var data = this.data,
                 yuiMojitoAssets = {},
-                jsPosition = data.settings.serveJs.position;
+                jsPosition = data.settings.serveJs.position,
+                lang = data.context.lang || '',
+                loaders = data.loaders[data.currentLocationName][lang] || data.loaders[data.currentLocationName][''];
+
             if (!data.settings.serveJs) {
                 return;
             }
 
+            assets.shakerInlineJs = assets.shakerInlineJs || {};
+            assets.shakerInlineJs.blob = assets.shakerInlineJs.blob || [];
+
+            // construct mojito client
             if (this.ac.instance.config.deploy === true && binders) {
                 this.ac.assets.assets = yuiMojitoAssets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
             } else {
                 return;
             }
+
+            // remove default loader and add loaders determined during server start time
+            Y.Array.each(loaders, function (loader, i) {
+                yuiMojitoAssets.top.js[i + 1] = loader;
+            });
 
             // add yui, loader, and mojito client to assets
             assets[jsPosition] = assets[jsPosition] || {};
@@ -150,45 +168,59 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     data.rollups.js.resources["yui-module--loader-yui3"])) {
                 yuiMojitoAssets.top.js.splice(0, 1);
                 Array.prototype.push.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
+
             } else {
                 // add yui and loader before rollup or any other js assets
                 Array.prototype.unshift.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
             }
+
             // add mojito client
-            assets.bottom = assets.bottom || {};
-            assets.bottom.blob = assets.bottom.blob || [];
-            Array.prototype.push.apply(assets.bottom.blob, yuiMojitoAssets.bottom.blob);
+            if (data.bootstrapEnabled) {
+                // add mojito client with other inline assets such that it gets merged with bootstrap
+                // strip out script tags since these will be added after all inline js have been merged
+                data.inline.mojitoClient = yuiMojitoAssets.bottom.blob[0].replace(SCRIPT_TAGS_REGEX, '');
+                assets.shakerInlineJs.blob.push('mojitoClient');
+            } else {
+                // add mojito client on the bottom
+                assets.bottom = assets.bottom || {};
+                assets.bottom.blob = assets.bottom.blob || [];
+                Array.prototype.push.apply(assets.bottom.blob, yuiMojitoAssets.bottom.blob);
+            }
+
             this.ac.assets.assets = assets;
         },
 
         _addBootstrap: function (assets) {
             var data = this.data,
                 // inline bootstrap contains SimpleLoader definition and a call to SimpleLoader
-                simpleLoaderDefinition = data.inline && data.inline["yui-bootstrap--yui-bootstrap-inline"],
-                inlineBootstrap,
+                inlineBootstrap = data.inline["yui-bootstrap--yui-bootstrap-inline"],
                 simpleLoaderUse,
                 jsUrls = [];
 
-            // add bootstrap if js rollup contains bootstrap files
-            if (data.rollups && data.rollups.js &&
-                    data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"]) {
+            if (!data.settings.serveJs) {
+                return;
+            }
 
-                // determine all the js scripts in assets
+            // add bootstrap if js rollup contains bootstrap files
+            if (inlineBootstrap && data.bootstrapEnabled) {
+
+                // determine all the js scripts in assets, and get their new location
                 Y.Object.each(assets, function (positionResources, position) {
-                    Array.prototype.push.apply(jsUrls, positionResources.js || []);
+                    Y.Array.each(positionResources.js, function (url) {
+                        jsUrls.push(data.locationMap[url] || url);
+                    });
                     // empty list so that scripts dont appear on page
                     positionResources.js = [];
                 });
 
                 // construct bootstrap inline script
-                inlineBootstrap = "<script>" + simpleLoaderDefinition;
                 if (jsUrls.length > 0) {
                     // construct list of js urls and append to SimpleLoader call
                     inlineBootstrap += "YUI.SimpleLoader.js('" + jsUrls.join("', '") + "');";
                 }
-                inlineBootstrap += "</script>";
                 // add inline bootstrap before mojito-client inline script
-                assets.bottom.blob.unshift(inlineBootstrap);
+                data.inline.inlineBootstrap = inlineBootstrap;
+                assets.shakerInlineJs.blob.unshift('inlineBootstrap');
             }
         },
 
@@ -269,14 +301,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         // remove resource if found in rollup
                         if (data.rollups && data.rollups[type] && data.rollups[type].resources[typeResources[i]]) {
                             typeResources.splice(i, 1);
-                        } else if (data.settings.inline && data.inline && data.inline[typeResources[i]] !== undefined &&
+                        } else if (data.inline[typeResources[i]] !== undefined &&
                                 (position === "shakerInlineCss" || position === "shakerInlineJs")) {
                             // resource is to be inlined
                             inlineElement += data.inline[typeResources[i]].trim();
                             typeResources.splice(i, 1);
-                        } else {
+                        } else if (type !== 'blob') {
                             // replace asset with new location if available
-                            newLocation = data.currentLocation && data.currentLocation.resources[typeResources[i]];
+                            newLocation = data.locationMap[typeResources[i]];
                             isRollup = data.rollups && data.rollups[type] && data.rollups[type].rollups.indexOf(typeResources[i]) !== -1;
                             isExternalLink = typeResources[i].indexOf("http") === 0;
                             // don't combo load rollups, or external links
@@ -286,8 +318,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                                     comboLocalTypeResources.push(newLocation || typeResources[i]);
                                 } else {
                                     // get location resources to comboload
-                                    // just use the path of the url
-                                    newLocation = newLocation.replace(/https?:\/\/[^\/]+/, '');
                                     comboLocationTypeResources.push(newLocation);
                                 }
                                 // remove resource since it will appear comboloaded
@@ -296,6 +326,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                                 typeResources[i] = newLocation || typeResources[i];
                                 i++;
                             }
+                        } else {
+                            i++;
                         }
                     }
 
@@ -311,10 +343,10 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
                     // add comboload resources
                     if (comboLoad && comboLocalTypeResources.length !== 0) {
-                        typeResources.push(self._comboload(comboLocalTypeResources, true));
+                        typeResources.push(data.rs.shaker._comboload(comboLocalTypeResources, null));
                     }
                     if (comboLoad && comboLocationTypeResources.length !== 0) {
-                        typeResources.push(self._comboload(comboLocationTypeResources, false));
+                        typeResources.push(data.rs.shaker._comboload(comboLocationTypeResources, data.currentLocation));
                     }
                 });
             });
@@ -348,27 +380,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     }
                 }
             });
-        },
-
-        /**
-         * Updates the location of each resource, filters out resources already in rollup.
-         * Handles comboloading.
-         * @param {object} assets The assets to be updated.
-         */
-        _comboload: function (resourcesArray, isLocal) {
-            var data = this.data,
-                comboSep = "~", // default comboSep
-                comboBase = "/combo~", // default comboBase
-                locationComboConfig = data.currentLocation && data.currentLocation.yuiConfig && data.currentLocation.yuiConfig.groups &&
-                           data.currentLocation.yuiConfig.groups.app;
-
-            // if location is not local, then update comboBase and comboSep as specified in location's config
-            if (!isLocal) {
-                comboBase = (locationComboConfig && locationComboConfig.comboBase) || comboBase;
-                comboSep = (locationComboConfig && locationComboConfig.comboSep) || comboSep;
-            }
-            // if just one resource return it, otherwise return combo url
-            return resourcesArray.length === 1 ? resourcesArray[0] : comboBase + resourcesArray.join(comboSep);
         }
     };
 
