@@ -21,6 +21,15 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
 
         namespace: 'shakerInline',
 
+        getInlineContent: function (file, mojit) {
+            var data = this.data,
+                appName = data.rs.url.config.appName,
+                prefix = data.rs.url.config.prefix,
+                url = '/' + prefix + '/' + (mojit || appName) + '/assets/' + file;
+
+            return data.inline[url];
+        },
+
         inlineFile: function (file, type) {
             var data = this.data,
                 inlineLocation = type === "js" ? "shakerInlineJs" : type === "css" ? "shakerInlineCss" : null,
