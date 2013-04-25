@@ -5,14 +5,14 @@ Overview
 .. _overview-what:
 
 What is Shaker?
-###############
+===============
 
 Shaker is a powerful static asset manager for Mojito applications. It gives users absolute control in transforming, validating, uploading, organizing, and combining resources in order to build maximize performance and build dynamic applications.
 
 Shaker provides contextualization of resources in order to serve different resources based on dimensions such as region, language, and device. The user can specify custom or default tasks such as JS/CSS minification and linting for transforming and validating resources. These resources can then be combined (or rolled up) in order to reduce HTTP requests and take advantage of caching. And finally resources can be uploaded to one or more CDN locations to optimize the delivery of resources to clients.
 
 Why Shaker?
-###########
+===========
 
 By default, application and mojit assets must be added on the page manually by using the ac.assets addon.
 This becomes especially challenging when particular assets are needed for different contexts.
@@ -35,8 +35,9 @@ Example
 
 Shaker takes care of all this logic through the assets naming convention. In addition, Shaker gives the user the ability to validate, transform, and combine (roll up) resources and deploy to CDNs. All this is done through a :ref:`simple configuration <configuration>`, which the user can customize to maximize the performance of their application.
 
+
 Features
-########
+========
 
 Assets Organization and Contextualization
 -----------------------------------------
