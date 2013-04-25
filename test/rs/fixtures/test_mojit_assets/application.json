@@ -1,9 +1,0 @@
-[
-    {
-        "settings": ["master"]
-    },
-    {
-        "settings": [ "device:iphone" ],
-        "selector": "iphone"
-    }
-]

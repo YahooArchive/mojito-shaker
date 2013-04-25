@@ -1,0 +1,133 @@
+[{
+    "dimensions": [{
+        "runtime": {
+            "common": {
+                "client": null,
+                "server": null
+            }
+        }
+    }, {
+        "device": {
+            "desktop": null,
+            "phone": {
+                "android": null,
+                "blackberry": null,
+                "iemobile": null,
+                "iphone": null,
+                "opera-mini": null,
+                "palm": null
+            },
+            "tablet": {
+                "ipad": null,
+                "kindle": null
+            },
+            "ie6": null,
+            "ie7": null,
+            "ie8": null
+        }
+    }, {
+        "environment": {
+            "prod": {
+                "production": null,
+                "staging": null,
+                "performance": null,
+                "feperf": null
+            },
+            "qa": {
+                "smoke": null,
+                "regression": null,
+                "functional": null
+            },
+            "dev": {
+                "development": null,
+                "corp": null
+            }
+        }
+    }, {
+        "lang": {
+            "ar": null,
+            "es": null,
+            "en": null,
+            "de": null,
+            "pt": null,
+            "fr": null,
+            "it": null,
+            "da": null,
+            "fi": null,
+            "zh": null,
+            "id": null,
+            "ko": null,
+            "nl": null,
+            "nb": null,
+            "ru": null,
+            "sv": null,
+            "th": null,
+            "vi": null,
+            "es-AR": null,
+            "en-SG": null,
+            "de-AT": null,
+            "en-AU": null,
+            "pt-BR": null,
+            "en-CA": null,
+            "fr-CA": null,
+            "de-CH": null,
+            "fr-CH": null,
+            "it-CH": null,
+            "es-CL": null,
+            "es-CO": null,
+            "es-CT": null,
+            "de-DE": null,
+            "da-DK": null,
+            "es-ES": null,
+            "es-US": null,
+            "fi-FI": null,
+            "fr-FR": null,
+            "zh-HK": null,
+            "id-ID": null,
+            "en-IN": null,
+            "it-IT": null,
+            "ko-KR": null,
+            "en-MY": null,
+            "es-MX": null,
+            "nl-NL": null,
+            "nb-NO": null,
+            "en-NZ": null,
+            "es-PE": null,
+            "en-PH": null,
+            "ru-RU": null,
+            "sv-SE": null,
+            "th-TH": null,
+            "zh-TW": null,
+            "en-GB": null,
+            "en-US": null,
+            "es-VE": null,
+            "vi-VN": null
+        }
+    }, {
+        "dir": {
+            "ltr": null,
+            "rtl": null
+        }
+    }, {
+        "experiment": {
+            "USN001": null,
+            "USN002": null
+        }
+    }, {
+        "vertical": {
+            "web": null,
+            "images": null,
+            "video": null,
+            "news": null,
+            "finance": null,
+            "sports": null,
+            "local": null,
+            "apps": null,
+            "games": null,
+            "recipes": null,
+            "movies": null,
+            "omg": null,
+            "directory": null
+        }
+    }]
+}]

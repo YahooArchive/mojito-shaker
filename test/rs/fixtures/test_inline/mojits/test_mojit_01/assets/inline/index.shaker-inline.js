@@ -1,1 +1,0 @@
-alert('inline for action: index');

@@ -1,0 +1,9 @@
+[{
+    "settings": [ "master" ],
+
+    "index-page": {
+        "verb": ["get"],
+        "path": "/",
+        "call": "frame.index"
+    }
+}]

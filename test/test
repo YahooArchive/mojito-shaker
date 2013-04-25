@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ $1 = "cover" ]]
+then
+	../node_modules/.bin/istanbul cover --root .. --yui=true -dir=artifacts/test/coverage ../node_modules/.bin/yuitest shaker-suite.js
+elif [[ $1 = "view" ]]
+then
+	open artifacts/test/coverage/lcov-report/index.html
+else
+	../node_modules/.bin/yuitest shaker-suite.js
+fi

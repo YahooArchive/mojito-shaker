@@ -1,0 +1,96 @@
+[
+    {
+        "settings": [ "master" ],
+        "appPort": "80",
+        "specs": {
+            "frame": {
+                "type": "ShakerHTMLFrameMojit",
+                "config": {
+                    "title": "App1",
+                    "deploy": true,
+                    "child": {
+                        "type": "Parent"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "settings": ["environment:dev"],
+        "shaker": {
+
+            "settings": {
+                "serveLocation": "default",
+                "inline": true,
+                "serveJs": {
+                    "combo": false,
+                    "position": "top"
+                },
+                "serveCss": {
+                    "position": "bottom",
+                    "combo": true
+                }
+            }
+        }
+    },
+    {
+        "settings": ["environment:prod"],
+        "shaker": {
+            "tasks": {
+                "js": {
+                    "jslint": true,
+                    "jsminify": {
+                        "mangle": true,
+                        "squeeze": true
+                    }
+                },
+                "css": {
+                    "csslint": true,
+                    "cssminify": {
+                        "yuicompress": true
+                    }
+                }
+            },
+
+            "resources": {
+                "assets": {
+                    "css": "inline"
+                }
+            },
+
+            "routeRollups": {
+                "module": "mojitrollup",
+                "rollups": {
+                    "index-page": [
+                        "Parent"
+                    ]
+                }
+            },
+
+            "locations": {
+                "local": true
+            },
+
+            "settings": {
+                "serveLocation": "local",
+                "inline": true,
+                "serveJs": {
+                    "combo": false,
+                    "position": "bottom"
+                },
+                "serveCss": {
+                    "position": "top",
+                    "combo": false
+                }
+            }
+        }
+    },
+    {
+        "settings": ["device:phone"],
+        "selector": "phone"
+    },
+    {
+        "settings": ["device:iphone"],
+        "selector": "iphone"
+    }
+]
