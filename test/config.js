@@ -69,10 +69,10 @@ exports.tests = {
 								},
 								'Tasks': {
 									error: [
-										"Error when applying task 'task with a syntax error' to ./mojits/Child/controller.common.js: ReferenceError: syntaxError is not defined"
+										"Error when applying task 'task with a syntax error' to apps/app1/mojits/Child/controller.common.js: ReferenceError: syntaxError is not defined"
 									],
 									warn: [
-										"Error when applying task 'task with an error' to ./mojits/Child/controller.common.js: error"
+										"Error when applying task 'task with an error' to apps/app1/mojits/Child/controller.common.js: error"
 									]
 								}
                             }
