@@ -35,13 +35,14 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 inlineLocation = type === "js" ? "shakerInlineJs" : type === "css" ? "shakerInlineCss" : null,
                 resourcesArray,
                 inlineFile;
-
+debugger;
             // ignore if no inline files or type is not to be served
             if (!data.settings.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
                 return;
             }
 
-            // look for asset within application resources
+            // look for asset within application resources in order to remove it
+            // this prevents the inline asset from appearing twice
             Y.Array.some(inlineLocation ? [inlineLocation] : ["shakerInlineJs", "shakerInlineCss"], function (location) {
                 resourcesArray = data.appResources && data.appResources[location] && data.appResources[location].blob;
                 if (resourcesArray) {
@@ -113,7 +114,7 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
             // only execute if inline is on
             if (data.settings.inline) {
                 Y.Array.each(inlinePositions, function (position) {
-                    var positionResources = meta.assets[position],
+                    var positionResources = meta.assets && meta.assets[position],
                         inlineElement = "",
                         type = position === "shakerInlineCss" ? "css" : "js";
 

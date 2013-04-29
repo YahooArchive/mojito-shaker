@@ -227,13 +227,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         /**
          * Adds app level resources.
          * @param {object} assets The assets to be updated.
+         * @param {object} pagePositions Optional array of pagePositions to focus on
          */
-        _addAppResources: function (assets) {
+        _addAppResources: function (assets, pagePositions) {
             var data = this.data;
             if (!data.appResources) {
                 return;
             }
-            Y.Array.each(PAGE_POSITIONS, function (pagePosition) {
+            Y.Array.each(pagePositions || PAGE_POSITIONS, function (pagePosition) {
                 Y.Object.each(data.appResources[pagePosition], function (typeResources, type) {
                     if ((!data.settings.serveJs && type === "js") ||
                             (!data.settings.serveCss && type === "css")) {
