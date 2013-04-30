@@ -8,7 +8,7 @@ YUI.add('parent-controller', function (Y, NAME) {
         index: function (ac) {
             ac.shaker.set('title', 'Index Page');
             console.log(mojitName + ' - Index Action');
-
+console.log("parent");
             ac.composite.execute({
                 children: {
                     'child': {

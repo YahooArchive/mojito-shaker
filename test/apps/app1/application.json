@@ -1,7 +1,6 @@
 [
     {
         "settings": [ "master" ],
-        "appPort": "80",
         "specs": {
             "frame": {
                 "type": "ShakerHTMLFrameMojit",

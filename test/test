@@ -6,6 +6,9 @@ then
 elif [[ $1 = "view" ]]
 then
 	open artifacts/test/coverage/lcov-report/index.html
+elif [[ $1 = "debug" ]]
+then
+	node --debug-brk ../node_modules/.bin/yuitest shaker-suite.js
 else
 	../node_modules/.bin/yuitest shaker-suite.js
 fi

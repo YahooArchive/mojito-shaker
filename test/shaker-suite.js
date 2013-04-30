@@ -16,4 +16,6 @@ Y.Object.each(config.apps, function (appConfig, appName) {
     shakerSuite.add(appSuite);
 });
 
+debugger;
+
 YUITest.TestRunner.add(shakerSuite);

@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "mojito": "0.5.6",
-        "mojito-shaker": "4.0.0pr1",
+        "mojito-shaker": "4.0.x",
         "mojito-shaker-mobstor": "2.0.0"
     },
     "engines": {

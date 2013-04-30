@@ -1,5 +1,7 @@
 exports.commonTests = {
-	'Summary Validation': 'common/tests/compiler/summary-validation.js'
+	'Summary Validation': 'common/tests/compiler/summary-validation.js',
+	'Standard Validation': 'common/tests/request/standard-validation.js',
+	'Markup Validation': 'common/tests/request/markup-validation.js'
 }
 
 exports.tests = {
@@ -96,6 +98,47 @@ exports.tests = {
 						'Summary Validation': true
 					}
             	}
+            },
+            runtime: {
+                "Development Environment": {
+                    context: {
+                        environment: "dev"
+                    }
+                }
+            },
+            request: {
+                '/': {
+                    tests: {
+                        'Standard Validation': true,
+                        'Markup Validation': {
+                            disabled: true,
+                            title: "Index Page",
+                            checks: [
+                                {
+                                    markup: {
+                                        ".parent.mojit": {
+                                            ".child.mojit": {
+                                                "span": {
+                                                    element: {
+                                                        innerText: "Child - Index View"
+                                                    }
+                                                }
+                                            },
+                                            ".log": {
+                                                count: {
+                                                    "div": 2
+                                                },
+                                                "div": {
+                                                    innerText: "YUI: parent-yui-module added"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         }
     }
