@@ -104,6 +104,11 @@ exports.tests = {
                     context: {
                         environment: "dev"
                     }
+                },
+                "Production Environment": {
+                    context: {
+                        environment: "dev"
+                    }
                 }
             },
             request: {

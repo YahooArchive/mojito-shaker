@@ -5,20 +5,21 @@ var Y = require('yui').YUI({useSync: true}).use('base-base'),
     commonTests = require('./config.js').commonTests,
     ShakerCompiler = require('../lib/compiler').ShakerCompiler;
 
-exports.CompilationSuite = function (compilationConfig, appSuite) {
+exports.CompilationSuite = function (compilationConfig, appSuite, shakerSuite) {
 
     var self = this,
         testCaseConfig = {
             name: "Compiler Tests"
         };
 
+    this.fullName = appSuite.name + " > " + compilationConfig.name;
+
     this.config = compilationConfig;
     this.suite = new YUITest.TestSuite({
         name: compilationConfig.name,
+        fullName: self.fullName,
         setUp: function () {
-            console.log("\n==============================================================================");
-            console.log(appSuite.name + " > " + this.name);
-            console.log("==============================================================================\n");
+            shakerSuite.print(self.fullName);
         }
     });
 
@@ -30,6 +31,8 @@ exports.CompilationSuite = function (compilationConfig, appSuite) {
     	if (!testConfig || testConfig.disabled) {
     		return;
     	}
+
+    	shakerSuite.addTest(self.fullName + " > " + testName);
     	testConfig = Y.Lang.isObject(testConfig) ? testConfig : {};
     	var testLocation = testConfig.test || commonTests[testName];
     		test = require(libpath.join(__dirname, testLocation)).test;

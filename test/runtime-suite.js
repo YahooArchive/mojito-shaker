@@ -3,8 +3,9 @@ var YUITest = require('yuitest').YUITest,
     jsdom = require('jsdom'),
     YUI = require('yui').YUI;
 
-exports.RuntimeSuite = function (runtimeConfig, compilationSuite, appSuite) {
+exports.RuntimeSuite = function (runtimeConfig, compilationSuite, appSuite, shakerSuite) {
     this.name = runtimeConfig.name;
+
     this.root = appSuite.root;
     this.mojito = require(this.root + '/node_modules/mojito');
     this.config = runtimeConfig;
@@ -12,12 +13,12 @@ exports.RuntimeSuite = function (runtimeConfig, compilationSuite, appSuite) {
 
     var self = this;
 
+    this.fullName = appSuite.name + " > " + compilationSuite.name + " > " + runtimeConfig.name;
     this.suite = new YUITest.TestSuite({
         name: runtimeConfig.name,
+        fullName: self.fullName,
         setUp: function () {
-            console.log("\n==============================================================================");
-            console.log(appSuite.name + " > " + compilationSuite.name + " > " + this.name);
-            console.log("==============================================================================\n");
+            shakerSuite.print(this.fullName);
         },
         tearDown: function () {
             self.mojitoServer.close();
