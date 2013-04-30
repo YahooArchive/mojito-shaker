@@ -1,1 +1,0 @@
-YUI.add("mojito",function(Y,NAME){Y.namespace("mojito.trans");Y.namespace("mojito.actions");Y.namespace("mojito.binders");Y.namespace("mojito.controllers");Y.namespace("mojito.models");Y.namespace("mojito.addons");Y.namespace("mojito.addons.ac");Y.namespace("mojito.addons.viewEngines");YUI.namespace("_mojito._cache");YUI.namespace("Env.mojito")},"0.1.0",{requires:[]});
