@@ -2,8 +2,8 @@ var Y = require('yui').YUI({useSync: true}).use('base-base'),
     YUITest = require('yuitest').YUITest,
     Assert = YUITest.Assert;
 
-exports.test = function (config) {
-	var summary = config.shakerCompiler.logger.summary;
+exports.test = function (shakerCompiler, config) {
+	var summary = shakerCompiler.logger.summary;
 		expectedSummary = config.summary || {};
 
 	// check that the compilation summary is the same as expected in the config

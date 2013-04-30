@@ -1,5 +1,6 @@
 var Y = require('yui').YUI({useSync: true}).use('base-base'),
     YUITest = require('yuitest').YUITest,
+    Assert = YUITest.Assert,
     libpath = require('path'),
     ShakerResources = require('../lib/resources.js').ShakerResources,
     commonTests = require('./config.js').commonTests,
@@ -37,13 +38,19 @@ exports.CompilationSuite = function (compilationConfig, appSuite, shakerSuite) {
     	var testLocation = testConfig.test || commonTests[testName];
     		test = require(libpath.join(__dirname, testLocation)).test;
         testCaseConfig[testName] = function () {
-            self.compile(function () {
-                Assert = YUITest.Assert;
-            	testConfig.shakerCompiler = self.shakerCompiler;
-            	test(testConfig);
-            });
+        	test(self.shakerCompiler, testConfig);
         };
     });
+
+
+    this.suite.add(new YUITest.TestCase({
+        name: "Compilation",
+        "Compilation done": function () {
+            self.compile(function () {
+                Assert.isNotUndefined(self.shakerCompiler);
+            });
+        }
+    }));
 
     this.test = new YUITest.TestCase(testCaseConfig);
     this.suite.add(this.test);
@@ -51,10 +58,6 @@ exports.CompilationSuite = function (compilationConfig, appSuite, shakerSuite) {
 
 exports.CompilationSuite.prototype = {
     compile: function (done) {
-
-        if (this.shakerCompiler) {
-            return done();
-        }
 
         var self = this,
             context = this.config.context || {},

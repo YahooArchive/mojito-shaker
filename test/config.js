@@ -32,8 +32,7 @@ exports.tests = {
 								}
                             }
                         }
-                    },
-                    stop: true
+                    }
                 },
             	'Invalid Tasks and Locations': {
             		shaker: {
@@ -79,8 +78,7 @@ exports.tests = {
 								}
                             }
                         }
-                    },
-            		stop: true
+                    }
             	},
             	'Development Environment': {
             		context: {
@@ -97,7 +95,40 @@ exports.tests = {
             		tests: {
 						'Summary Validation': true
 					}
-            	}
+            	},
+            	'No Bootstrap': {
+            	    shaker: {
+            	        resources: {
+            	            bootstrap: false
+            	        },
+	                    routeRollups: {
+                            module: "mojitrollup"
+                        },
+                        locations: {
+                            local: true
+                        }
+            	    },
+                    tests: {
+                        'Summary Validation': true
+                    }
+            	},
+            	'No YUI, No Bootstrap': {
+                    shaker: {
+                        resources: {
+                            yui: false,
+                            bootstrap: false
+                        },
+                        routeRollups: {
+                            module: "mojitrollup"
+                        },
+                        locations: {
+                            local: true
+                        }
+                    },
+                    tests: {
+                        'Summary Validation': true
+                    }
+                }
             },
             runtime: {
                 "Development Environment": {
@@ -107,7 +138,7 @@ exports.tests = {
                 },
                 "Production Environment": {
                     context: {
-                        environment: "dev"
+                        environment: "prod"
                     }
                 }
             },

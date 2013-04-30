@@ -43,8 +43,10 @@ exports.RuntimeSuite.prototype = {
             context: self.context,
             root: self.root
         });
+
         self.port = self.mojitoServer._app.store._appConfigStatic.appPort || 8666;
         self.config.shaker = self.mojitoServer._app.store._appConfigStatic.shaker;
+        self.config.shaker.seed = self.mojitoServer._app.store.yui.yuiConfig.seed;
 
         self.mojitoServer.listen(null, null, function (err) {
             self.test.resume(function () {
@@ -60,7 +62,7 @@ exports.RuntimeSuite.prototype = {
             port: self.port
         }, function (err, url, content) {
 
-            content = " \
+/*            content = " \
 <html> \
     <head> \
     <script src='abc'></script> \
@@ -72,7 +74,7 @@ exports.RuntimeSuite.prototype = {
     <link rel='stylesheet' href='abc'/> \
         <link rel='stylesheet' href='abc'/> \
     </body> \
-</html>"
+</html>"*/
 
             Assert.isNull(err, "There was an error when visiting '" + path + "': " + err);
             var document = jsdom.jsdom(content),
@@ -81,7 +83,7 @@ exports.RuntimeSuite.prototype = {
                 win: window,
                 doc: document
             }).use('node', function (node) {
-                done(node)
+                done(node, content)
             });
         });
     }

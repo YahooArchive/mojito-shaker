@@ -15,7 +15,7 @@ exports.RequestTests = function (requestConfig, runtimeSuite, compilationSuite, 
                 self.shaker = self.getShakerConfig(runtimeSuite.config.shaker, compilationSuite.config.shaker);
             }
         };
-
+    this.fullName = testCaseConfig.fullName;
     this.name = requestConfig.name;
     this.config = requestConfig;
 
@@ -28,7 +28,10 @@ exports.RequestTests = function (requestConfig, runtimeSuite, compilationSuite, 
     	var testLocation = testConfig.test || commonTests[testName],
     		test = require(libpath.join(__dirname, testLocation)).test;
         testCaseConfig[testName] = function () {
-            runtimeSuite.getWebPage(requestConfig.path, function (node) {
+            /*if (self.fullName === "app1 > No YUI, No Bootstrap > Production Environment > /") {
+                self.test.wait(999999);
+            }*/
+            runtimeSuite.getWebPage(requestConfig.path, function (node, content) {
                 self.test.resume(function () {
                     Assert.isNotNull(node, "Invalid html page.");
                     var url = "http://localhost:" + runtimeSuite.port + requestConfig.path;
@@ -49,6 +52,7 @@ exports.RequestTests = function (requestConfig, runtimeSuite, compilationSuite, 
 exports.RequestTests.prototype.getShakerConfig = function (shakerRuntime, shakerCompilation) {
     var shaker = {};
 
+    shaker.seed = shakerRuntime.seed;
     shaker.settings = shakerRuntime.settings;
     shaker.resources = shakerCompilation.resources;
     shaker.tasks = shakerCompilation.tasks;
