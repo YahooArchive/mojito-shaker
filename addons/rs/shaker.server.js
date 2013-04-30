@@ -121,7 +121,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 loaders = {},
                 prefix = '/' + self.rs.url.config.prefix + '/';
 
-
             // remove yui seeds
             while (i < seed.length) {
                 if (seed[i] === 'yui-base' || seed[i] === 'loader-base' || seed[i] === 'loader-yui3') {
@@ -131,6 +130,9 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 }
             }
             this.meta.loaders = loaders;
+
+            // make sure that langs contains the no-lang version
+            self.rs.yui.langs[''] = true;
 
             Y.Object.each(self.meta.locations, function (location, locationName) {
                 var locationMap = location.resources || {};
