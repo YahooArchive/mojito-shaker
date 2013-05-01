@@ -227,7 +227,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         /**
          * Adds app level resources.
          * @param {object} assets The assets to be updated.
-         * @param {object} pagePositions Optional array of pagePositions to focus on
+         * @param {array} pagePositions Optional array of pagePositions to focus on.
          */
         _addAppResources: function (assets, pagePositions) {
             var data = this.data;
