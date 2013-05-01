@@ -59,8 +59,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.loaders = data.meta.loaders;
             data.rollups = data.route && data.currentLocation ? data.meta.app[data.poslStr].rollups &&
                 data.meta.app[data.poslStr].rollups[data.route.name] : null;
-            data.bootstrapEnabled = data.rollups && data.rollups.js &&
-                data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"];
+            data.bootstrapEnabled = !!(data.rollups && data.rollups.js &&
+                data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"] &&
+                data.inline["yui-bootstrap--yui-bootstrap-inline"]);
 
             data.initialized = true;
         },
