@@ -1,14 +1,16 @@
 #!/bin/bash
 
-if [[ $1 = "cover" ]]
+cd ..
+pwd
+if [[ $1 = "coverage" ]]
 then
-	../node_modules/.bin/istanbul cover --root .. --yui=true -dir=artifacts/test/coverage ../node_modules/.bin/yuitest shaker-suite.js
+	./node_modules/.bin/istanbul cover --root .. --yui=true -dir=artifacts/test/coverage ./node_modules/.bin/yuitest test/shaker-suite.js
 elif [[ $1 = "view" ]]
 then
 	open artifacts/test/coverage/lcov-report/index.html
 elif [[ $1 = "debug" ]]
 then
-	node --debug-brk ../node_modules/.bin/yuitest shaker-suite.js
+	node --debug-brk ../node_modules/.bin/yuitest test/shaker-suite.js
 else
-	../node_modules/.bin/yuitest shaker-suite.js
+	./node_modules/.bin/yuitest test/shaker-suite.js
 fi

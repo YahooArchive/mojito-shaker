@@ -37,7 +37,8 @@
         "mojito-shake": "bin/mojito-shake"
     },
     "scripts": {
-        "start": "bin/mojito-shake"
+        "start": "bin/mojito-shake",
+        "test": "yuitest test/shaker-suite.js"
     },
     "yahoo": {
         "mojito": {
