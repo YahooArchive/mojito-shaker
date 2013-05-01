@@ -77,11 +77,12 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
             // if the current location is set to something other than default
             // hook into getAppConfig in order to set custom yui configuration
-            if (this.meta.currentLocation) {
+            // TODO: disabling this since it can cause issues when using the debugger
+            /*if (this.meta.currentLocation) {
                 // use own version of appConfigCache in order to modify appConfig only once per context
                 this._appConfigCache = {};
                 this.afterHostMethod('getAppConfig', this.getAppConfig, this);
-            }
+            }*/
         },
 
         /**
