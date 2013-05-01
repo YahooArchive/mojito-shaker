@@ -6,6 +6,8 @@ Shaker is a powerful static asset manager for [Mojito](https://github.com/yahoo/
 
 For more information, please see the [online documentation](http://developer.yahoo.com/cocktails/shaker).
 
+[![Build Status](https://secure.travis-ci.org/yahoo/mojito-shaker.png)](http://travis-ci.org/yahoo/mojito-shaker)
+
 ## Installation
 
 Shaker can be installed either locally or globally (using -g option), but we encourage you to install it locally,
