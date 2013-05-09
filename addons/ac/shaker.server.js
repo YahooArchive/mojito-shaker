@@ -20,7 +20,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         if (!this.data) {
             data = this.data = {
                 htmlData: {
-                    title: ac.instance.config.title || 'Powered by Mojito',
+                    title: ac.config.get('title') || 'Powered by Mojito',
                     mojito_version: Y.mojito.version
                 }
             };
