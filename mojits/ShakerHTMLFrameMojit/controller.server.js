@@ -22,13 +22,15 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
         __call: function (ac) {
 
             this._renderChild(ac, function (data, meta) {
-                var htmlData = ac.shaker.data.htmlData;
-
                 // meta.assets from child should be piped into
                 // the frame's assets before doing anything else.
                 ac.assets.addAssets(meta.assets);
 
-                ac.shaker.run(ac.assets.assets, meta.binders);
+                if (typeof ac.shaker.data.run === 'function') {
+                    ac.shaker.data.run(ac.assets.assets, meta.binders);
+                } else {
+                    ac.shaker.run(ac.assets.assets, meta.binders);
+                }
 
                 // we don't care much about the views specified in childs
                 // and for the parent, we have a fixed one.
@@ -45,7 +47,7 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
 
 
                 ac.done(
-                    Y.merge(data, ac.assets.renderLocations(), htmlData),
+                    Y.merge(data, ac.assets.renderLocations(), ac.shaker.data.htmlData),
                     Y.mojito.util.metaMerge(meta, {
 
                         http: {
