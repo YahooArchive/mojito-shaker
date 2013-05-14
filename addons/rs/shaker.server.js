@@ -52,7 +52,11 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _initializeMetadata: function () {
             // read shaker metadata
-            this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, METADATA_FILENAME));
+            try {
+                this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, METADATA_FILENAME));
+            } catch (e) {
+            }
+
 
             if (this.meta && !Y.Object.isEmpty(this.meta)) {
                 Y.log('Metadata loaded correctly.', 'info', 'Shaker');
@@ -77,12 +81,11 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
             // if the current location is set to something other than default
             // hook into getAppConfig in order to set custom yui configuration
-            // TODO: disabling this since it can cause issues when using the debugger
-            /*if (this.meta.currentLocation) {
+            if (this.meta.currentLocation) {
                 // use own version of appConfigCache in order to modify appConfig only once per context
                 this._appConfigCache = {};
                 this.afterHostMethod('getAppConfig', this.getAppConfig, this);
-            }*/
+            }
         },
 
         /**
