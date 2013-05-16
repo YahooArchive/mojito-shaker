@@ -45,7 +45,7 @@ Running Shaker
 
 Within a Mojito application root folder:
 
-#. Edit the ``application.json`` file to configure and use the ``ShakerHTMLFrame``.
+#. Edit the ``application.json`` file to configure and use the ``ShakerHTMLFrameMojit``.
    It should look like the following:
 
    .. code-block:: javascript
@@ -55,7 +55,7 @@ Within a Mojito application root folder:
           "settings": [ "master" ],
           "specs": {
             "htmlframe": {
-              "type": "ShakerHTMLFrame"
+              "type": "ShakerHTMLFrameMojit"
             }
           }
         }

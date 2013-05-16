@@ -13,7 +13,7 @@ Shaker HTML Frame
 =================
 
 Shaker uses a specialized version of Mojito's `HTML frame <http://developer.yahoo.com/cocktails/mojito/docs/topics/mojito_frame_mojits.html>`_.
-The specialized frame, ShakerHTMLFrame, must be specified in application.json.
+The specialized frame, ShakerHTMLFrameMojit, must be specified in application.json.
 
 .. code-block:: javascript
 
@@ -21,7 +21,7 @@ The specialized frame, ShakerHTMLFrame, must be specified in application.json.
         "settings": [ "master" ],
         "specs": {
             "htmlframe": {
-                "type": "ShakerHTMLFrame",
+                "type": "ShakerHTMLFrameMojit",
                 "config": {
                     "deploy": <true_or_false>,
                     "title": "<optional_title>",
