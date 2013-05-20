@@ -22,7 +22,7 @@ exports.tests = {
 								'Config Validation': {
 									error: [
 										"resources option should be an object. Using default resources.",
- 										"tasks option should be an object. Ignoring tasks.",
+ 										"tasks option should be an object.",
  										"locations option should be an object. Ignoring locations.",
  										"routeRollups option should be an object. Ignoring route rollups."
 									],
@@ -38,6 +38,7 @@ exports.tests = {
             		shaker: {
                         tasks: {
                         	js: "invalid",
+                        	"invalid": true,
                         	"controller": {
                         		'task missing task function': {
                         			module: "../test/common/tasks/invalid.js"
@@ -61,6 +62,9 @@ exports.tests = {
 						'Summary Validation': {
                             summary: {
 								'Config Validation': {
+								    warn: [
+								        "Ignoring unknown task type 'invalid'."
+								    ],
 									error: [
 										"'js' tasks should be an object. Ignoring 'js' tasks.",
 										"Task module '../test/common/tasks/invalid.js' must have a function called 'task'. Ignoring 'task missing task function' task.",
