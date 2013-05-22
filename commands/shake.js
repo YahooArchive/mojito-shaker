@@ -98,6 +98,7 @@ exports.run = function (params, options) {
 
     compiler = new ShakerCompiler(context);
     compiler.compile(function (err) {
+        process.shakerCompiler = false;
         if (err) {
             // disable logger to prevent further messages after a failure
             compiler.logger.log = function () {};
