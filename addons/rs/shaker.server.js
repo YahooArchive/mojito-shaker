@@ -261,7 +261,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getMojitResources: function (meta, posl, mojit, action) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].mojits && meta.app[poslStr].mojits[mojit] && meta.app[poslStr].mojits[mojit][action];
+                return meta.app[poslStr] && meta.app[poslStr].mojits && meta.app[poslStr].mojits[mojit] && meta.app[poslStr].mojits[mojit][action];
             });
         },
 
@@ -270,7 +270,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getAppResources: function (meta, posl) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].app;
+                return meta.app[poslStr] && meta.app[poslStr].app;
             });
         },
 
@@ -279,17 +279,17 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getRollupResources: function (meta, posl, route) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].rollups && meta.app[poslStr].rollups[route];
+                return meta.app[poslStr] && meta.app[poslStr].rollups && meta.app[poslStr].rollups[route];
             });
         },
 
         /**
          * Base function used to retrieve app, rollups, and mojit resources.
          * This function begins searching in the specified posl; if the resources is not found
-         * in this posl, it continues searching by going in the less general posl. This less
-         * general posl is determined by removing the minor selector form the posl array. The minor
-         * selector is the least significant selector (the second to last since '*' is always last). If
-         * the resource set is still not found, it continues until it reaches the base posl ('*').
+         * in this posl, it continues searching by going in the less specific posl. This less
+         * specific posl is determined by removing the highest priority selector form the posl array. This
+         * selector is always the first selector. If the resource set is still not found, it continues
+         * until it reaches the base posl ('*').
          * @param {array} posl The priority ordered selector list array.
          * @param {function} getMetaResources the function that retrieves a specific type of resource set.
          */
@@ -333,10 +333,10 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 if (posl.length === 1) {
                     break;
                 }
-                // remove the minor selector from the posl and search within more general posl
+                // remove the highest priority selector from the posl and search within more general posl
                 // first clone posl since the resource store may use it
                 posl = Y.clone(posl);
-                posl.splice(posl.length - 2, 1);
+                posl.splice(0, 1);
                 poslStr = posl.join('-');
             }
             // remove type resources if empty
