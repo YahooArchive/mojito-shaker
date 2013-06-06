@@ -261,7 +261,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getMojitResources: function (meta, posl, mojit, action) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].mojits && meta.app[poslStr].mojits[mojit] && meta.app[poslStr].mojits[mojit][action];
+                return meta.app[poslStr] && meta.app[poslStr].mojits && meta.app[poslStr].mojits[mojit] && meta.app[poslStr].mojits[mojit][action];
             });
         },
 
@@ -270,7 +270,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getAppResources: function (meta, posl) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].app;
+                return meta.app[poslStr] && meta.app[poslStr].app;
             });
         },
 
@@ -279,7 +279,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
          */
         _getRollupResources: function (meta, posl, route) {
             return this._getResources(posl, function (poslStr) {
-                return meta.app[poslStr].rollups && meta.app[poslStr].rollups[route];
+                return meta.app[poslStr] && meta.app[poslStr].rollups && meta.app[poslStr].rollups[route];
             });
         },
 
@@ -336,7 +336,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 // remove the minor selector from the posl and search within more general posl
                 // first clone posl since the resource store may use it
                 posl = Y.clone(posl);
-                posl.splice(posl.length - 2, 1);
+                posl.splice(0, 1);
                 poslStr = posl.join('-');
             }
             // remove type resources if empty
