@@ -116,7 +116,8 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 Y.Array.each(inlinePositions, function (position) {
                     var positionResources = meta.assets && meta.assets[position],
                         inlineElement = "",
-                        type = position === "shakerInlineCss" ? "css" : "js";
+                        type = position === "shakerInlineCss" ? "css" : "js",
+                        tmpData;
 
                     if (!positionResources) {
                         return;
@@ -136,7 +137,13 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                         // add inline css to the top of the html
                         inlineElement = "<style>" + inlineElement + "</style>";
                         if (typeof mojitData === 'string') {
-                            mojitData = inlineElement + mojitData;
+                            if (meta.dataType === 'json') {
+                                tmpData = JSON.parse(mojitData);
+                                tmpData.css = inlineElement;
+                                mojitData = JSON.stringify(tmpData);
+                            } else {
+                                mojitData = inlineElement + mojitData;
+                            }
                         } else if (data instanceof Array) {
                             mojitData.splice(0, 0, inlineElement);
                         }
@@ -144,7 +151,13 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                         // add inline js to the bottom of the html
                         inlineElement = "<script>" + inlineElement + "</script>";
                         if (typeof mojitData === 'string') {
-                            mojitData += inlineElement;
+                            if (meta.dataType === 'json') {
+                                tmpData = JSON.parse(mojitData);
+                                tmpData.js = inlineElement;
+                                mojitData = JSON.stringify(tmpData);
+                            } else {
+                                mojitData = mojitData + inlineElement;
+                            }
                         } else if (data instanceof Array) {
                             mojitData.push(inlineElement);
                         }
