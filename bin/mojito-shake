@@ -91,11 +91,10 @@ function main() {
     }
 
     if (argInfo.errors && argInfo.errors.length > 0) {
-        utils = require('mojito/lib/management/utils')
         argInfo.errors.forEach(function(e) {
-            utils.log(e);
+            console.error(e);
         });
-        //utils.error('Invalid command line.', "Try 'mojito help <command>'.");
+        //console.error('Invalid command line.', "Try 'mojito help <command>'.");
         return;
     }
 
