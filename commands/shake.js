@@ -5,6 +5,7 @@
  */
 
 var resolve = require('path').resolve,
+    colors = require('../lib/utils/colors'),
     ShakerCompiler = require('../lib/compiler').ShakerCompiler;
 
 
@@ -35,11 +36,11 @@ function mojitoStart(params, options, cb) {
     try {
         mojitoCli(cb);
     } catch (err) {
-        console.log(err);
+        //console.error(err);
         try {
             mojitoLib(params, options, cb);
         } catch (er2) {
-            console.error('`mojito start` could not be invoked.');
+            console.error(('`mojito start` could not be invoked.').red.bold);
             cb(er2.message);
         }
     }
@@ -49,7 +50,7 @@ function done(err, msg) {
     if (err) {
         console.error(err);
     } else {
-        console.log(msg || 'Mojito started');
+        console.log((msg || 'Mojito started').green.bold);
     }
 }
 
@@ -70,7 +71,7 @@ function contextCsvToObject(s) {
         if (pair[0]) {
             pair[0] = pair[0].trim();
             if (!pair[1]) {
-                console.warn('Missing value for context key: ' + pair[0]);
+                console.warn(('Missing value for context key: ' + pair[0]).yellow);
             } else {
                 pair[1] = pair[1].trim();
                 ctx[pair[0]] = pair[1];
@@ -147,9 +148,9 @@ exports.run = function (params, options) {
         if (err) {
             // disable logger to prevent further messages after a failure
             compiler.logger.log = function () {};
-            console.error('Shaker compilation failed: ' + err);
+            console.error(('Shaker compilation failed: ' + err).red.bold);
         } else {
-            console.log('Shaker compilation done.');
+            console.log(('Shaker compilation done.').green.bold);
             if (options.run) {
                 delete options.run;
                 mojitoStart(params, options, done);
