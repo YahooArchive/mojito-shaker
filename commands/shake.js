@@ -11,14 +11,15 @@ var resolve = require('path').resolve,
 
 // mojito@">=0.7.0" and mojito-cli installed globally or locally
 function mojitoCli(cb) {
+    'use strict';
     var args = ['start'].concat(process.argv.slice(2)),
         cwd = process.cwd(),
         fn;
 
     try {
-    	fn = require('mojito-cli');
+        fn = require('mojito-cli');
     } catch (err) {
-    	fn = require(resolve(cwd, 'node_modules/mojito-cli'));
+        fn = require(resolve(cwd, 'node_modules/mojito-cli'));
     }
 
     fn(args, cwd, cb);
@@ -26,6 +27,7 @@ function mojitoCli(cb) {
 
 // mojito@"<0.7.0" start command
 function mojitoLib(params, options, cb) {
+    'use strict';
     var fn = require('mojito/lib/app/commands/start');
 
     fn.run(params, options, cb);
@@ -33,6 +35,7 @@ function mojitoLib(params, options, cb) {
 
 // try to invoke `mojito start` for mojito@"<0.7.0" or mojito + mojito-cli
 function mojitoStart(params, options, cb) {
+    'use strict';
     try {
         mojitoCli(cb);
     } catch (err) {
@@ -47,6 +50,7 @@ function mojitoStart(params, options, cb) {
 }
 
 function done(err, msg) {
+    'use strict';
     if (err) {
         console.error(err);
     } else {
