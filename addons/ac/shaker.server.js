@@ -265,7 +265,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     }
                     assets[pagePosition] = assets[pagePosition] || {};
                     assets[pagePosition][type] = assets[pagePosition][type] || [];
-                    Array.prototype.push.apply((assets[pagePosition] || {})[type], typeResources || []);
+                    Array.prototype.push.apply(assets[pagePosition][type], typeResources || []);
                 });
             });
         },

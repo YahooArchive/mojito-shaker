@@ -77,6 +77,8 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
             // set current location
             this.meta.currentLocation = this.meta.locations && this.meta.locations[this.meta.settings.serveLocation];
+            // ensure that the current location does not have any loader error during compilation
+            this.meta.currentLocation = this.meta.currentLocation && this.meta.currentLocation.loaderError !== true ? this.meta.currentLocation : null;
             this.meta.currentLocationName = this.meta.currentLocation ? this.meta.settings.serveLocation : 'default';
 
             // if the current location is set to something other than default
@@ -180,12 +182,29 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                     var posl = poslStr.split('-');
                     poslResources.app = poslResources.app || {};
                     poslResources.app.assets = self._positionResources(self._getAppResources(self.meta, posl));
+                    // dont add rollups if no current location
+                    if (!self.meta.currentLocation) {
+                        return;
+                    }
                     Y.Array.each(routes, function (route) {
                         var typeResources = {};
                         poslResources.rollups = poslResources.rollups || {};
                         poslResources.rollups[route] = self._getRollupResources(self.meta, posl, route);
                         typeResources.js = (poslResources.rollups[route].js && poslResources.rollups[route].js.rollups) || [];
                         typeResources.css = (poslResources.rollups[route].css && poslResources.rollups[route].css.rollups) || [];
+                        // filter out rollups that are not found in the current location
+                        Y.Array.each(['js', 'css'], function (type) {
+                            var i,
+                                typeResource;
+                            for (i = 0; i < typeResources[type].length; i++) {
+                                typeResource = typeResources[type][i];
+                                if (!self.meta.currentLocation.resources[typeResource]) {
+                                    delete typeResources[type];
+                                    delete poslResources.rollups[route][type];
+                                    break;
+                                }
+                            }
+                        });
                         poslResources.rollups[route].assets = self._positionResources(typeResources);
                     });
                 });
