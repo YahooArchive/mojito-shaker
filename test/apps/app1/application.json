@@ -29,6 +29,12 @@
                     "position": "bottom",
                     "combo": true
                 }
+            },
+
+            "addons": {
+                "compiler": {
+                    "test-addon": {}
+                }
             }
         }
     },
