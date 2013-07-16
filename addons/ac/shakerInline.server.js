@@ -45,7 +45,7 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 return;
             }
 
-            // look for asset within application resources in order to remove it
+            // look for file within application resources in order to remove it
             // this prevents the inline asset from appearing twice
             Y.Array.some(inlineAppResources, function (url, i) {
                 if (url === baseUrl + '-inline.' + type) {
@@ -64,12 +64,9 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
             });
 
             // file may be a manual inline
-            inlineFile = baseUrl + '-manual-inline.' + type;
-            if (!data.inline[inlineFile]) {
-                inlineFile = null;
-            }
+            inlineFile = inlineFile || baseUrl + '-manual-inline.' + type;
 
-            if (inlineFile) {
+            if (data.inline[inlineFile]) {
                 this.ac.assets.addAsset("blob", inlineLocation, inlineFile);
             }
         },
