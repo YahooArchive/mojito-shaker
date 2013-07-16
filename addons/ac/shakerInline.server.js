@@ -31,29 +31,24 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
         },
 
         inlineFile: function (file, type) {
-            var data = this.data,
+            type = type || 'js';
+            var inlineFile,
+                data = this.data,
                 inlineLocation = type === "js" ? "shakerInlineJs" : type === "css" ? "shakerInlineCss" : null,
-                resourcesArray,
-                inlineFile;
+                baseUrl = '/' + data.rs.url.config.prefix + '/' + data.rs.url.config.appName + '/assets/' + file,
+                inlineAppResources = data.appResources && data.appResources[inlineLocation]
+                    && data.appResources[inlineLocation].blob;
 
             // ignore if no inline files or type is not to be served
-            if (!data.settings.inline || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
+            if (inlineLocation === null || !data.settings.inline
+                    || (!data.settings.serveJs && type === "js") || (!data.settings.serveCss && type === "css")) {
                 return;
             }
 
             // look for asset within application resources in order to remove it
             // this prevents the inline asset from appearing twice
-            Y.Array.some(inlineLocation ? [inlineLocation] : ["shakerInlineJs", "shakerInlineCss"], function (location) {
-                resourcesArray = data.appResources && data.appResources[location] && data.appResources[location].blob;
-                if (resourcesArray) {
-                    inlineLocation = location;
-                    return true;
-                }
-            });
-            // look for asset within resources array
-            Y.Array.some(resourcesArray || [], function (url, i) {
-                var filenameStart = url.lastIndexOf("/") + 1;
-                if (url.indexOf(file + "-inline", filenameStart) === filenameStart) {
+            Y.Array.some(inlineAppResources, function (url, i) {
+                if (url === baseUrl + '-inline.' + type) {
                     inlineFile = url;
                     // remove inline file from appResources
                     // TODO: must clone appResources to prevent interference with different requests
@@ -67,6 +62,12 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                     return true;
                 }
             });
+
+            // file may be a manual inline
+            inlineFile = baseUrl + '-manual-inline.' + type;
+            if (!data.inline[inlineFile]) {
+                inlineFile = null;
+            }
 
             if (inlineFile) {
                 this.ac.assets.addAsset("blob", inlineLocation, inlineFile);
