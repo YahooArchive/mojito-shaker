@@ -34,6 +34,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
         namespace: 'shaker',
 
+        PAGE_POSITIONS: PAGE_POSITIONS,
+
         /**
          * This is automatically called after this is constructed. This gives access to the
          * resources store object, which is used to retrieve the shaker meta data.
@@ -252,12 +254,13 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * Adds route rollups.
          * @param {object} assets The assets to be updated.
          */
-        _addRouteRollups: function (assets) {
+        // TODO: should js route rollup be forced to bottom when bootstrap is enabled
+        _addRouteRollups: function (assets, pagePositions) {
             var data = this.data;
             if (!data.rollups) {
                 return;
             }
-            Y.Array.each(['top', 'shakerTop', 'bottom'], function (pagePosition) {
+            Y.Array.each(pagePositions || ['top', 'shakerTop', 'bottom'], function (pagePosition) {
                 Y.Object.each(data.rollups.assets[pagePosition], function (typeResources, type) {
                     if ((!data.settings.serveJs && type === "js") ||
                             (!data.settings.serveCss && type === "css")) {
