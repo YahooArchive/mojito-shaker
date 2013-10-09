@@ -153,6 +153,7 @@ exports.run = function (params, options) {
             // disable logger to prevent further messages after a failure
             compiler.logger.log = function () {};
             console.error(('Shaker compilation failed: ' + err).red.bold);
+            exit(1);
         } else {
             console.log(('Shaker compilation done.').green.bold);
             if (options.run) {
