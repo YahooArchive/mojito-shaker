@@ -4,6 +4,8 @@
  * See the accompanying LICENSE file for terms.
  */
 
+/*global exit */
+
 var resolve = require('path').resolve,
     colors = require('../lib/utils/colors'),
     ShakerCompiler = require('../lib/compiler').ShakerCompiler;
