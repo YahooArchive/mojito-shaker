@@ -1,1 +1,4 @@
 node_modules
+test/apps/*/shaker-meta.json
+test/apps/*/assets/compiled/*
+docs/.build

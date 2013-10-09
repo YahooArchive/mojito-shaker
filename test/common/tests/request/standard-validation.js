@@ -73,7 +73,7 @@ var Y = require('yui').YUI({useSync: true}).use('base-base'),
         });
 
         // if simple loader definition is found check for seed in simple loader call
-        if (/SimpleLoader\s*=\s*function/.test(mojitoClientScript)) {
+        if (/YUI.SimpleLoader\s*=/.test(mojitoClientScript)) {
             Y.Array.each(seed, function (yuiModule) {
                if (!new RegExp("YUI.SimpleLoader.js\\(.*" + yuiModule + ".*\\)").test(mojitoClientScript)) {
                    Assert.fail("Did not find " + yuiModule + " in SimpleLoader call.");
