@@ -28,6 +28,9 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function (config) {
+
+            this.afterHostMethod('parseResourceVersion', this.parseResourceVersion, this);
+
             // do not use Shaker RS addon when running Shaker compiler
             if (process.shakerCompiler) {
                 return;
@@ -45,6 +48,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             // change the location of the resources to their cdn location
 
             this.afterHostMethod('resolveResourceVersions', this._populateLoaders, this);
+
         },
 
         /**
@@ -418,6 +422,13 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 var resources = self._getMojitResources(self.meta, posl, mojit, action);
                 view.assets = self._positionResources(resources);
             });
+        },
+
+        parseResourceVersion: function (source, type, subtype, mojitType) {
+            if (type === 'addon' && subtype === 'shaker') {
+                Y.Do.currentRetVal.mojit = null;
+                return Y.Do.AlterReturn(Y.Do.currentRetVal);
+            }
         }
     });
 
