@@ -8,14 +8,17 @@
 
 YUI.add('mojito-shaker-addon', function (Y, NAME) {
     'use strict';
-    var PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'],
+    var libUrl = require('url'),
+        libPath = require('path'),
+        URL_REGEX = /^https?:\/\//,
+        PAGE_POSITIONS = ['shakerInlineCss', 'top', 'shakerTop', 'shakerInlineJs', 'bottom'],
         SCRIPT_TAGS_REGEX = /<\/?script[^>]*>/g;
 
     function ShakerAddon(command, adapter, ac) {
         var data;
         this.ac = ac;
 
-        // initialize shaker global data
+        // Initialize shaker global data.
         this.data = adapter.req.shakerGlobal;
         if (!this.data) {
             data = this.data = {
@@ -42,10 +45,15 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          * @param {object} rs The resource store object.
          */
         setStore: function (rs) {
-            var data = this.data;
+            var data = this.data,
+                yuiConfig;
+
             if (data.initialized) {
                 return;
             }
+
+            yuiConfig = rs.getAppConfig(data.context).yui.config;
+            data.yuiAppConfig = (yuiConfig && yuiConfig.groups && yuiConfig.groups.app) || {};
 
             data.rs = rs;
             data.title = rs.shaker.title;
@@ -157,8 +165,15 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             }
 
             // remove default loader and add loaders determined during server start time
-            Y.Array.each(loaders, function (loader, i) {
-                yuiMojitoAssets.top.js[i + 1] = loader;
+            yuiMojitoAssets.top.js.pop();
+            if (loaders.local.length > 0) {
+                yuiMojitoAssets.top.js.push(this._createComboUrl(loaders.local, true));
+            }
+            if (loaders.location.length > 0) {
+                yuiMojitoAssets.top.js.push(this._createComboUrl(loaders.location));
+            }
+            Y.Array.each(loaders.url, function (url) {
+                yuiMojitoAssets.top.js.push(url);
             });
 
             // add yui, loader, and mojito client to assets
@@ -194,7 +209,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         },
 
         _addBootstrap: function (assets) {
-            var data = this.data,
+            var self = this,
+                data = self.data,
                 // inline bootstrap contains SimpleLoader definition and a call to SimpleLoader
                 inlineBootstrap = data.inline["yui-bootstrap--yui-bootstrap-inline"],
                 simpleLoaderUse,
@@ -209,8 +225,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
                 // determine all the js scripts in assets, and get their new location
                 Y.Object.each(assets, function (positionResources, position) {
-                    Y.Array.each(positionResources.js, function (url) {
-                        jsUrls.push(data.locationMap[url] || url);
+                    Y.Array.each(positionResources.js, function (path) {
+                        var mappedLocation = data.locationMap[path] || path;
+                        jsUrls.push(URL_REGEX.test(mappedLocation) ? mappedLocation : self._createUrl(path));
                     });
                     // empty list so that scripts dont appear on page
                     positionResources.js = [];
@@ -287,10 +304,10 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             Y.Object.each(assets, function (positionResources, position) {
                 Y.Object.each(positionResources, function (typeResources, type) {
                     var i = 0,
-                        newLocation,
                         isRollup = false,
-                        isExternalLink = false,
+                        isUrl = false,
                         inlineElement = "",
+                        mappedLocation,
                         comboLocalTypeResources = [],
                         comboLocationTypeResources = [],
                         comboLoad;
@@ -313,22 +330,22 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                             typeResources.splice(i, 1);
                         } else if (type !== 'blob') {
                             // replace asset with new location if available
-                            newLocation = data.locationMap[typeResources[i]];
                             isRollup = data.rollups && data.rollups[type] && data.rollups[type].rollups.indexOf(typeResources[i]) !== -1;
-                            isExternalLink = typeResources[i].indexOf("http") === 0;
+                            mappedLocation = data.locationMap[typeResources[i]] || typeResources[i];
+                            isUrl = URL_REGEX.test(mappedLocation);
                             // don't combo load rollups, or external links
-                            if (comboLoad && !isRollup && !isExternalLink) {
+                            if (comboLoad && !isRollup && !isUrl) {
                                 // get local resource to comboload
-                                if (data.settings.serveLocation === "local" || !newLocation) {
-                                    comboLocalTypeResources.push(newLocation || typeResources[i]);
+                                if (data.settings.serveLocation === "local" || !data.locationMap[typeResources[i]]) {
+                                    comboLocalTypeResources.push(mappedLocation);
                                 } else {
                                     // get location resources to comboload
-                                    comboLocationTypeResources.push(newLocation);
+                                    comboLocationTypeResources.push(mappedLocation);
                                 }
                                 // remove resource since it will appear comboloaded
                                 typeResources.splice(i, 1);
                             } else {
-                                typeResources[i] = newLocation || typeResources[i];
+                                typeResources[i] = isUrl ? mappedLocation : self._createUrl(typeResources[i]);
                                 i++;
                             }
                         } else {
@@ -348,10 +365,10 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
                     // add comboload resources
                     if (comboLoad && comboLocalTypeResources.length !== 0) {
-                        typeResources.push(data.rs.shaker._comboload(comboLocalTypeResources, null));
+                        typeResources.push(self._createComboUrl(comboLocalTypeResources, true));
                     }
                     if (comboLoad && comboLocationTypeResources.length !== 0) {
-                        typeResources.push(data.rs.shaker._comboload(comboLocationTypeResources, data.currentLocation));
+                        typeResources.push(self._createComboUrl(comboLocationTypeResources));
                     }
                 });
             });
@@ -385,6 +402,44 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     }
                 }
             });
+        },
+
+        /**
+         * Creates a url based on a path.
+         * @param {string} path The path.
+         */
+        _createUrl: function (path) {
+            var yuiAppConfig = this.data.yuiAppConfig,
+                root = yuiAppConfig.root || '/',
+                base = yuiAppConfig.base || '/',
+                newLocation = this.data.locationMap[path];
+
+            if (!newLocation) {
+                return path;
+            }
+
+            return libUrl.resolve(base, libPath.join(root, newLocation));
+        },
+
+        /**
+         * Creates a combo url from an array of resources.
+         * @param {array} resourcesArray The array of resources.
+         * @param {object} isLocal Whether the resources are local.
+         */
+        _createComboUrl: function (resourcesArray, isLocal) {
+            var yuiAppConfig = isLocal ? {} : this.data.yuiAppConfig,
+                root = yuiAppConfig.root || '',
+                comboSep = yuiAppConfig.comboSep || "~",
+                comboBase = yuiAppConfig.comboBase || "/combo~";
+
+            resourcesArray = resourcesArray.slice();
+            if (root) {
+                Y.Array.each(resourcesArray, function (resource, i) {
+                    resourcesArray[i] = libPath.join(root, resource);
+                });
+            }
+
+            return comboBase + resourcesArray.join(comboSep);
         }
     };
 

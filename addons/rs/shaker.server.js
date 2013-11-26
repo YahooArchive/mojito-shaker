@@ -15,7 +15,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             },
             optimizeBootstrap: true
         },
-        HTTP_URL_REGEX = /https?:\/\/[^\/]+/,
+        URL_REGEX = /^https?:\/\//,
         libpath = require('path');
 
     function RSAddonShaker() {
@@ -90,32 +90,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             }
         },
 
-        /**
-         * Updates the location of each resource, filters out resources already in rollup.
-         * Handles comboloading.
-         * @param {object} assets The assets to be updated.
-         */
-        _comboload: function (resourcesArray, currentLocation) {
-            var comboSep = "~", // default comboSep
-                comboBase = "/combo~", // default comboBase
-                locationComboConfig = currentLocation && currentLocation.yuiConfig && currentLocation.yuiConfig.groups &&
-                           currentLocation.yuiConfig.groups.app;
-
-            // if location is not local, then update comboBase and comboSep as specified in location's config
-            if (locationComboConfig) {
-                comboBase = (locationComboConfig && locationComboConfig.comboBase) || comboBase;
-                comboSep = (locationComboConfig && locationComboConfig.comboSep) || comboSep;
-                // remove base
-                if (resourcesArray.length > 1) {
-                    Y.Array.each(resourcesArray, function (resource, i) {
-                        resourcesArray[i] = resource.replace(HTTP_URL_REGEX, '');
-                    });
-                }
-            }
-            // if just one resource return it, otherwise return combo url
-            return resourcesArray.length === 1 ? resourcesArray[0] : comboBase + resourcesArray.join(comboSep);
-        },
-
         _populateLoaders: function () {
             // set default location
             this.meta.locations = this.meta.locations || {};
@@ -145,24 +119,26 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
                 loaders[locationName] = {};
                 Y.Object.each(self.rs.yui.langs, function (langObj, lang) {
-                    var localUrls = [],
-                        locationUrls = [];
-                    loaders[locationName][lang] = [];
+                    loaders[locationName][lang] = {
+                        local: [],
+                        location: [],
+                        url: []
+                    };
                     Y.Array.each(seed, function (loader) {
-                        var url = prefix + loader + '.js';
-                        url = url.replace('{langPath}', lang ? ("_" + lang) : '');
-                        if (locationMap[url]) {
-                            locationUrls.push(locationMap[url]);
+                        var langPath = prefix + loader + '.js',
+                            path = langPath.replace('{langPath}', lang ? ("_" + lang) : ''),
+                            mappedLocation = locationMap[path];
+
+                        if (mappedLocation) {
+                            if (URL_REGEX.test(mappedLocation)) {
+                                loaders[locationName][lang].url.push(mappedLocation);
+                            } else {
+                                loaders[locationName][lang].location.push(mappedLocation);
+                            }
                         } else {
-                            localUrls.push(url);
+                            loaders[locationName][lang].local.push(path);
                         }
                     });
-                    if (localUrls.length > 0) {
-                        loaders[locationName][lang].push(self._comboload(localUrls, null));
-                    }
-                    if (locationUrls.length > 0) {
-                        loaders[locationName][lang].push(self._comboload(locationUrls, location));
-                    }
                 });
             });
         },
@@ -389,8 +365,10 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             }
 
             modifiedAppConfig = Y.Do.originalRetVal;
-            // merge the application's yui config with the location's yui config, with precedence on the location's config
-            Y.mix(modifiedAppConfig.yui.config, this.meta.currentLocation.yuiConfig, true, null, 0, true);
+            // merge the application's yui config with the location's yui config, with precedence on the application's config
+            modifiedAppConfig.yui = modifiedAppConfig.yui || {};
+            modifiedAppConfig.yui.config = modifiedAppConfig.yui.config || {};
+            Y.mix(modifiedAppConfig.yui.config, this.meta.currentLocation.yuiConfig, false, null, 0, true);
 
             this.rs._appConfigCache[key] = JSON.stringify(modifiedAppConfig);
             this._appConfigCache[key] = true;

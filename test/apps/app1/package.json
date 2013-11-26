@@ -7,9 +7,8 @@
         "email": "jimenez@yahoo-inc.com"
     },
     "dependencies": {
-        "mojito": "0.6.x",
-        "mojito-shaker": "4.0.x",
-        "mojito-shaker-mobstor": "2.0.0"
+        "mojito": "0.8.x",
+        "mojito-shaker": "4.1.x"
     },
     "engines": {
         "node": "> 0.8",
