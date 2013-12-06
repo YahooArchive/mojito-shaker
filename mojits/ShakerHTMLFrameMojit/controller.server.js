@@ -44,10 +44,8 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
                 //    and any other html data added through shaker
                 // 2. mixing meta with child metas, along with some extra
                 //    headers.
-
-
                 ac.done(
-                    Y.merge(data, ac.assets.renderLocations(), ac.shaker.data.htmlData),
+                    Y.merge(ac.shaker.data.htmlData, data, ac.assets.renderLocations()),
                     Y.mojito.util.metaMerge(meta, {
 
                         http: {
