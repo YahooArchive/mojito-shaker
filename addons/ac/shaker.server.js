@@ -144,10 +144,12 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          */
         _addYUILoader: function (assets, binders) {
             var data = this.data,
-                yuiMojitoAssets = {},
+                comboSep = data.yuiAppConfig.comboSep || '&',
+                parts,
+                modules,
+                mojitoClientAssets = {},
                 jsPosition = data.settings.serveJs.position,
-                lang = data.context.lang || '',
-                loaders = data.loaders[data.currentLocationName][lang] || data.loaders[data.currentLocationName][''];
+                yuiLoaderModules = ['yui-base', 'loader-base', 'loader-yui3'];
 
             if (!data.settings.serveJs) {
                 return;
@@ -158,51 +160,58 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
             // construct mojito client
             if (this.ac.instance.config.deploy === true && binders) {
-                this.ac.assets.assets = yuiMojitoAssets;
+                this.ac.assets.assets = mojitoClientAssets;
                 this.ac.deploy.constructMojitoClientRuntime(this.ac.assets, binders);
             } else {
                 return;
             }
 
-            // remove default loader and add loaders determined during server start time
-            yuiMojitoAssets.top.js.pop();
-            if (loaders.local.length > 0) {
-                yuiMojitoAssets.top.js.push(this._createComboUrl(loaders.local, true));
-            }
-            if (loaders.location.length > 0) {
-                yuiMojitoAssets.top.js.push(this._createComboUrl(loaders.location));
-            }
-            Y.Array.each(loaders.url, function (url) {
-                yuiMojitoAssets.top.js.push(url);
-            });
-
             // add yui, loader, and mojito client to assets
             assets[jsPosition] = assets[jsPosition] || {};
             assets[jsPosition].js = assets[jsPosition].js || [];
-            // if rollup contains yui then only add loader config
-            if (data.rollups && data.rollups.js &&
-                    (data.rollups.js.resources["yui-module--yui-base"] &&
-                    data.rollups.js.resources["yui-module--loader-base"] &&
-                    data.rollups.js.resources["yui-module--loader-yui3"])) {
-                yuiMojitoAssets.top.js.splice(0, 1);
-                Array.prototype.push.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
 
+            // remove any yui modules already included in the rollups
+            if (data.rollups && data.rollups.js) {
+                parts = mojitoClientAssets.top.js[0].split('?');
+                modules = parts[1].split(comboSep);
+                Y.Array.each(yuiLoaderModules, function (yuiLoaderModule) {
+                    var i = 0;
+                    if (data.rollups.js.resources['yui-module--' + yuiLoaderModule]) {
+                        // check if modules contain the yui module which is already in the rollup
+                        while (i < modules.length) {
+                            if (new RegExp(yuiLoaderModule + '[\\.\\-_]').test(modules[i])) {
+                                // remove the module since it is already in the rollup
+                                modules.splice(i, 1);
+                                continue;
+                            }
+                            i++;
+                        }
+                    }
+                });
+                if (modules.length === 0) {
+                    // remove this asset since the combo url contains no modules
+                    mojitoClientAssets.top.js.splice(0, 1);
+                } else {
+                    // recreate the combo url with the filtered modules
+                    mojitoClientAssets.top.js[0] = parts[0] + modules.join(comboSep);
+                }
+                Array.prototype.push.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
             } else {
                 // add yui and loader before rollup or any other js assets
-                Array.prototype.unshift.apply(assets[jsPosition].js, yuiMojitoAssets.top.js);
+                Array.prototype.unshift.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
             }
 
             // add mojito client
             if (data.bootstrapEnabled) {
                 // add mojito client with other inline assets such that it gets merged with bootstrap
                 // strip out script tags since these will be added after all inline js have been merged
-                data.inline.mojitoClient = yuiMojitoAssets.bottom.blob[0].replace(SCRIPT_TAGS_REGEX, '');
+                data.inline.mojitoClient = mojitoClientAssets.bottom.blob[0].replace(SCRIPT_TAGS_REGEX, '');
                 assets.shakerInlineJs.blob.push('mojitoClient');
             } else {
                 // add mojito client on the bottom
                 assets.bottom = assets.bottom || {};
                 assets.bottom.blob = assets.bottom.blob || [];
-                Array.prototype.push.apply(assets.bottom.blob, yuiMojitoAssets.bottom.blob);
+                Array.prototype.push.apply(assets.bottom.blob, mojitoClientAssets.bottom.blob);
             }
 
             this.ac.assets.assets = assets;

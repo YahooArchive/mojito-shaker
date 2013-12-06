@@ -42,9 +42,14 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             this._initializeMetadata();
             this._populateAppResources();
 
-            // change the location of the resources to their cdn location
-
-            this.afterHostMethod('resolveResourceVersions', this._populateLoaders, this);
+            if (this.meta.currentLocation) {
+                // use own version of appConfigCache in order to modify appConfig only once per context
+                this._appConfigCache = {};
+                // hook into getAppConfig in order to merge the yui configuration with the location's default yui configuration
+                this.afterHostMethod('getAppConfig', this.getAppConfig, this);
+                // hook into resolveResourceVersions in order to update the urls of application yui modules
+                this.afterHostMethod('resolveResourceVersions', this._updateAppModuleUrls, this);
+            }
         },
 
         /**
@@ -77,69 +82,22 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
 
             // set current location
             this.meta.currentLocation = this.meta.locations && this.meta.locations[this.meta.settings.serveLocation];
-            // ensure that the current location does not have any loader error during compilation
-            this.meta.currentLocation = this.meta.currentLocation && this.meta.currentLocation.loaderError !== true ? this.meta.currentLocation : null;
-            this.meta.currentLocationName = this.meta.currentLocation ? this.meta.settings.serveLocation : 'default';
 
-            // if the current location is set to something other than default
-            // hook into getAppConfig in order to set custom yui configuration
-            if (this.meta.currentLocation) {
-                // use own version of appConfigCache in order to modify appConfig only once per context
-                this._appConfigCache = {};
-                this.afterHostMethod('getAppConfig', this.getAppConfig, this);
+            // if there was a error uploading loaders then assets should be served by the app itself
+            if (this.meta.currentLocation && this.meta.currentLocation.loaderError) {
+                this.meta.currentLocation = null;
+                this.rs.yui.staticHandling.serveYUIFromAppOrigin = true;
             }
+            this.meta.currentLocationName = this.meta.currentLocation ? this.meta.settings.serveLocation : 'default';
         },
 
-        _populateLoaders: function () {
-            // set default location
-            this.meta.locations = this.meta.locations || {};
-            this.meta.locations['default'] = {};
-
-            var self = this,
-                seed = Y.clone(self.rs.yui.yuiConfig.seed),
-                i = 0,
-                loaders = {},
-                prefix = '/' + self.rs.url.config.prefix + '/';
-
-            // remove yui seeds
-            while (i < seed.length) {
-                if (seed[i] === 'yui-base' || seed[i] === 'loader-base' || seed[i] === 'loader-yui3') {
-                    seed.splice(i, 1);
-                } else {
-                    i++;
-                }
-            }
-            this.meta.loaders = loaders;
-
-            // make sure that langs contains the no-lang version
-            self.rs.yui.langs[''] = true;
-
-            Y.Object.each(self.meta.locations, function (location, locationName) {
-                var locationMap = location.resources || {};
-
-                loaders[locationName] = {};
-                Y.Object.each(self.rs.yui.langs, function (langObj, lang) {
-                    loaders[locationName][lang] = {
-                        local: [],
-                        location: [],
-                        url: []
-                    };
-                    Y.Array.each(seed, function (loader) {
-                        var langPath = prefix + loader + '.js',
-                            path = langPath.replace('{langPath}', lang ? ("_" + lang) : ''),
-                            mappedLocation = locationMap[path];
-
-                        if (mappedLocation) {
-                            if (URL_REGEX.test(mappedLocation)) {
-                                loaders[locationName][lang].url.push(mappedLocation);
-                            } else {
-                                loaders[locationName][lang].location.push(mappedLocation);
-                            }
-                        } else {
-                            loaders[locationName][lang].local.push(path);
-                        }
-                    });
-                });
+        /**
+         * Updates the url's of all application yui modules with their corresponding CDN urls.
+         */
+        _updateAppModuleUrls: function () {
+            var locationMap = this.meta.currentLocation.resources;
+            Y.Object.each(this.rs.yui.appModulesDetails, function (module) {
+                module.url = locationMap[module.url] || module.url;
             });
         },
 
