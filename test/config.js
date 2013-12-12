@@ -74,10 +74,12 @@ exports.tests = {
                                 },
                                 'Tasks': {
                                     error: [
-                                        "Error when applying task 'task with a syntax error' to test/apps/app1/mojits/Child/controller.common.js: ReferenceError: syntaxError is not defined"
+                                        "Error when applying task 'task with a syntax error' to test/apps/app1/mojits/Child/controller.common.js: ReferenceError: syntaxError is not defined",
+                                        "Error when applying task 'task with a syntax error' to test/apps/app1/node_modules/mojito/lib/app/mojits/LazyLoad/controller.common.js: ReferenceError: syntaxError is not defined"
                                     ],
                                     warn: [
-                                        "Error when applying task 'task with an error' to test/apps/app1/mojits/Child/controller.common.js: error"
+                                        "Error when applying task 'task with an error' to test/apps/app1/mojits/Child/controller.common.js: error",
+                                        "Error when applying task 'task with an error' to test/apps/app1/node_modules/mojito/lib/app/mojits/LazyLoad/controller.common.js: error"
                                     ]
                                 }
                             }
