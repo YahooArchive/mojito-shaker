@@ -15,7 +15,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
             },
             optimizeBootstrap: true
         },
-        URL_REGEX = /^https?:\/\//,
         libpath = require('path');
 
     function RSAddonShaker() {
@@ -47,8 +46,10 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 this._appConfigCache = {};
                 // hook into getAppConfig in order to merge the yui configuration with the location's default yui configuration
                 this.afterHostMethod('getAppConfig', this.getAppConfig, this);
-                // hook into resolveResourceVersions in order to update the urls of application yui modules
-                this.afterHostMethod('resolveResourceVersions', this._updateAppModuleUrls, this);
+                // hook into yui._getAppSeedFiles in order to update the modules locations in the files returned
+                this.afterHostMethod('resolveResourceVersions', this._hookGetAppSeedFiles, this);
+                // hook into yui._makeYUIModuleConfig to ensure that the synthetic loader config contain the proper location paths
+                this.rs.yui._makeYUIModuleConfig = this._makeYUIModuleConfig.bind(this);
             }
         },
 
@@ -61,7 +62,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 this.meta = this.rs.config.readConfigSimple(libpath.join(this.appRoot, METADATA_FILENAME));
             } catch (e) {
             }
-
 
             if (this.meta && !Y.Object.isEmpty(this.meta)) {
                 Y.log('Metadata loaded correctly.', 'info', 'Shaker');
@@ -89,16 +89,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 this.rs.yui.staticHandling.serveYUIFromAppOrigin = true;
             }
             this.meta.currentLocationName = this.meta.currentLocation ? this.meta.settings.serveLocation : 'default';
-        },
-
-        /**
-         * Updates the url's of all application yui modules with their corresponding CDN urls.
-         */
-        _updateAppModuleUrls: function () {
-            var locationMap = this.meta.currentLocation.resources;
-            Y.Object.each(this.rs.yui.appModulesDetails, function (module) {
-                module.url = locationMap[module.url] || module.url;
-            });
         },
 
         /**
@@ -354,6 +344,122 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 var resources = self._getMojitResources(self.meta, posl, mojit, action);
                 view.assets = self._positionResources(resources);
             });
+        },
+
+        /**
+         * Updates the url's of all application yui modules with their corresponding CDN urls.
+         */
+        _updateAppModuleUrls: function () {
+            var locationMap = this.meta.currentLocation.resources;
+            Y.Object.each(this.rs.yui.appModulesDetails, function (module, name) {
+                if (locationMap[module.url]) {
+                    //module.url = locationMap[module.url];
+                    module.actualUrl = locationMap[module.url];
+                } else {
+                    module.isLocal = true;
+                    module.actualUrl = module.url;
+                }
+                module.url = name;
+            });
+        },
+
+        /**
+         * Modifies the files returned by yui.getAppSeedFile to ensure that each module specified has the correct
+         * basename of its new location.
+         */
+        _hookGetAppSeedFiles: function () {
+            var locationMap = this.meta.currentLocation.resources,
+                originalGetAppSeedFiles = this.rs.yui.getAppSeedFiles;
+
+            // Change the url of all app modules to the module name itself.
+            // This allows the hook of getAppSeedFile to match the modules specified in the files
+            // such that it can update the modules' locations.
+            Y.Object.each(this.rs.yui.appModulesDetails, function (module, name) {
+                if (locationMap[module.url]) {
+                    //module.url = locationMap[module.url];
+                    module.actualUrl = locationMap[module.url];
+                } else {
+                    module.isLocal = true;
+                    module.actualUrl = module.url;
+                }
+                module.url = name;
+            });
+
+            this.rs.yui.getAppSeedFiles = function (ctx, yuiConfig) {
+                var i = 0,
+                    j,
+                    appModules = [],
+                    localModules = [],
+                    module,
+                    file,
+                    files = originalGetAppSeedFiles.call(this, ctx, yuiConfig),
+                    appGroupConfig = (yuiConfig.groups && yuiConfig.groups.app) || {};
+
+                while (i < files.length) {
+                    file = files[i];
+                    if (file.indexOf(appGroupConfig.comboBase) === 0) {
+                        file = file.substring(appGroupConfig.comboBase.length);
+                        appModules = file.split(appGroupConfig.comboSep);
+                        j = 0;
+                        while (j < appModules.length) {
+                            module = appModules[j].substring(appGroupConfig.root.length);
+                            module = this.appModulesDetails[module];
+                            if (module) {
+                                if (module.isLocal) {
+                                    localModules.push(module.actualUrl);
+                                    appModules.splice(j, 1);
+                                    continue;
+                                } else {
+                                    appModules[j] = appGroupConfig.root + module.actualUrl;
+                                }
+                            }
+                            j++;
+                        }
+                        if (appModules.length > 0) {
+                            files[i] = appGroupConfig.comboBase + appModules.join(appGroupConfig.comboSep);
+                        } else {
+                            files.splice(i, 1);
+                            continue;
+                        }
+                    } else if (file.indexOf(appGroupConfig.base) === 0) {
+                        module = file.substring(appGroupConfig.base.length);
+                        module = this.appModulesDetails[module];
+                        if (module) {
+                            files[i] = appGroupConfig.base + module.actualUrl;
+                        }
+                    }
+                    i++;
+                }
+
+                if (localModules.length > 0) {
+                    files.push('/combo~' + localModules.join('~'));
+                }
+
+                return files;
+            }.bind(this.rs.yui);
+        },
+
+        /**
+         * Replaces yui._makeYUIModuleConfig to ensure that the synthetic loader configs contain the
+         * the actual paths of the yui modules.
+         */
+        _makeYUIModuleConfig: function (env, res) {
+            var locationMap = this.meta.currentLocation.resources,
+                config = {
+                    requires: (res.yui.meta && res.yui.meta.requires) || []
+                };
+            if ('client' === env) {
+                // using relative path since the loader will do the rest
+                if (locationMap[res.url]) {
+                    config.path = locationMap[res.url];
+                } else {
+                    config.fullpath = res.url;
+                    config.path = config.fullpath;
+                }
+            } else {
+                config.fullpath = res.source.fs.fullPath;
+            }
+            return config;
         }
     });
 

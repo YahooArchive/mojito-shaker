@@ -53,7 +53,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             }
 
             yuiConfig = rs.getAppConfig(data.context).yui.config;
-            data.yuiAppConfig = (yuiConfig && yuiConfig.groups && yuiConfig.groups.app) || {};
+            data.yuiConfig = yuiConfig || {};
+            data.yuiAppConfig = (yuiConfig.groups && yuiConfig.groups.app) || {};
 
             data.rs = rs;
             data.title = rs.shaker.title;
@@ -66,7 +67,6 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.currentLocationName = data.meta.currentLocationName;
             data.locationMap = (data.currentLocation && data.currentLocation.resources) || {};
             data.inline = data.meta.inline || {};
-            data.loaders = data.meta.loaders;
             data.rollups = data.route && data.currentLocation ? data.meta.app[data.poslStr].rollups &&
                 data.meta.app[data.poslStr].rollups[data.route.name] : null;
             data.bootstrapEnabled = !!(data.rollups && data.rollups.js &&
@@ -144,7 +144,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          */
         _addYUILoader: function (assets, binders) {
             var data = this.data,
-                comboSep = data.yuiAppConfig.comboSep || '&',
+                comboSep = data.yuiAppConfig.comboSep || '~',
                 parts,
                 modules,
                 mojitoClientAssets = {},
@@ -193,13 +193,12 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                     mojitoClientAssets.top.js.splice(0, 1);
                 } else {
                     // recreate the combo url with the filtered modules
-                    mojitoClientAssets.top.js[0] = parts[0] + modules.join(comboSep);
+                    mojitoClientAssets.top.js[0] = parts[0] + '?' + modules.join(comboSep);
                 }
-                Array.prototype.push.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
-            } else {
-                // add yui and loader before rollup or any other js assets
-                Array.prototype.unshift.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
             }
+
+            // add yui and loader before rollup or any other js assets
+            Array.prototype.unshift.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
 
             // add mojito client
             if (data.bootstrapEnabled) {
