@@ -197,8 +197,11 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 }
             }
 
-            // add yui and loader before rollup or any other js assets
-            Array.prototype.unshift.apply(assets[jsPosition].js, mojitoClientAssets.top.js);
+            // if the js rollup contains the yui base then the rollup must appear first
+            // else the yui base and loader are added before any other js asset.
+            Array.prototype[
+                data.rollups && data.rollups.js && data.rollups.js.resources['yui-module--yui-base'] ? 'push' : 'unshift'
+            ].apply(assets[jsPosition].js, mojitoClientAssets.top.js);
 
             // add mojito client
             if (data.bootstrapEnabled) {
