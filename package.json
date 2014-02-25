@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "mojito": "0.8.x",
+        "mojito-cli": "0.1.x",
         "jsdom": "0.6.0",
         "yuitest": "0.7.9",
         "istanbul": "0.1.34"
