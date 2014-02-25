@@ -1,3 +1,7 @@
+.parent {
+    width: 410px;
+}
+
 .parent.mojit {
     border-color: #BB1133;
 }
@@ -5,4 +9,12 @@
 .log {
     border: 2px solid;
     padding: 10px;
+}
+
+#logo {
+    background-image: url(/static/Parent/assets/logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 96px;
+    height: 23px;
 }
