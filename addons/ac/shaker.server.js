@@ -429,7 +429,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 return path;
             }
 
-            return libUrl.resolve(base, libPath.join(root, newLocation));
+            return libUrl.resolve(base, newLocation[0] === '/' ? newLocation : libPath.join(root, newLocation));
         },
 
         /**
@@ -446,7 +446,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             resourcesArray = resourcesArray.slice();
             if (root) {
                 Y.Array.each(resourcesArray, function (resource, i) {
-                    resourcesArray[i] = libPath.join(root, resource);
+                    resourcesArray[i] = resource[0] === '/' ? resource : libPath.join(root, resource);
                 });
             }
 
