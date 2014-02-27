@@ -1,6 +1,14 @@
+@font-face {
+    font-family: albertus;
+    src: url(/static/app1/assets/albertus.ttf);
+}
 .mojit {
     border: 3px solid;
     padding: 10px;
     margin: 20px;
     background-color: white;
+}
+
+h3 {
+    font-family: albertus;
 }
