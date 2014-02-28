@@ -144,9 +144,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
          */
         _addYUILoader: function (assets, binders) {
             var data = this.data,
-                comboSep = data.yuiAppConfig.comboSep || '~',
-                parts,
-                modules,
+                yuiConfig = data.yuiConfig,
+                yuiAppConfig = data.yuiAppConfig,
                 mojitoClientAssets = {},
                 jsPosition = data.settings.serveJs.position,
                 yuiLoaderModules = ['yui-base', 'loader-base', 'loader-yui3'];
@@ -172,29 +171,64 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
 
             // remove any yui modules already included in the rollups
             if (data.rollups && data.rollups.js) {
-                parts = mojitoClientAssets.top.js[0].split('?');
-                modules = parts[1].split(comboSep);
-                Y.Array.each(yuiLoaderModules, function (yuiLoaderModule) {
-                    var i = 0;
-                    if (data.rollups.js.resources['yui-module--' + yuiLoaderModule]) {
-                        // check if modules contain the yui module which is already in the rollup
-                        while (i < modules.length) {
-                            if (new RegExp(yuiLoaderModule + '[\\.\\-_]').test(modules[i])) {
-                                // remove the module since it is already in the rollup
-                                modules.splice(i, 1);
+                (function () {
+                    var i = 0,
+                        j,
+                        file,
+                        modules,
+                        module,
+                        isCombo,
+                        files = mojitoClientAssets.top.js,
+                        moduleInRollup = function (module) {
+                            var i,
+                                isInRollup = false;
+                            Y.Array.some(yuiLoaderModules, function (yuiLoaderModule) {
+                                if (data.rollups.js.resources['yui-module--' + yuiLoaderModule] &&
+                                        new RegExp(yuiLoaderModule + '[\\.\\-_]').test(module)) {
+                                    isInRollup = true;
+                                    return true;
+                                }
+                            });
+                            return isInRollup;
+                        };
+
+                    while (i < files.length) {
+                        file = files[i];
+                        isCombo = file.indexOf(yuiAppConfig.comboBase) === 0 || file.indexOf(yuiConfig.comboBase) === 0;
+                        if (isCombo) {
+                            if (file.indexOf(yuiAppConfig.comboBase) === 0) {
+                                file = file.substring(yuiAppConfig.comboBase.length);
+                                modules = file.split(yuiAppConfig.comboSep);
+                            } else {
+                                file = file.substring(yuiConfig.comboBase.length);
+                                modules = file.split(yuiConfig.comboSep);
+                            }
+                            modules = file.split(yuiAppConfig.comboSep);
+                            j = 0;
+                            while (j < modules.length) {
+                                module = modules[j].substring(yuiAppConfig.root.length);
+                                if (moduleInRollup(module)) {
+                                    modules.splice(j, 1);
+                                } else {
+                                    j++;
+                                }
+                            }
+                            if (modules.length > 0) {
+                                files[i] = yuiAppConfig.comboBase + modules.join(yuiAppConfig.comboSep);
+                            } else {
+                                files.splice(i, 1);
                                 continue;
                             }
-                            i++;
+                        } else if (file.indexOf(yuiAppConfig.base) === 0) {
+                            module = file.split('/').pop();
+                            if (moduleInRollup(module)) {
+                                files.splice(i, 1);
+                                continue;
+                            }
                         }
+                        i++;
                     }
-                });
-                if (modules.length === 0) {
-                    // remove this asset since the combo url contains no modules
-                    mojitoClientAssets.top.js.splice(0, 1);
-                } else {
-                    // recreate the combo url with the filtered modules
-                    mojitoClientAssets.top.js[0] = parts[0] + '?' + modules.join(comboSep);
-                }
+                }());
             }
 
             // if the js rollup contains the yui base then the rollup must appear first
