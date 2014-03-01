@@ -52,7 +52,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 return;
             }
 
-            yuiConfig = rs.getAppConfig(data.context).yui.config;
+            yuiConfig = rs.yui.getYUIConfig(data.context);
             data.yuiConfig = yuiConfig || {};
             data.yuiAppConfig = (yuiConfig.groups && yuiConfig.groups.app) || {};
 
@@ -177,6 +177,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         file,
                         modules,
                         module,
+                        config,
                         isCombo,
                         files = mojitoClientAssets.top.js,
                         moduleInRollup = function (module) {
@@ -196,17 +197,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                         file = files[i];
                         isCombo = file.indexOf(yuiAppConfig.comboBase) === 0 || file.indexOf(yuiConfig.comboBase) === 0;
                         if (isCombo) {
-                            if (file.indexOf(yuiAppConfig.comboBase) === 0) {
-                                file = file.substring(yuiAppConfig.comboBase.length);
-                                modules = file.split(yuiAppConfig.comboSep);
-                            } else {
-                                file = file.substring(yuiConfig.comboBase.length);
-                                modules = file.split(yuiConfig.comboSep);
-                            }
-                            modules = file.split(yuiAppConfig.comboSep);
+                            config = file.indexOf(yuiAppConfig.comboBase) === 0 ? yuiAppConfig : yuiConfig;
+
+                            file = file.substring(config.comboBase.length);
+                            modules = file.split(config.comboSep);
+
                             j = 0;
                             while (j < modules.length) {
-                                module = modules[j].substring(yuiAppConfig.root.length);
+                                module = modules[j].split('/').pop();
                                 if (moduleInRollup(module)) {
                                     modules.splice(j, 1);
                                 } else {
@@ -214,12 +212,12 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                                 }
                             }
                             if (modules.length > 0) {
-                                files[i] = yuiAppConfig.comboBase + modules.join(yuiAppConfig.comboSep);
+                                files[i] = config.comboBase + modules.join(config.comboSep);
                             } else {
                                 files.splice(i, 1);
                                 continue;
                             }
-                        } else if (file.indexOf(yuiAppConfig.base) === 0) {
+                        } else if (file.indexOf(yuiAppConfig.base) === 0 || file.indexOf(yuiConfig.base) === 0) {
                             module = file.split('/').pop();
                             if (moduleInRollup(module)) {
                                 files.splice(i, 1);
