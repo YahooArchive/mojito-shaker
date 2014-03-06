@@ -29,7 +29,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             };
             adapter.req.shakerGlobal = data;
             data.context = ac.context;
-            data.route = ac.url.find(adapter.req.url, adapter.req.method);
+            data.route = ac.url.find(adapter.req.url, adapter.req.method) || {};
+            data.routeName = data.route.annotations !== undefined ? data.route.annotations.name : data.route.name;
         }
     }
 
@@ -67,8 +68,8 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.currentLocationName = data.meta.currentLocationName;
             data.locationMap = (data.currentLocation && data.currentLocation.resources) || {};
             data.inline = data.meta.inline || {};
-            data.rollups = data.route && data.currentLocation ? data.meta.app[data.poslStr].rollups &&
-                data.meta.app[data.poslStr].rollups[data.route.name] : null;
+            data.rollups = data.currentLocation ? data.meta.app[data.poslStr].rollups &&
+                data.meta.app[data.poslStr].rollups[data.routeName] : null;
             data.bootstrapEnabled = !!(data.rollups && data.rollups.js &&
                 data.rollups.js.resources["yui-bootstrap--yui-bootstrap-override"] &&
                 data.inline["yui-bootstrap--yui-bootstrap-inline"]);
