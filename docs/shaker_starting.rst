@@ -1,4 +1,3 @@
-
 ===============
 Getting Started
 ===============
@@ -9,7 +8,7 @@ Prerequisites
 #############
 
 - `Node.js (>= 0.6.0) <http://nodejs.org/>`_, `npm (> 1.0.0) <https://npmjs.org/>`_
-- `Mojito v0.5.x <https://npmjs.org/package/mojito>`_
+- `Mojito >=v0.5.x <https://npmjs.org/package/mojito>`_
 
 .. note:: To use Shaker with other versions of Mojito,
           see :ref:`Compatibility Table <gs-compatibility>`.
