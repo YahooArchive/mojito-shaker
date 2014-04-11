@@ -13,6 +13,7 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 combo: false,
                 position: 'top'
             },
+            inline: true,
             optimizeBootstrap: true
         },
         libpath = require('path');
