@@ -28,8 +28,13 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
     Y.extend(RSAddonShaker, Y.Plugin.Base, {
 
         initializer: function (config) {
-            // do not use Shaker RS addon when running Shaker compiler
+
             if (process.shakerCompiler) {
+                // Shaker needs information about all mojits and langs,
+                // so lazy loading them is not possible.
+                config.host.lazyLangs = false;
+                config.host.lazyMojits = false;
+                // do not use Shaker RS addon when running Shaker compiler
                 return;
             }
 
