@@ -52,6 +52,8 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 this.afterHostMethod('resolveResourceVersions', this._hookGetAppSeedFiles, this);
                 // hook into yui._makeYUIModuleConfig to ensure that the synthetic loader config contain the proper location paths
                 this.rs.yui._makeYUIModuleConfig = this._makeYUIModuleConfig.bind(this);
+                // hook into yui._processResources in order to update the url's of all application yui modules with their corresponding CDN url's.
+                Y.Do.after(this._updateAppModuleUrls, this.rs.yui, '_processResources', this);
             }
         },
 
@@ -349,20 +351,23 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
         },
 
         /**
-         * Updates the url's of all application yui modules with their corresponding CDN urls.
+         * Updates the url's of all application yui modules with their corresponding CDN url's.
          */
-        _updateAppModuleUrls: function () {
+        _updateAppModuleUrls: function (ress) {
             var locationMap = this.meta.currentLocation.resources;
-            Y.Object.each(this.rs.yui.appModulesDetails, function (module, name) {
+            Y.Array.each(ress, function (res) {
+                if (!res.yui || !res.yui.name || !this.rs.yui.appModulesDetails[res.yui.name]) {
+                    return;
+                }
+                var module = this.rs.yui.appModulesDetails[res.yui.name];
                 if (locationMap[module.url]) {
-                    //module.url = locationMap[module.url];
                     module.actualUrl = locationMap[module.url];
                 } else {
                     module.isLocal = true;
                     module.actualUrl = module.url;
                 }
-                module.url = name;
-            });
+                module.url = res.yui.name;
+            }.bind(this));
         },
 
         /**
@@ -372,20 +377,6 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
         _hookGetAppSeedFiles: function () {
             var locationMap = this.meta.currentLocation.resources,
                 originalGetAppSeedFiles = this.rs.yui.getAppSeedFiles;
-
-            // Change the url of all app modules to the module name itself.
-            // This allows the hook of getAppSeedFile to match the modules specified in the files
-            // such that it can update the modules' locations.
-            Y.Object.each(this.rs.yui.appModulesDetails, function (module, name) {
-                if (locationMap[module.url]) {
-                    //module.url = locationMap[module.url];
-                    module.actualUrl = locationMap[module.url];
-                } else {
-                    module.isLocal = true;
-                    module.actualUrl = module.url;
-                }
-                module.url = name;
-            });
 
             this.rs.yui.getAppSeedFiles = function (ctx, yuiConfig) {
                 var i = 0,
