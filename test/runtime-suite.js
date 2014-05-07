@@ -1,3 +1,7 @@
+'use strict';
+
+/*jslint nomen: true */
+
 var YUITest = require('yuitest').YUITest,
     Assert = YUITest.Assert,
     jsdom = require('jsdom'),
@@ -5,6 +9,7 @@ var YUITest = require('yuitest').YUITest,
     http = require('http');
 
 exports.RuntimeSuite = function (runtimeConfig, compilationSuite, appSuite, shakerSuite) {
+
     this.name = runtimeConfig.name;
 
     this.root = appSuite.root;
@@ -39,8 +44,7 @@ exports.RuntimeSuite = function (runtimeConfig, compilationSuite, appSuite, shak
 
 exports.RuntimeSuite.prototype = {
     startServer: function (self) {
-        var self = this,
-            cwd = process.cwd(),
+        var cwd = process.cwd(),
             express = this.express,
             mojito = this.mojito,
             app;
@@ -94,7 +98,7 @@ exports.RuntimeSuite.prototype = {
                 content += chunk;
             });
 
-            res.on('end', function() {
+            res.on('end', function () {
                 Assert.areEqual(res.statusCode, 200, "Unexpected status code when visiting '" + path + "': " + res.statusCode);
                 var document = jsdom.jsdom(content),
                     window = document.createWindow();
@@ -103,11 +107,11 @@ exports.RuntimeSuite.prototype = {
                     win: window,
                     doc: document
                 }).use('node', function (node) {
-                    done(node, content)
+                    done(node, content);
                 });
             });
-        }).on('error', function(err) {
+        }).on('error', function (err) {
             done(null, null);
         }).end();
     }
-}
+};
