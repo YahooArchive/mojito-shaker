@@ -22,8 +22,9 @@
         "knox": "0.5.x"
     },
     "devDependencies": {
-        "mojito": "0.8.x",
-        "mojito-cli": "0.1.x",
+        "express": "3.5.x",
+        "mojito": "0.9.x",
+        "mojito-cli": "0.2.x",
         "jsdom": "0.6.0",
         "yuitest": "0.7.9",
         "istanbul": "0.1.34"
