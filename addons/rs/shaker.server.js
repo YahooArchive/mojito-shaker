@@ -53,7 +53,10 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
                 // hook into yui._makeYUIModuleConfig to ensure that the synthetic loader config contain the proper location paths
                 this.rs.yui._makeYUIModuleConfig = this._makeYUIModuleConfig.bind(this);
                 // hook into yui._processResources in order to update the url's of all application yui modules with their corresponding CDN url's.
-                Y.Do.after(this._updateAppModuleUrls, this.rs.yui, '_processResources', this);
+                if (this.rs.yui._processResources) {
+                    // Checking if rs.yui has a method processResources, for backward compatibility.
+                    Y.Do.after(this._updateAppModuleUrls, this.rs.yui, '_processResources', this);
+                }
             }
         },
 
@@ -377,6 +380,21 @@ YUI.add('addon-rs-shaker', function (Y, NAME) {
         _hookGetAppSeedFiles: function () {
             var locationMap = this.meta.currentLocation.resources,
                 originalGetAppSeedFiles = this.rs.yui.getAppSeedFiles;
+
+            // If rs.yui does not have a method processResources then we must process modules here,
+            // for backward compatibility.
+            if (!this.rs.yui._processResources) {
+                Y.Object.each(this.rs.yui.appModulesDetails, function (module, name) {
+                    if (locationMap[module.url]) {
+                        //module.url = locationMap[module.url];
+                        module.actualUrl = locationMap[module.url];
+                    } else {
+                        module.isLocal = true;
+                        module.actualUrl = module.url;
+                    }
+                    module.url = name;
+                });
+            }
 
             this.rs.yui.getAppSeedFiles = function (ctx, yuiConfig) {
                 var i = 0,
