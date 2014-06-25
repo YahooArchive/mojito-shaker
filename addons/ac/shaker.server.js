@@ -31,7 +31,9 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             data.context = ac.context;
             data.route = ac.url.find(adapter.req.url, adapter.req.method) || {};
             data.routeName = data.route.annotations !== undefined ? data.route.annotations.name : data.route.name;
+            data.frameAc = ac;
         }
+        this.frameAc = this.data.frameAc;
     }
 
     ShakerAddon.prototype = {
@@ -495,6 +497,7 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
         'mojito-assets-addon',
         'mojito-config-addon',
         'mojito-deploy-addon',
+        'mojito-http-addon',
         'mojito-url-addon'
     ]
 });
