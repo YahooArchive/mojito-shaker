@@ -48,7 +48,7 @@ YUI.add('ShakerHTMLFrameMojit', function (Y, NAME) {
 
                         http: {
                             headers: {
-                                'content-type': 'text/html; charset="utf-8"'
+                                'content-type': ['text/html; charset="utf-8"']
                             }
                         }
 
