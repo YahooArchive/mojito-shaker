@@ -55,7 +55,10 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
                 return;
             }
 
-            yuiConfig = rs.yui.getYUIConfig(data.context);
+            // Get the yui config that will be used on the client.
+            yuiConfig = rs.yui.getYUIConfig(Y.mix({
+                runtime: 'client'
+            }, data.context));
             data.yuiConfig = yuiConfig || {};
             data.yuiAppConfig = (yuiConfig.groups && yuiConfig.groups.app) || {};
 
@@ -149,7 +152,14 @@ YUI.add('mojito-shaker-addon', function (Y, NAME) {
             var data = this.data,
                 yuiConfig = data.yuiConfig,
                 yuiAppConfig = data.yuiAppConfig,
-                mojitoClientAssets = {},
+                mojitoClientAssets = {
+                    top: {
+                        js: []
+                    },
+                    bottom: {
+                        blob: []
+                    }
+                },
                 jsPosition = data.settings.serveJs.position,
                 yuiLoaderModules = ['yui-base', 'loader-base', 'loader-yui3'];
 
