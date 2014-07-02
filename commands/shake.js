@@ -4,8 +4,6 @@
  * See the accompanying LICENSE file for terms.
  */
 
-/*global exit */
-
 var resolve = require('path').resolve,
     colors = require('../lib/utils/colors'),
     ShakerCompiler = require('../lib/compiler').ShakerCompiler;
@@ -155,7 +153,7 @@ exports.run = function (params, options) {
             // disable logger to prevent further messages after a failure
             compiler.logger.log = function () {};
             console.error(('Shaker compilation failed: ' + err).red.bold);
-            exit(1);
+            process.exit(1);
         } else {
             console.log(('Shaker compilation done.').green.bold);
             if (options.run) {
