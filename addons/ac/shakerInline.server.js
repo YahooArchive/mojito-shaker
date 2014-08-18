@@ -100,22 +100,27 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
         _shakerDone: function (selfContext, done, mojitData, meta) {
             var data = this.data,
                 args,
+                headers,
+                dataIsJson,
                 inlinePositions = [];
-
-            if (data.settings.serveJs) {
-                inlinePositions.push('shakerInlineJs');
-            }
-            if (data.settings.serveCss) {
-                inlinePositions.push('shakerInlineCss');
-            }
 
             // only execute if inline is on
             if (data.settings.inline) {
+                headers = (meta.http && meta.http.headers) || {};
+                dataIsJson = headers['content-type'] === 'application/json' ||
+                            (Y.Lang.isArray(headers['content-type']) && headers['content-type'].indexOf('application/json') !== -1);
+
+                if (data.settings.serveJs) {
+                    inlinePositions.push('shakerInlineJs');
+                }
+                if (data.settings.serveCss) {
+                    inlinePositions.push('shakerInlineCss');
+                }
+
                 Y.Array.each(inlinePositions, function (position) {
                     var positionResources = meta.assets && meta.assets[position],
                         inlineElement = "",
-                        type = position === "shakerInlineCss" ? "css" : "js",
-                        tmpData;
+                        type = position === "shakerInlineCss" ? "css" : "js";
 
                     if (!positionResources) {
                         return;
@@ -131,14 +136,16 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                         }
                     });
 
+                    // empty inline resources
+                    // do not delete this position (causes resources to appear twice for some reason)
+                    meta.assets[position].blob = [];
+
                     if (type === "css" && inlineElement) {
                         // add inline css to the top of the html
                         inlineElement = "<style>" + inlineElement + "</style>";
                         if (typeof mojitData === 'string') {
-                            if (meta.dataType === 'json') {
-                                tmpData = JSON.parse(mojitData);
-                                tmpData.css = inlineElement;
-                                mojitData = JSON.stringify(tmpData);
+                            if (dataIsJson) {
+                                meta.assets[position].blob.push(inlineElement);
                             } else {
                                 mojitData = inlineElement + mojitData;
                             }
@@ -149,10 +156,8 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                         // add inline js to the bottom of the html
                         inlineElement = "<script>" + inlineElement + "</script>";
                         if (typeof mojitData === 'string') {
-                            if (meta.dataType === 'json') {
-                                tmpData = JSON.parse(mojitData);
-                                tmpData.js = inlineElement;
-                                mojitData = JSON.stringify(tmpData);
+                            if (dataIsJson) {
+                                meta.assets[position].blob.push(inlineElement);
                             } else {
                                 mojitData = mojitData + inlineElement;
                             }
@@ -160,9 +165,6 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                             mojitData.push(inlineElement);
                         }
                     }
-                    // empty inline resources
-                    // do not delete this position (causes resources to appear twice for some reason)
-                    meta.assets[position].blob = [];
                 });
             }
 
