@@ -37,7 +37,7 @@ YUI.add('shaker-inline-addon', function (Y, NAME) {
                 inlineLocation = type === "js" ? "shakerInlineJs" : type === "css" ? "shakerInlineCss" : null,
                 baseUrl = '/' + data.rs.url.config.prefix + '/' + data.rs.url.config.appName + '/assets/' + file,
                 inlineAppResources = data.appResources && data.appResources[inlineLocation]
-                    && data.appResources[inlineLocation].blob;
+                    && data.appResources[inlineLocation].blob || [];
 
             // ignore if no inline files or type is not to be served
             if (inlineLocation === null || !data.settings.inline
