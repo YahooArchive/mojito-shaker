@@ -1,6 +1,6 @@
 {
     "name": "mojito-shaker",
-    "version": "4.3.1",
+    "version": "4.3.2",
     "description": "Compiles and deploys asset rollups for Mojito applications.",
     "author": "shaker-users@yahoo-inc.com",
     "contributors": [
@@ -12,7 +12,7 @@
     ],
     "dependencies": {
         "async": "0.2.x",
-        "yui": "~3.7.3",
+        "yui": "3.18.x",
         "jslint": "0.1.x",
         "uglify-js": "2.4.x",
         "csslint": "0.9.x",
